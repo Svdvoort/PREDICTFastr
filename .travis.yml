@@ -1,0 +1,17 @@
+language: python
+python:
+- '2.7'
+install:
+- python --version
+- python -m pip install --disable-pip-version-check --upgrade pip
+- pip install wheel>=0.29.0
+- pip install setuptools>=28.0.0
+- pip install --trusted-host www.itk.org -f https://itk.org/SimpleITKDoxygen/html/PyDownloadPage.html
+  SimpleITK>=0.9.1
+- pip install -r requirements.txt
+- python setup.py -q install
+notifications:
+  slack:
+    secure: BbNj7x4Ak6kop+MGfrXQQlpBVUV4iL5yboklJtenGYVIZhVQf7shN83bXnNm8u19MeI7YHeY7mIQ3kMEKcUhj/dseHQ531/RGI5KXhkm2QIFYFIUwGl00eUu2Uzg89gA4D+6EoEDU55nYJALYSix9GdMCg+j5EMEN8nhc7Rg2m35gafQ5v4gQ8NXnYfsvuEXMqmeUUwzphut122MlN8p4rHXd3S8GxYHymSUW2VooBAd1saRl9y+g3P/ysp2CK5f5KB/M+CYTwxO5zO5bKTnbTO0FEeX+Xhp4r8vId5pXZrLrhGgjR6sg0Hp2h9/tdjJ1zHql0Uc6CjBY943TVcQ1hc27EUqQmK2R1gBvMtOR7j7iMdv2V2u4kGHRFHmKmDto9MIa75HXSzVu+OfBiYz/Xqm8wkMqcw5euvWe6H5zv7pIdRm+e8ECZFCgBDMH65j34Te0IVRAmV4VU3neRzAO2hxq/XQWehqB6FUHcCyRN3HGoLqaOVhp7PGly7rbTzEFLoZRjlmVARDDTGYNlhIbRDTVKUX3csEKViWv19g8USsUiAcvtE1PWtNKFJETjrGogmVrXh3m/onhhhkKZn9I50LE0R02DyQiLCNHypt171yVLDdXc1UeHHbITDdB2u/aRu5+Otqno84APQVZYQcGGObAM46ZMnAdK0P51GAFp8=
+script:
+- python ./tests/tests.py

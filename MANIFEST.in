@@ -1,0 +1,25 @@
+include LICENSE
+include APACHE-LICENSE-2.0
+include README.md
+include requirements.txt
+include test_requirements.txt
+include requirements-setup.txt
+include version
+include CHANGELOG
+
+recursive-include PREDICT *
+recursive-include PREDICT/classifiers *
+recursive-include PREDICT/classifiers/SVM *
+recursive-include PREDICT/genetics *
+recursive-include PREDICT/helpers *
+recursive-include PREDICT/IOparser/ *
+
+#documentation
+recursive-include docs/_build/html *
+
+recursive-exclude * __pycache__
+recursive-exclude * *.py[cod]
+
+# Exclude all bytecode
+global-exclude *.pyo
+global-exclude *.pyc
