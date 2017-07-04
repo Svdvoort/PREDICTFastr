@@ -16,15 +16,15 @@
 
 import numpy as np
 import pandas as pd
-import IOparser.config_io_classifier as config_io
-import genetics.genetic_processing as gp
+import PREDICT.IOparser.config_io_classifier as config_io
+import PREDICT.genetics.genetic_processing as gp
 import json
 import os
 from sklearn.feature_selection import VarianceThreshold
 
-from classification import crossval as cv
-from classification import construct_classifier as cc
-from tools.plot_SVM import plot_single_SVM
+from PREDICT.classification import crossval as cv
+from PREDICT.classification import construct_classifier as cc
+from PREDICT.tools.plot_SVM import plot_single_SVM
 
 
 def trainclassifier(feat_m1, feat_m2, feat_m3, patientinfo, config,
@@ -74,18 +74,17 @@ def trainclassifier(feat_m1, feat_m2, feat_m3, patientinfo, config,
         # Construct the required classifier
         classifier, param_grid =\
             cc.construct_classifier(config,
-                                    image_features_select[0],
-                                    path)
+                                    image_features_select[0])
 
         # For N_iter, perform k-fold crossvalidation
         if config['Classification']['fastr']:
             trained_classifier = cv.crossvalfastr(config, label_data,
                                                   image_features_select,
-                                                  classifier, param_grid)
+                                                  classifier, param_grid, path)
         else:
             trained_classifier = cv.crossval(config, label_data,
                                              image_features_select,
-                                             classifier, param_grid)
+                                             classifier, param_grid, path)
         # Add labels to dataframe
         # TODO: Works only if single mutation is present
         labels_pd =\

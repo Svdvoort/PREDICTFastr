@@ -70,6 +70,10 @@ entry_points = {
     ]
 }
 
+# Determine the fastr config path
+USER_DIR = os.path.expanduser(os.path.join('~', '.fastr'))
+config_d = os.path.join(USER_DIR, 'config.d')
+
 
 class NoseTestCommand(TestCommand):
     def finalize_options(self):
@@ -157,5 +161,6 @@ setup(
     test_suite='nose.collector',
     cmdclass={'test': NoseTestCommand, 'install': MyInstall},
     entry_points=entry_points,
-    # setup_requires=setup_requirements
+    data_files=[(config_d, ['PREDICT/fastrconfig/PREDICT_config.py'])],
+    setup_requires=_requires
 )

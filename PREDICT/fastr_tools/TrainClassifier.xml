@@ -1,14 +1,14 @@
-<tool id="SVMGS" name="SVMGS" version="1.0">
-    <description>A wrapper around PREDICT's Radiomics patient classification using Support Vector Machines with a grid search.</description>
+<tool id="TrainClassifier" name="TrainClassifier" version="1.0">
+    <description>A wrapper around PREDICT's Radiomics patient classification function.</description>
     <authors>
       <author name="Martijn Starmans" email="m.starmans@erasmusmc.nl" url="http://www.bigr.nl/people/MartijnStarmans" />
     </authors>
   <command version="1.0" url="" >
     <targets>
-      <target os="*" arch="*" interpreter="python" paths='bin/' bin="SVMGS_tool.py" />
+      <target os="*" arch="*" interpreter="python" paths='bin/' bin="TC_tool.py" />
     </targets>
     <description>
-       SVMGS.py images patientinfo seg parameters
+       TrainClassifier.py images patientinfo seg parameters
        output = Radiomics classification
     </description>
     <authors>
@@ -33,7 +33,7 @@
   </interface>
   <requirements />
   <tests />
-  <help> usage: svmgs.py [-h] -feat_m1/m2/m3 FEATURES.hdf5 -pc PATIENTCLASS.txt-conf CONFIGURATION.ini -parameters PARAMETERS.ini -class CLASSIFICATION.hdf5 -perf PERFORMANCE.json
+  <help> usage: TrainClassifier.py [-h] -feat_m1/m2/m3 FEATURES.hdf5 -pc PATIENTCLASS.txt-conf CONFIGURATION.ini -parameters PARAMETERS.ini -class CLASSIFICATION.hdf5 -perf PERFORMANCE.json
     Perform a grid search over several features types to train multiple Support Vector Machine (SVM) classifiers.
 
     -feat_m1, ..m2, ..m3 FEATURES.HDF5 File containing the features for an object. Support up to three feature files for a single object.

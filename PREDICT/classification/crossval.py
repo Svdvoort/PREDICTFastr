@@ -229,6 +229,8 @@ def crossval(config, label_data, image_features,
 
             # Find best hyperparameters and construct svm
             svm = po.random_search_parameters(X_train, Y_train,
+                                              classifier=classifier,
+                                              param_grid=param_grid,
                                               **config['HyperOptimization'])
 
             temp_save_data = (svm, X_train, X_test, Y_train, Y_test,

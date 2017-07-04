@@ -16,7 +16,7 @@
 # limitations under the License.
 
 import argparse
-from PREDICT.SVM import single_search_SVM as SVM
+from PREDICT.trainclassifier import trainclassifier
 
 
 def main():
@@ -49,9 +49,10 @@ def main():
                         help='Performance (JSON)')
     args = parser.parse_args()
 
-    SVM(feat_m1=args.feat_m1, feat_m2=args.feat_m2, feat_m3=args.feat_m3,
-        config=args.cf, patientinfo=args.pc, parameter_file=args.para,
-        output_svm=args.svm, output_json=args.perf, verbose=False)
+    trainclassifier(feat_m1=args.feat_m1, feat_m2=args.feat_m2,
+                    feat_m3=args.feat_m3, config=args.cf, patientinfo=args.pc,
+                    parameter_file=args.para,
+                    output_svm=args.svm, output_json=args.perf, verbose=False)
 
 
 if __name__ == '__main__':

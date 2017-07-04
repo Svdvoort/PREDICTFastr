@@ -55,6 +55,9 @@ def load_config(config_file_path):
     settings_dict['Classification']['classifier'] =\
         str(settings['Classification']['classifier'])
 
+    settings_dict['Classification']['Kernel'] =\
+        str(settings['Classification']['Kernel'])
+
     # Cross validation settings
     settings_dict['CrossValidation']['N_iterations'] =\
         settings['CrossValidation'].getint('N_iterations')

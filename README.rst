@@ -1,18 +1,81 @@
-PREDICT;
+PREDICT v1.0.0
+==============
 
-PREDICT: a Radiomics Extensive Differentiable Interchangable
-Classification Toolkit
+PREDICT: a Radiomics Extensive Differentiable Interchangable Classification Toolkit
+-----------------------------------------------------------------------------------
 
-Quick Start
------------
+This is an open-source python package supporting Radiomics medical image
+feature extraction and classification.
 
-PREDICT runs on python version 2.7.
+We aim to add a wide variety of features and classifiers to address a
+wide variety classification problems. Through a modular setup, these can
+easily be interchanged and compared.
 
-Set-up a virtual environment (`see
-here <http://docs.python-guide.org/en/latest/dev/virtualenvs/#virtualenv-burrito>`__).
+Documentation
+~~~~~~~~~~~~~
 
-Then: $ pip install requirements
+For more information, see the sphinx generated documentation available
+`here <http://predict.readthedocs.io/>`__.
 
-And you should be got to go!
+Alternatively, you can generate the documentation by checking out the
+master branch and running from the root directory:
 
-If not, please open an issue
+::
+
+    python setup.py build_sphinx
+
+The documentation can then be viewed in a browser by opening
+``PACKAGE_ROOT\build\sphinx\html\index.html``.
+
+Installation
+~~~~~~~~~~~~
+
+PREDICT has currently only been tested on Unix with Python 2.7. The
+package can be installed through pip:
+
+::
+
+      pip install PREDICT
+
+FASTR tools
+^^^^^^^^^^^
+
+When running the FASTR package under version 1.3.0, you need to manually
+add the PREDICT fastr\_tools path to the FASTR tools path. Go the your
+FASTR config file (default: ~/.fastr/config.py) and add the fastr\_tools
+path analogue to the description in the
+PREDICT/fastrconfig/PREDICT\_config.py file.
+
+3rd-party packages used in PREDICT:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+We mainly rely on the following packages:
+
+-  SimpleITK (Image loading and preprocessing)
+-  numpy (Feature computation)
+-  sklearn, scipy (Classification)
+-  FASTR (Fast and parallel workflow execution)
+-  pandas (Storage)
+
+See also the `requirements file <requirements.txt>`__.
+
+WIP
+~~~
+
+-  We are working on improving the documentation.
+-  We are working on the addition of different classifiers.
+-  Examples and unit tests will be added.
+
+License
+~~~~~~~
+
+This package is covered by the open source `APACHE 2.0
+License <APACHE-LICENSE-2.0>`__.
+
+Contact
+~~~~~~~
+
+We are happy to help you with any questions: please send us a message or
+create an issue.
+
+We welcome contributions to PREDICT. We will soon make some guidelines.

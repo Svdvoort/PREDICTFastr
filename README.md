@@ -25,6 +25,9 @@ The package can be installed through pip:
 
       pip install PREDICT
 
+#### FASTR tools
+When running the FASTR package under version 1.3.0, you need to manually add the PREDICT fastr_tools path to the FASTR tools path. Go the your FASTR config file (default: ~/.fastr/config.py) and add the fastr_tools path analogue to the description in the PREDICT/fastrconfig/PREDICT_config.py file.
+
 ### 3rd-party packages used in PREDICT:
 We mainly rely on the following packages:
 
