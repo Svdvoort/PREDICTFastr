@@ -10,9 +10,13 @@ include CHANGELOG
 recursive-include PREDICT *
 recursive-include PREDICT/classifiers *
 recursive-include PREDICT/classifiers/SVM *
+recursive-include PREDICT/featureselection/ *
 recursive-include PREDICT/genetics *
 recursive-include PREDICT/helpers *
+recursive-include PREDICT/imagefeatures *
 recursive-include PREDICT/IOparser/ *
+recursive-include PREDICT/plotting/ *
+recursive-include PREDICT/processing/ *
 
 #documentation
 recursive-include docs/_build/html *

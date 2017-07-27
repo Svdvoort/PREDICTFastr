@@ -10,7 +10,7 @@ Through a modular setup, these can easily be interchanged and compared.
 
 ### Documentation
 
-For more information, see the sphinx generated documentation available [here](http://predict.readthedocs.io/).
+For more information, see the sphinx generated documentation available [here (WIP)](http://predict.readthedocs.io/).
 
 Alternatively, you can generate the documentation by checking out the master branch and running from the root directory:
 
@@ -26,7 +26,14 @@ The package can be installed through pip:
       pip install PREDICT
 
 #### FASTR tools
-When running the FASTR package under version 1.3.0, you need to manually add the PREDICT fastr_tools path to the FASTR tools path. Go the your FASTR config file (default: ~/.fastr/config.py) and add the fastr_tools path analogue to the description in the PREDICT/fastrconfig/PREDICT_config.py file.
+When running the FASTR package under version 1.3.0, you need to manually add the PREDICT fastr_tools path to the FASTR tools path. Go the your FASTR config file (default: ~/.fastr/config.py) and add the fastr_tools path analogue to the description in the PREDICT/fastrconfig/PREDICT_config.py file:
+
+```
+packagedir = site.getsitepackages()[0]
+tools_path = [os.path.join(packagedir, 'PREDICT', 'fastr_tools')] + tools_path
+```
+
+Note that the Python site package does not work properly in virtual environments. You must then manually locate the packagedir.
 
 ### 3rd-party packages used in PREDICT:
 We mainly rely on the following packages:
@@ -43,11 +50,12 @@ See also the [requirements file](requirements.txt).
 - We are working on improving the documentation.
 - We are working on the addition of different classifiers.
 - Examples and unit tests will be added.
+- We have some issues with installing numpy and scipy in the requirements. There is now a workaround implemented.
 
 ### License
 This package is covered by the open source [APACHE 2.0 License](APACHE-LICENSE-2.0).
 
 ### Contact
-We are happy to help you with any questions: please send us a message or create an issue.
+We are happy to help you with any questions: please send us a message or create an issue on GITHUB.
 
 We welcome contributions to PREDICT. We will soon make some guidelines.

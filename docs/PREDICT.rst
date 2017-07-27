@@ -8,10 +8,12 @@ Subpackages
 
     PREDICT.IOparser
     PREDICT.classification
+    PREDICT.featureselection
     PREDICT.genetics
     PREDICT.helpers
     PREDICT.imagefeatures
-    PREDICT.tools
+    PREDICT.plotting
+    PREDICT.processing
 
 Submodules
 ----------

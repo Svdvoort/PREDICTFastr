@@ -1,0 +1,77 @@
+Metadata-Version: 1.1
+Name: xnat
+Version: 0.2.2
+Summary: An XNAT client that exposes the XNAT REST interface as python objects. Part of the interface is automatically generated based on the servers data model as defined by the xnat schema.
+Home-page: https://bitbucket.org/bigr_erasmusmc/xnatpy
+Author: H.C. Achterberg
+Author-email: hakim.achterberg@gmail.com
+License: Apache 2.0
+Description: ======
+        XNATPY
+        ======
+        A new XNAT client that exposes XNAT objects/functions as python
+        objects/functions.
+        
+        Disclaimer
+        ----------
+        
+        This is NOT pyxnat, but a new module which is not as mature but uses a
+        different philisophy for the user interface. Pyxnat is located at:
+        `https://pythonhosted.org/pyxnat/ <https://pythonhosted.org/pyxnat/>`_
+        
+        Getting started
+        ---------------
+        
+        To install just use the setup.py normally::
+        
+          python setup.py install
+        
+        or install directly using pip::
+        
+          pip install xnat
+        
+        To get started, create a connection and start querying::
+        
+          >>> import xnat
+          >>> session = xnat.connect('https://central.xnat.org', user="", password="")
+          >>> session.projects['Sample_DICOM'].subjects
+        
+        when using IPython most functionality can be figured out by looking at the
+        available attributes/methods of the returned objects.
+        
+        Credentials
+        -----------
+        
+        To store credentials this module uses the .netrc file. This file contains login
+        information and should be accessible ONLY by the user (if not, the module with
+        throw an error to let you know the file is unsafe).
+        
+        Documentation
+        -------------
+        
+        The official documentation can be found at `xnat.readthedocs.org <http://xnat.readthedocs.org>`_
+        This documentation is a stub, but shows the classes and methods available.
+        
+        Status
+        ------
+        
+        Currently we do not support the creation of Projects, Subjects, Experiments, etc
+        via code. You can create resources and uploads files to them. Also it is
+        possible to import data via the import service (upload a zip file). There is
+        also some support for working with the prearchive (reading, moving, deleting and
+        archiving).
+        
+        There is virtuall no documentation or testing, this is a known limitation.
+        
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Healthcare Industry
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Natural Language :: English
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Topic :: Scientific/Engineering :: Bio-Informatics
+Classifier: Topic :: Scientific/Engineering :: Medical Science Apps.

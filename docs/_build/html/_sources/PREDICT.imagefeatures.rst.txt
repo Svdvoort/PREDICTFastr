@@ -4,6 +4,14 @@ PREDICT.imagefeatures package
 Submodules
 ----------
 
+PREDICT.imagefeatures.coliage_features module
+---------------------------------------------
+
+.. automodule:: PREDICT.imagefeatures.coliage_features
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 PREDICT.imagefeatures.dti_features module
 -----------------------------------------
 

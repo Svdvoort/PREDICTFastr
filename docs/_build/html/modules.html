@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>PREDICT &#8212; PREDICT rc1.0.1 documentation</title>
+    <title>PREDICT &#8212; PREDICT rc1.0.0 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     'rc1.0.1',
+        VERSION:     'rc1.0.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -65,6 +65,13 @@
 <li class="toctree-l4"><a class="reference internal" href="PREDICT.classification.html#module-PREDICT.classification">Module contents</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="PREDICT.featureselection.html">PREDICT.featureselection package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="PREDICT.featureselection.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PREDICT.featureselection.html#predict-featureselection-selectgroups-module">PREDICT.featureselection.SelectGroups module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PREDICT.featureselection.html#predict-featureselection-selfeat-module">PREDICT.featureselection.selfeat module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PREDICT.featureselection.html#module-contents">Module contents</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="PREDICT.genetics.html">PREDICT.genetics package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="PREDICT.genetics.html#submodules">Submodules</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PREDICT.genetics.html#module-PREDICT.genetics.genetic_processing">PREDICT.genetics.genetic_processing module</a></li>
@@ -83,6 +90,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="PREDICT.imagefeatures.html">PREDICT.imagefeatures package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="PREDICT.imagefeatures.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PREDICT.imagefeatures.html#predict-imagefeatures-coliage-features-module">PREDICT.imagefeatures.coliage_features module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PREDICT.imagefeatures.html#module-PREDICT.imagefeatures.dti_features">PREDICT.imagefeatures.dti_features module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PREDICT.imagefeatures.html#module-PREDICT.imagefeatures.get_features">PREDICT.imagefeatures.get_features module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PREDICT.imagefeatures.html#module-PREDICT.imagefeatures.histogram_features">PREDICT.imagefeatures.histogram_features module</a></li>
@@ -94,15 +102,28 @@
 <li class="toctree-l4"><a class="reference internal" href="PREDICT.imagefeatures.html#module-PREDICT.imagefeatures">Module contents</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="PREDICT.tools.html">PREDICT.tools package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="PREDICT.tools.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="PREDICT.tools.html#module-PREDICT.tools.boxplot">PREDICT.tools.boxplot module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="PREDICT.tools.html#module-PREDICT.tools.compute_CI">PREDICT.tools.compute_CI module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="PREDICT.tools.html#module-PREDICT.tools.plot_ROC">PREDICT.tools.plot_ROC module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="PREDICT.tools.html#module-PREDICT.tools.plot_SVM">PREDICT.tools.plot_SVM module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="PREDICT.tools.html#module-PREDICT.tools.scatterplot">PREDICT.tools.scatterplot module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="PREDICT.tools.html#module-PREDICT.tools.showscores">PREDICT.tools.showscores module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="PREDICT.tools.html#module-PREDICT.tools">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PREDICT.plotting.html">PREDICT.plotting package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="PREDICT.plotting.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PREDICT.plotting.html#predict-plotting-boxplot-module">PREDICT.plotting.boxplot module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PREDICT.plotting.html#predict-plotting-compute-ci-module">PREDICT.plotting.compute_CI module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PREDICT.plotting.html#predict-plotting-plot-roc-module">PREDICT.plotting.plot_ROC module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PREDICT.plotting.html#predict-plotting-plot-svm-module">PREDICT.plotting.plot_SVM module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PREDICT.plotting.html#predict-plotting-plotposteriors-module">PREDICT.plotting.plotposteriors module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PREDICT.plotting.html#predict-plotting-scatterplot-module">PREDICT.plotting.scatterplot module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PREDICT.plotting.html#predict-plotting-showallscores-module">PREDICT.plotting.showallscores module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PREDICT.plotting.html#predict-plotting-showprobs-module">PREDICT.plotting.showprobs module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PREDICT.plotting.html#predict-plotting-showscores-module">PREDICT.plotting.showscores module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PREDICT.plotting.html#predict-plotting-showsensspec-module">PREDICT.plotting.showsensspec module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PREDICT.plotting.html#module-contents">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="PREDICT.processing.html">PREDICT.processing package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="PREDICT.processing.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PREDICT.processing.html#predict-processing-searchcvjoblib-module">PREDICT.processing.SearchCVJoblib module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PREDICT.processing.html#predict-processing-searchcvfastr-module">PREDICT.processing.SearchCVfastr module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PREDICT.processing.html#predict-processing-fitandscore-module">PREDICT.processing.fitandscore module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PREDICT.processing.html#predict-processing-testgs-module">PREDICT.processing.testGS module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PREDICT.processing.html#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>
