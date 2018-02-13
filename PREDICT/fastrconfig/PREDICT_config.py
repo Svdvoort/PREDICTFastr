@@ -17,9 +17,18 @@
 
 import site
 import os
+import sys
 
 
-# Add the PREDICT FASTR tools
-packagedir = site.getsitepackages()[0]
+# Get directory in which packages are installed
+try:
+    packagedir = site.getsitepackages()[0]
+except AttributeError:
+    # Inside virtualenvironment, so getsitepackages doesnt work.
+    paths = sys.path
+    for p in paths:
+        if os.path.isdir(p) and os.path.basename(p) == 'site-packages':
+            packagedir = p
+
 # packagedir is the path in which PREDICT is installed. Default on Linux is /usr/local/lib/python2.7/site-packages
 tools_path = [os.path.join(packagedir, 'PREDICT', 'fastr_tools')] + tools_path

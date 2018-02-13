@@ -16,44 +16,60 @@
 # limitations under the License.
 
 
-def get_patient_features(metadata, image_type):
+def get_patient_features(metadata, image_type, protocol_feat=False):
     patient_labels = list()
     patient_features = list()
 
-    patient_age = int(metadata[0x10, 0x1010].value[0:3])
+    if [0x10, 0x1010] in metadata.keys():
+        patient_age = int(metadata[0x10, 0x1010].value[0:3])
+    else:
+        print("[PREDICT Warning] No patient age in metadata, using zero.")
+        patient_age = 0
+
     patient_labels.append('pf_age')
     patient_features.append(patient_age)
 
-    patient_sex = metadata[0x10, 0x40].value
+    if [0x10, 0x40] in metadata.keys():
+        patient_sex = metadata[0x10, 0x40].value
 
-    if patient_sex == 'M':
-        patient_sex = 0
-    elif patient_sex == 'F':
-        patient_sex = 1
+        if patient_sex == 'M':
+            patient_sex = 0
+        elif patient_sex == 'F':
+            patient_sex = 1
+        else:
+            patient_sex = 2
     else:
-        patient_sex = 2
+        print("[PREDICT Warning] No patient sex in metadata, using 2.")
+        patient_age = 2
 
     patient_labels.append('pf_sex')
     patient_features.append(patient_sex)
 
     # Include slice thickness
     if image_type == 'CT' or image_type == 'MR':
-        slice_thickness = int(metadata[0x18, 0x50].value)
-        patient_labels.append('pf_thickness')
-        patient_features.append(slice_thickness)
+        if protocol_feat:
+            slice_thickness = int(metadata[0x18, 0x50].value)
+            patient_labels.append('pf_thickness')
+            patient_features.append(slice_thickness)
+
+            voxel_spacing = metadata[0x28, 0x30].value
+            patient_labels.append('pf_voxelspacing0')
+            patient_features.append(float(voxel_spacing[0]))
+            patient_labels.append('pf_voxelspacing1')
+            patient_features.append(float(voxel_spacing[1]))
 
     # Echo times and tesla for MR
-    if image_type == 'MR':
-        TR = int(metadata[0x18, 0x80].value)
-        patient_labels.append('pf_TR')
-        patient_features.append(TR)
-
-        TE = int(metadata[0x18, 0x81].value)
-        patient_labels.append('pf_TE')
-        patient_features.append(TE)
-
-        Tesla = int(metadata[0x18, 0x87].value)
-        patient_labels.append('pf_Tesla')
-        patient_features.append(Tesla)
+    # if image_type == 'MR':
+    #     TR = int(metadata[0x18, 0x80].value)
+    #     patient_labels.append('pf_TR')
+    #     patient_features.append(TR)
+    #
+    #     TE = int(metadata[0x18, 0x81].value)
+    #     patient_labels.append('pf_TE')
+    #     patient_features.append(TE)
+    #
+    #     Tesla = int(metadata[0x18, 0x87].value)
+    #     patient_labels.append('pf_Tesla')
+    #     patient_features.append(Tesla)
 
     return patient_features, patient_labels

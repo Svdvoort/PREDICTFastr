@@ -36,7 +36,8 @@ def load_config(config_file_path):
     settings_dict = {'General': dict(), 'CrossValidation': dict(),
                      'Genetics': dict(), 'HyperOptimization': dict(),
                      'Classification': dict(), 'SelectFeatGroup': dict(),
-                     'Featsel': dict()}
+                     'Featsel': dict(), 'FeatureScaling': dict(),
+                     'SampleProcessing': dict()}
 
     settings_dict['General']['cross_validation'] =\
         settings['General'].getboolean('cross_validation')
@@ -72,16 +73,16 @@ def load_config(config_file_path):
         settings['CrossValidation'].getfloat('test_size')
 
     # Genetic settings
-    mutation_setting = str(settings['Genetics']['mutation_type'])
+    label_names_setting = str(settings['Genetics']['label_names'])
 
-    mutation_types = re.findall("\[(.*?)\]", mutation_setting)
+    label_namess = re.findall("\[(.*?)\]", label_names_setting)
 
-    for i_index, i_mutation in enumerate(mutation_types):
-        stripped_mutation_type = [x.strip() for x in i_mutation.split(',')]
-        mutation_types[i_index] = stripped_mutation_type
+    for i_index, i_label_names in enumerate(label_namess):
+        stripped_label_names = [x.strip() for x in i_label_names.split(',')]
+        label_namess[i_index] = stripped_label_names
 
-    settings_dict['Genetics']['mutation_type'] =\
-        mutation_types
+    settings_dict['Genetics']['label_names'] =\
+        label_namess
 
     # Settings for hyper optimization
     settings_dict['HyperOptimization']['scoring_method'] =\
@@ -92,5 +93,17 @@ def load_config(config_file_path):
         settings['HyperOptimization'].getint('N_iterations')
     settings_dict['HyperOptimization']['n_jobspercore'] =\
         int(settings['HyperOptimization']['n_jobspercore'])
+
+    settings_dict['FeatureScaling']['scale_features'] =\
+        settings['FeatureScaling'].getboolean('scale_features')
+    settings_dict['FeatureScaling']['scaling_method'] =\
+        str(settings['FeatureScaling']['scaling_method'])
+
+    settings_dict['SampleProcessing']['SMOTE'] =\
+        settings['SampleProcessing'].getboolean('SMOTE')
+    settings_dict['SampleProcessing']['SMOTE_ratio'] =\
+        settings['SampleProcessing'].getfloat('SMOTE_ratio')
+    settings_dict['SampleProcessing']['SMOTE_neighbors'] =\
+        settings['SampleProcessing'].getint('SMOTE_neighbors')
 
     return settings_dict

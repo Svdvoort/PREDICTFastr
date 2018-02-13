@@ -30,7 +30,7 @@ import os
 import PREDICT.genetics.genetic_processing as gp
 
 
-def plot_single_SVM(prediction, mutation_data, show_plots=False):
+def plot_single_SVM(prediction, mutation_data, label_type, show_plots=False):
     if type(prediction) is not pd.core.frame.DataFrame:
         if os.path.isfile(prediction):
             prediction = pd.read_hdf(prediction)
@@ -51,7 +51,7 @@ def plot_single_SVM(prediction, mutation_data, show_plots=False):
     # mutation_data = gp.load_mutation_status(patientinfo, [[label]])
     if type(mutation_data) is not dict:
         if os.path.isfile(mutation_data):
-            mutation_data = gp.load_mutation_status(mutation_data, [[label]])
+            mutation_data = gp.load_mutation_status(mutation_data, [[label_type]])
 
     patient_IDs = mutation_data['patient_IDs']
     mutation_label = mutation_data['mutation_label']

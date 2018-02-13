@@ -44,7 +44,7 @@ def load_mutation_status(genetic_file, mutation_type):
     else:
         raise IOError(extension + ' is not valid genetic file extension.')
 
-    print(mutation_type)
+    print("Label names to extract: "+ str(mutation_type))
     mutation_label = list()
     for i_mutation in mutation_type:
         if len(i_mutation) == 1:
@@ -102,14 +102,16 @@ def load_genetic_file(input_file):
 
     # Mutation status is stored in all remaining columns
     mutation_status = data[1:, 1:]
-    mutation_status = mutation_status.astype(np.int)
+    mutation_status = mutation_status.astype(np.float)
 
     return mutation_names, patient_ID, mutation_status
 
 
 def load_genetic_XNAT(genetic_info):
     """
-    Load the patient IDs and genetic data from XNAT
+    Load the patient IDs and genetic data from XNAT, Only works if you have a
+    file /resources/GENETICS/files/genetics.json for each patient containing
+    a single dictionary of all labels.
 
     Args:
         url (string): XNAT URL
@@ -204,8 +206,8 @@ def findmutationdata(patientinfo, mutation_type, filenames,
                 for i_len in range(len(mutation_data_temp['mutation_label'])):
                     mutation_label[i_len].append(mutation_data_temp['mutation_label'][i_len][i_num])
 
-    if image_features_temp is not None:
-        image_features = np.asarray(image_features)
+    # if image_features_temp is not None:
+    #     image_features = np.asarray(image_features)
 
     # Convert to arrays
     for i_len in range(len(mutation_label)):

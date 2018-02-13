@@ -33,13 +33,25 @@ def load_config(config_file_path):
         str(settings['ImageFeatures']['texture'])
 
     settings_dict['ImageFeatures']['coliage'] =\
-        str(settings['ImageFeatures']['coliage'])
+        settings['ImageFeatures'].getboolean('coliage')
 
     settings_dict['ImageFeatures']['orientation'] =\
         settings['ImageFeatures'].getboolean('orientation')
 
+    settings_dict['ImageFeatures']['vessel'] =\
+        settings['ImageFeatures'].getboolean('vessel')
+
+    settings_dict['ImageFeatures']['log'] =\
+        settings['ImageFeatures'].getboolean('log')
+
+    settings_dict['ImageFeatures']['phase'] =\
+        settings['ImageFeatures'].getboolean('phase')
+
+    # Parameters for computing features
+    settings_dict['ImageFeatures']['parameters'] = dict()
+
     # Gabor settings
-    settings_dict['ImageFeatures']['gabor_settings'] = dict()
+    settings_dict['ImageFeatures']['parameters']['gabor_settings'] = dict()
 
     gabor_frequencies = [str(item).strip() for item in
                          settings['ImageFeatures']['gabor_frequencies']
@@ -53,10 +65,85 @@ def load_config(config_file_path):
     # Convert gabor angle to radians from angles
     gabor_angles = np.radians(gabor_angles)
 
-    settings_dict['ImageFeatures']['gabor_settings']['gabor_frequencies'] =\
+    settings_dict['ImageFeatures']['parameters']['gabor_settings']['gabor_frequencies'] =\
         gabor_frequencies
 
-    settings_dict['ImageFeatures']['gabor_settings']['gabor_angles'] =\
+    settings_dict['ImageFeatures']['parameters']['gabor_settings']['gabor_angles'] =\
         gabor_angles
+
+    # GLCM
+    settings_dict['ImageFeatures']['parameters']['GLCM'] = dict()
+
+    settings_dict['ImageFeatures']['parameters']['GLCM']['levels'] =\
+        int(settings['ImageFeatures']['GLCM_levels'])
+
+    GLCM_angles = [str(item).strip() for item in
+                   settings['ImageFeatures']['GLCM_angles']
+                   .split(',')]
+    settings_dict['ImageFeatures']['parameters']['GLCM']['angles'] =\
+        [float(g) for g in GLCM_angles]
+
+    GLCM_distances = [str(item).strip() for item in
+                      settings['ImageFeatures']['GLCM_distances']
+                      .split(',')]
+    settings_dict['ImageFeatures']['parameters']['GLCM']['distances'] =\
+        [float(g) for g in GLCM_distances]
+
+    # LBP
+    settings_dict['ImageFeatures']['parameters']['LBP'] = dict()
+
+    LBP_radius = [str(item).strip() for item in
+                  settings['ImageFeatures']['LBP_radius']
+                  .split(',')]
+    settings_dict['ImageFeatures']['parameters']['LBP']['radius'] =\
+        [int(g) for g in LBP_radius]
+
+    LBP_npoints = [str(item).strip() for item in
+                   settings['ImageFeatures']['LBP_npoints']
+                   .split(',')]
+    settings_dict['ImageFeatures']['parameters']['LBP']['N_points'] =\
+        [int(g) for g in LBP_npoints]
+
+    # Phase features
+    settings_dict['ImageFeatures']['parameters']['phase'] = dict()
+
+    phase_minwavelength = [str(item).strip() for item in
+                           settings['ImageFeatures']['phase_minwavelength']
+                           .split(',')]
+    settings_dict['ImageFeatures']['parameters']['phase']['minwavelength'] =\
+        [int(g) for g in phase_minwavelength]
+
+    phase_nscale = [str(item).strip() for item in
+                    settings['ImageFeatures']['phase_nscale']
+                    .split(',')]
+    settings_dict['ImageFeatures']['parameters']['phase']['nscale'] =\
+        [int(g) for g in phase_nscale]
+
+    # log features
+    settings_dict['ImageFeatures']['parameters']['log'] = dict()
+
+    log_sigma = [str(item).strip() for item in
+                 settings['ImageFeatures']['log_sigma']
+                 .split(',')]
+    settings_dict['ImageFeatures']['parameters']['log']['sigma'] =\
+        [int(g) for g in log_sigma]
+
+    # vessel features
+    settings_dict['ImageFeatures']['parameters']['vessel'] = dict()
+
+    vessel_scale_range = [str(item).strip() for item in
+                          settings['ImageFeatures']['vessel_scale_range']
+                          .split(',')]
+    settings_dict['ImageFeatures']['parameters']['vessel']['scale_range'] =\
+        [float(g) for g in vessel_scale_range]
+
+    vessel_scale_step = [str(item).strip() for item in
+                         settings['ImageFeatures']['vessel_scale_step']
+                         .split(',')]
+    settings_dict['ImageFeatures']['parameters']['vessel']['scale_step'] =\
+        [float(g) for g in vessel_scale_step]
+
+    settings_dict['ImageFeatures']['parameters']['vessel']['radius'] =\
+        int(settings['ImageFeatures']['vessel_radius'])
 
     return settings_dict

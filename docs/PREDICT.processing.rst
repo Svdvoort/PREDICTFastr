@@ -4,18 +4,34 @@ PREDICT.processing package
 Submodules
 ----------
 
-PREDICT.processing.SearchCVJoblib module
-----------------------------------------
+PREDICT.processing.ICC module
+-----------------------------
 
-.. automodule:: PREDICT.processing.SearchCVJoblib
+.. automodule:: PREDICT.processing.ICC
     :members:
     :undoc-members:
     :show-inheritance:
 
-PREDICT.processing.SearchCVfastr module
----------------------------------------
+PREDICT.processing.Imputer module
+---------------------------------
 
-.. automodule:: PREDICT.processing.SearchCVfastr
+.. automodule:: PREDICT.processing.Imputer
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+PREDICT.processing.SearchCV module
+----------------------------------
+
+.. automodule:: PREDICT.processing.SearchCV
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+PREDICT.processing.SearchCVoldkslearn module
+--------------------------------------------
+
+.. automodule:: PREDICT.processing.SearchCVoldkslearn
     :members:
     :undoc-members:
     :show-inheritance:
@@ -28,10 +44,10 @@ PREDICT.processing.fitandscore module
     :undoc-members:
     :show-inheritance:
 
-PREDICT.processing.testGS module
---------------------------------
+PREDICT.processing.readcrossvalfunc module
+------------------------------------------
 
-.. automodule:: PREDICT.processing.testGS
+.. automodule:: PREDICT.processing.readcrossvalfunc
     :members:
     :undoc-members:
     :show-inheritance:

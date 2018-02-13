@@ -18,6 +18,8 @@
 import pandas as pd
 
 import PREDICT.helpers.sitk_helper as sitkh
+import PREDICT.helpers.image_helper as ih
+
 import PREDICT.imagefeatures.histogram_features as hf
 import PREDICT.imagefeatures.texture_features as tf
 import PREDICT.imagefeatures.shape_features as sf
@@ -26,16 +28,17 @@ import PREDICT.imagefeatures.orientation_features as of
 import PREDICT.imagefeatures.coliage_features as cf
 import PREDICT.imagefeatures.dti_features as dtif
 import PREDICT.imagefeatures.patient_features as pf
-import PREDICT.helpers.image_helper as ih
+import PREDICT.imagefeatures.log_features as logf
+import PREDICT.imagefeatures.vessel_features as vesf
+import PREDICT.imagefeatures.phase_features as phasef
 
 # CONSTANTS
 N_BINS = 50
 
 
-def get_image_features(image_data, masks, gabor_settings,
+def get_image_features(image_data, masks, parameters,
                        mask_index=-1, multi_mask=False, config=None,
                        output=None):
-
     if type(image_data) == pd.core.frame.DataFrame:
         images = image_data['images']
         image_types = image_data['images'].keys()
@@ -115,7 +118,7 @@ def get_image_features(image_data, masks, gabor_settings,
             texture_features, texture_labels =\
                 tf.get_texture_features(i_image_array,
                                         i_mask_array,
-                                        gabor_settings,
+                                        parameters,
                                         config['texture'])
 
             feature_values += histogram_features + texture_features
@@ -128,6 +131,33 @@ def get_image_features(image_data, masks, gabor_settings,
                                             i_mask_array)
                 feature_values += coliage_features
                 feature_labels += coliage_labels
+
+            if config["vessel"]:
+                print("Computing vessel features.")
+                vessel_features, vessel_labels =\
+                    vesf.get_vessel_features(i_image_array,
+                                             i_mask_array,
+                                             parameters['vessel'])
+                feature_values += vessel_features
+                feature_labels += vessel_labels
+
+            if config["log"]:
+                print("Computing log features.")
+                log_features, log_labels =\
+                    logf.get_log_features(i_image_array,
+                                          i_mask_array,
+                                          parameters['log'])
+                feature_values += log_features
+                feature_labels += log_labels
+
+            if config["phase"]:
+                print("Computing phase features.")
+                phase_features, phase_labels =\
+                    phasef.get_phase_features(i_image_array,
+                                              i_mask_array,
+                                              parameters['phase'])
+                feature_values += phase_features
+                feature_labels += phase_labels
 
         elif 'DTI_post' in i_image_type:
             dti_features, dti_labels = dtif.get_dti_post_features(i_image,
@@ -160,7 +190,7 @@ def get_image_features(image_data, masks, gabor_settings,
             texture_features, texture_labels =\
                 tf.get_texture_features(i_image_array,
                                         i_mask_array,
-                                        gabor_settings,
+                                        parameters,
                                         config['texture'])
 
             feature_values += histogram_features + texture_features
@@ -173,6 +203,33 @@ def get_image_features(image_data, masks, gabor_settings,
                                             i_mask_array)
                 feature_values += coliage_features
                 feature_labels += coliage_labels
+
+            if config["vessel"]:
+                print("Computing vessel features.")
+                vessel_features, vessel_labels =\
+                    vesf.get_vessel_features(i_image_array,
+                                             i_mask_array,
+                                             parameters['vessel'])
+                feature_values += vessel_features
+                feature_labels += vessel_labels
+
+            if config["log"]:
+                print("Computing log features.")
+                log_features, log_labels =\
+                    logf.get_log_features(i_image_array,
+                                          i_mask_array,
+                                          parameters['log'])
+                feature_values += log_features
+                feature_labels += log_labels
+
+            if config["phase"]:
+                print("Computing phase features.")
+                phase_features, phase_labels =\
+                    phasef.get_phase_features(i_image_array,
+                                              i_mask_array,
+                                              parameters['phase'])
+                feature_values += phase_features
+                feature_labels += phase_labels
 
         else:
             print("Invalid image type: {}").format(i_image_type)

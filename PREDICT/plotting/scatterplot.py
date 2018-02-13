@@ -13,7 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import matplotlib.pyplot as plt
+try:
+    import matplotlib.pyplot as plt
+except ImportError:
+    print("[PREDICT Warning] Cannot use scatterplot function, as _tkinter is not installed")
+
 import pandas as pd
 import argparse
 import genetics.genetic_processing as gp

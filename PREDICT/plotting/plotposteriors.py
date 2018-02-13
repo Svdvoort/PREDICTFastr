@@ -17,6 +17,8 @@ import pandas as pd
 import argparse
 import numpy as np
 import csv
+import os
+import glob
 
 
 def main():
@@ -29,7 +31,68 @@ def main():
     if type(args.svm) is list:
         args.svm = ''.join(args.svm)
 
-    svm = pd.read_hdf(args.svm)
+    if os.path.isdir(args.svm):
+        posteriors = readmultiplesvm(args.svm)
+        output = os.path.join(args.svm, 'posteriors.csv')
+    else:
+        posteriors = readsinglesvm(args.svm)
+        output = args.svm.replace('.hdf5', '_posteriors.csv')
+
+    # Write output to csv
+    with open(output, 'wb') as csv_file:
+        writer = csv.writer(csv_file)
+        writer.writerow(['Patient ID', 'Posterior', 'True Label', 'Counts'])
+        for k in posteriors.keys():
+            p = posteriors[k]
+            data = [k, str(p[0]), str(p[1]), str(p[2])]
+
+            writer.writerow(data)
+
+
+def readmultiplesvm(svmdir):
+    # Search the directory for all svm hdf5s
+    svms = glob.glob(svmdir + '/*.hdf5')
+
+    # Compute test set scores for each svm
+    y_score = list()
+    y_test = list()
+    pid_test = list()
+    y_predict = list()
+    for num, svm in enumerate(svms):
+        print("Processing svm {} / {}.").format(str(num+1), len(svms))
+        svm = pd.read_hdf(svm)
+
+        k = svm.keys()[0]
+        X_test = svm[k].X_test
+        Y_test = svm[k].Y_test
+        pidt = svm[k].patient_ID_test
+
+        y_score.extend(svm[k].ix('svms')[0].predict_proba(X_test))
+        y_predict.extend(svm[k].ix('svms')[0].predict(X_test))
+        y_test.extend(Y_test)
+        pid_test.extend(pidt)
+
+    # Gather all scores for all patients and average
+    pid_unique = list(set(pid_test))
+    pid_unique = sorted(pid_unique)
+    posteriors = dict()
+    for pid in pid_unique:
+        posteriors[pid] = list()
+
+        counts = 0
+        for num, allid in enumerate(pid_test):
+            if allid == pid:
+                counts += 1
+                posteriors[pid].append(y_score[num][0])
+                truelabel = y_test[num]
+
+        posteriors[pid] = [np.mean(posteriors[pid]), truelabel, counts]
+
+    return posteriors
+
+
+def readsinglesvm(svmfile):
+    svm = pd.read_hdf(svmfile)
 
     k = svm.keys()[0]
     X_test_full = svm[k].X_test
@@ -76,16 +139,7 @@ def main():
 
         posteriors[pid] = [np.mean(posteriors[pid]), truelabel, counts]
 
-    # Write output to csv
-    output = args.svm.replace('.hdf5', '_posteriors.csv')
-    with open(output, 'wb') as csv_file:
-        writer = csv.writer(csv_file)
-        writer.writerow(['Patient ID', 'Posterior', 'True Label', 'Counts'])
-        for k in posteriors.keys():
-            p = posteriors[k]
-            data = [k, str(p[0]), str(p[1]), str(p[2])]
-
-            writer.writerow(data)
+    return posteriors
 
 
 if __name__ == '__main__':

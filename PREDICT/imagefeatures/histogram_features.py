@@ -21,7 +21,6 @@ import scipy.stats
 
 import PREDICT.helpers.contour_functions as cf
 
-
 def create_histogram(data, bins):
     histogram, bins = np.histogram(data, bins)
     return histogram, bins
