@@ -23,16 +23,12 @@ from skimage.feature import greycomatrix, greycoprops
 from skimage.exposure import rescale_intensity
 from skimage.feature import local_binary_pattern
 import SimpleITK as sitk
-
-import pandas as pd
-
 import scipy.stats
 import PREDICT.IOparser.config_general as config_io
-
 from radiomics import featureextractor
 
 
-def gabor_filter_parallel(image, mask, gabor_settings, n_jobs=None,
+def gabor_filter_parallel(image, mask, parameters=dict(), n_jobs=None,
                           backend=None):
     """
     Apply gabor filters to image, done in parallel.
@@ -46,9 +42,19 @@ def gabor_filter_parallel(image, mask, gabor_settings, n_jobs=None,
     if backend is None:
         backend = config['Joblib']['backend']
 
+    if "gabor_frequencies" in parameters.keys():
+        gabor_frequencies = parameters["gabor_frequencies"]
+    else:
+        gabor_frequencies =  [0.05, 0.2, 0.5]
+
+    if "gabor_angles" in parameters.keys():
+        gabor_angles = parameters["gabor_angles"]
+    else:
+        gabor_angles = [0, 45, 90, 135]
+
     # Create kernel from frequencies and angles
-    kernels = list(itertools.product(gabor_settings['gabor_frequencies'],
-                                     gabor_settings['gabor_angles']))
+    kernels = list(itertools.product(gabor_frequencies,
+                                     gabor_angles))
 
     N_slices = image.shape[2]
     N_kernels = len(kernels)
@@ -124,10 +130,21 @@ def gabor_filter(image, mask, kernel):
     return filtered_image
 
 
-def get_GLCM_features(image, mask):
+def get_GLCM_features_multislice(image, mask, parameters=dict()):
+    if "levels" in parameters.keys():
+        levels = parameters["levels"]
+    else:
+        levels = 16
 
-    angles = [0, np.pi/4, np.pi/2, 3*np.pi/4]
-    distances = [1, 3]
+    if "angles" in parameters.keys():
+        angles = parameters["angles"]
+    else:
+        angles = [0, np.pi/4, np.pi/2, 3*np.pi/4]
+
+    if "distances" in parameters.keys():
+        distances = parameters["distances"]
+    else:
+        distances = [1, 3]
 
     N_slices = image.shape[2]
 
@@ -150,7 +167,7 @@ def get_GLCM_features(image, mask):
 
         image_bounded = rescale_intensity(image_bounded, out_range=(0, 15))
 
-        GLCM_matrix = greycomatrix(image_bounded, distances, angles, levels=16,
+        GLCM_matrix = greycomatrix(image_bounded, distances, angles, levels=levels,
                                    normed=True)
 
         contrast.append(greycoprops(GLCM_matrix, 'contrast').flatten())
@@ -185,9 +202,9 @@ def get_GLCM_features(image, mask):
         energy_std.tolist() + correlation_mean.tolist() +\
         correlation_std.tolist()
 
-    feature_names = ['tf_GLCM_contrast', 'tf_GLCM_dissimilarity',
-                     'tf_GLCM_homogeneity', 'tf_GLCM_ASM', 'tf_GLCM_energy',
-                     'tf_GLCM_correlation']
+    feature_names = ['tf_GLCMMS_contrast', 'tf_GLCMMS_dissimilarity',
+                     'tf_GLCMMS_homogeneity', 'tf_GLCMMS_ASM',
+                     'tf_GLCMMS_energy', 'tf_GLCMMS_correlation']
 
     GLCM_labels = list()
     for i_name, i_dist, i_angle in itertools.product(feature_names,
@@ -210,10 +227,94 @@ def get_GLCM_features(image, mask):
     return GLCM_features, GLCM_labels
 
 
-def get_LBP_features(image, mask):
-    # TODO: Should be moved to WORC
-    radius = [3]
-    N_points = [24]
+def get_GLCM_features(image, mask, parameters=dict()):
+    if "levels" in parameters.keys():
+        levels = parameters["levels"]
+    else:
+        levels = 16
+
+    if "angles" in parameters.keys():
+        angles = parameters["angles"]
+    else:
+        angles = [0, np.pi/4, np.pi/2, 3*np.pi/4]
+
+    if "distances" in parameters.keys():
+        distances = parameters["distances"]
+    else:
+        distances = [1, 3]
+
+    N_slices = image.shape[2]
+
+    contrast = list()
+    dissimilarity = list()
+    homogeneity = list()
+    ASM = list()
+    energy = list()
+    correlation = list()
+
+    GLCM_matrix = np.zeros([levels, levels, len(distances), len(angles)])
+    for i_slice in range(0, N_slices):
+        image_bounded, mask_bounded = bbox_2D(image[:, :, i_slice],
+                                              mask[:, :, i_slice])
+
+        image_bounded[~mask_bounded] = 0
+        image_bounded = image_bounded + image_bounded.min()
+        image_bounded = image_bounded*255.0 / image_bounded.max()
+
+        image_bounded = image_bounded.astype(np.uint8)
+
+        image_bounded = rescale_intensity(image_bounded, out_range=(0, 15))
+
+        GLCM_matrix += greycomatrix(image_bounded, distances, angles, levels=levels,
+                                    normed=True)
+
+    contrast = greycoprops(GLCM_matrix, 'contrast').flatten()
+    dissimilarity = greycoprops(GLCM_matrix, 'dissimilarity').flatten()
+    homogeneity = greycoprops(GLCM_matrix, 'homogeneity').flatten()
+    ASM = greycoprops(GLCM_matrix, 'ASM').flatten()
+    energy = greycoprops(GLCM_matrix, 'energy').flatten()
+    correlation = greycoprops(GLCM_matrix, 'correlation').flatten()
+
+    GLCM_features = contrast.tolist() +\
+        dissimilarity.tolist() +\
+        homogeneity.tolist() +\
+        ASM.tolist() + energy.tolist() +\
+        correlation.tolist()
+
+    feature_names = ['tf_GLCM_contrast', 'tf_GLCM_dissimilarity',
+                     'tf_GLCM_homogeneity', 'tf_GLCM_ASM', 'tf_GLCM_energy',
+                     'tf_GLCM_correlation']
+
+    GLCM_labels = list()
+    for i_name, i_dist, i_angle in itertools.product(feature_names,
+                                                     distances,
+                                                     angles):
+        # Round to reduce name length
+        i_dist = round(i_dist, 2)
+        i_angle = round(i_dist, 2)
+
+        label = i_name + 'd' + str(i_dist) + 'A' + str(i_angle)
+        GLCM_labels.append(label)
+
+    if len(GLCM_features) != len(GLCM_labels):
+        print(len(GLCM_features))
+        print(len(GLCM_labels))
+        raise ValueError('Label length does not fit feature length')
+
+    return GLCM_features, GLCM_labels
+
+
+def get_LBP_features(image, mask, parameters=dict()):
+    if "radius" in parameters.keys():
+        radius = parameters["radius"]
+    else:
+        radius = [3, 8, 15]
+
+    if "N_points" in parameters.keys():
+        N_points = parameters["N_points"]
+    else:
+        N_points = [12, 24, 36]
+
     method = 'uniform'
 
     feature_names = ['tf_LBP_mean', 'tf_LBP_std', 'tf_LBP_median',
@@ -325,16 +426,60 @@ def get_GLRLM_features(image, mask):
     return GLRLM_features, GLRLM_labels
 
 
-def get_texture_features(image, mask, gabor_settings=None, config='LBP'):
+def get_NGTDM_features(image, mask):
+    mask = mask.astype(int)
+    image = sitk.GetImageFromArray(image)
+    mask = sitk.GetImageFromArray(mask)
+    kwargs = {'binWidth': 25,
+              'interpolator': sitk.sitkBSpline,
+              'resampledPixelSpacing': None,
+              'verbose': True}
+
+    # Initialize wrapperClass to generate signature
+    extractor = featureextractor.RadiomicsFeaturesExtractor(**kwargs)
+    extractor.disableAllFeatures()
+    extractor.enableFeatureClassByName('ngtdm')
+    extractor.settings['distances'] = [1]
+
+    featureVector = extractor.execute(image, mask)
+
+    # Assign features to corresponding groups
+    NGTDM_labels_temp = list()
+    NGTDM_features = list()
+
+    for featureName in featureVector.keys():
+        # Skip the "general" features
+        if 'ngtdm' in featureName:
+            NGTDM_labels_temp.append(featureName)
+            NGTDM_features.append(featureVector[featureName])
+
+    # Replace part of label to indicate a texture feature
+    NGTDM_labels = list()
+    for l in NGTDM_labels_temp:
+        l = l.replace('original_ngtdm', 'tf_NGTDM')
+        NGTDM_labels.append(l)
+
+    return NGTDM_features, NGTDM_labels
+
+
+def get_texture_features(image, mask, parameters=None, config='LBP'):
+    if parameters is None:
+        parameters = dict()
+        parameters['gabor_settings'] = dict()
+        parameters['LBP'] = dict()
+        parameters['GLCM'] = dict()
 
     texture_features = dict()
     if config == 'all':
         print("-   Computing Gabor features.")
         gabor_features, gabor_labels =\
-            gabor_filter_parallel(image, mask, gabor_settings)
+            gabor_filter_parallel(image, mask, parameters['gabor_settings'])
 
         print("-   Computing GLCM features.")
-        GLCM_features, GLCM_labels = get_GLCM_features(image, mask)
+        GLCM_features, GLCM_labels = get_GLCM_features(image, mask,
+                                                       parameters['GLCM'])
+        GLCMMS_features, GLCMMS_labels =\
+            get_GLCM_features_multislice(image, mask, parameters['GLCM'])
 
         print("-   Computing GLRLM features.")
         GLRLM_features, GLRLM_labels = get_GLRLM_features(image, mask)
@@ -343,25 +488,29 @@ def get_texture_features(image, mask, gabor_settings=None, config='LBP'):
         GLSZM_features, GLSZM_labels = get_GLSZM_features(image, mask)
 
         print("-   Computing LBP features.")
-        LBP_features, LBP_labels = get_LBP_features(image, mask)
+        LBP_features, LBP_labels = get_LBP_features(image, mask,
+                                                    parameters['LBP'])
 
-        print type(gabor_features)
-        print type(GLCM_features)
-        print type(GLRLM_features)
-        print type(GLSZM_features)
-        print type(LBP_features)
+        print("-   Computing NGTDM features.")
+        NGTDM_features, NGTDM_labels = get_NGTDM_features(image, mask)
 
-        texture_features = gabor_features + GLCM_features + GLRLM_features +\
-            GLSZM_features + LBP_features
+        texture_features = gabor_features + GLCM_features + GLCMMS_features +\
+            GLRLM_features + GLSZM_features + NGTDM_features + LBP_features
 
-        texture_labels = gabor_labels + GLCM_labels + GLRLM_labels +\
-            GLSZM_labels + LBP_labels
+        texture_labels = gabor_labels + GLCM_labels + GLCMMS_labels +\
+            GLRLM_labels + GLSZM_labels + NGTDM_labels + LBP_labels
 
     elif config == 'LBP':
-        texture_features, texture_labels = get_LBP_features(image, mask)
+        texture_features, texture_labels = get_LBP_features(image, mask,
+                                                            parameters['LBP'])
 
     elif config == 'GLCM':
-        texture_features, texture_labels = get_GLCM_features(image, mask)
+        texture_features, texture_labels = get_GLCM_features(image, mask,
+                                                             parameters['GLCM'])
+
+    elif config == 'GLCMMS':
+        texture_features, texture_labels =\
+            get_GLCM_features_multislice(image, mask, parameters['GLCM'])
 
     elif config == 'GLRLM':
         texture_features, texture_labels = get_GLRLM_features(image, mask)
@@ -369,9 +518,12 @@ def get_texture_features(image, mask, gabor_settings=None, config='LBP'):
     elif config == 'GLSZM':
         texture_features, texture_labels = get_GLSZM_features(image, mask)
 
+    elif config == 'NGTDM':
+        texture_features, texture_labels = get_NGTDM_features(image, mask)
+
     elif config == 'Gabor':
         texture_features, texture_labels =\
-         gabor_filter_parallel(image, mask, gabor_settings)
+         gabor_filter_parallel(image, mask,  parameters['gabor_settings'])
 
     return texture_features, texture_labels
 

@@ -58,10 +58,10 @@ def main():
     out = Parallel(
         n_jobs=n_cores, verbose=data['verbose'],
         pre_dispatch=2*n_cores
-    )(delayed(fit_and_score)(data['base_estimator'], data['X'], data['y'],
-                             data['scorer'], traintest['train'],
-                             traintest['test'], data['verbose'],
-                             parameters, fit_params=data['fit_params'],
+    )(delayed(fit_and_score)(estimator=data['base_estimator'], X=data['X'], y=data['y'],
+                             scorer=data['scorer'], train=traintest['train'],
+                             test=traintest['test'], verbose=data['verbose'],
+                             para=parameters, fit_params=data['fit_params'],
                              return_train_score=data['return_train_score'],
                              return_parameters=data['return_parameters'],
                              return_n_test_samples=data['return_n_test_samples'],
@@ -69,12 +69,12 @@ def main():
                              error_score=data['error_score'])
       for parameters in para.values())
 
-    (ret, GroupSel, VarSel, feature_labels, scaler) = zip(*out)
+    (ret, GroupSel, VarSel, SelectModel, feature_labels, scaler) = zip(*out)
 
-    source_labels = ['RET', 'feature_labels', 'scaler', 'VarSelection', 'GroupSelection']
+    source_labels = ['RET', 'feature_labels', 'scaler', 'VarSelection', 'GroupSelection', 'SelectModel']
 
     source_data =\
-        pd.Series([ret, feature_labels, scaler, VarSel, GroupSel],
+        pd.Series([ret, feature_labels, scaler, VarSel, GroupSel, SelectModel],
                   index=source_labels,
                   name='Fit and Score Output')
     source_data.to_hdf(args.out, 'RET')

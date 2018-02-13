@@ -5,3 +5,49 @@ All notable changes to this project will be documented in this file.
 
 The format is based on `Keep a Changelog <http://keepachangelog.com/>`_
 and this project adheres to `Semantic Versioning <http://semver.org/>`_
+
+
+2.0.0 - 2018-02-13
+------------------
+
+Added
+~~~~~
+
+- Vessel, Laplacian of Gaussian (LoG), phase, GLCM multislice and NGTDM
+  features.
+- Groupwise feature selection for these features.
+- Function to perform statistical tests among features from classes.
+- Selectfrommodel feature selection.
+- SGDR, RFR, ElasticNet, and LASSO estimators.
+- Option to supply fixed splits to cross validation.
+- Option to perform no cross validation, but just a fixed train and test split.
+- SMOTE?
+- After each cross validation, a temporary save of the results of that
+  iteration can optionally be made.
+- A lot of explanations/helps to functions.
+- Plotting function for regression functions.
+- Function to apply student t-test to features.
+
+Changed
+~~~~~~~
+
+- Parameters of all features computations are now parsed from the configuration
+  ini file instead of solely being in the functions.
+- Joblib and Fastr SearchCV objects now in single file. Created a general
+  SearchCV object.
+
+
+Fixed
+~~~~~
+
+- SVM kernel degree can now also become linear.
+- Feature group selection was not working.
+- Regression now uses a non-stratified split for cross validation, a stratified
+  split is not possible and thus gave errors.
+- There was a bug that the coliage features where always computed, which
+  is now fixed.
+
+1.0.0 - 2017-07-27
+------------------
+
+Release

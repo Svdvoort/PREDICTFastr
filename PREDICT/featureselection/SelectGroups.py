@@ -21,23 +21,51 @@ import numpy as np
 
 
 class SelectGroups(BaseEstimator, SelectorMixin):
+    '''
+    Object to fit feature selection based on the type group the feature belongs
+    to. The label for the feature is used for this procedure.
+    '''
     def __init__(self, parameters):
+        '''
+        Parameters
+        ----------
+        parameters: dict, mandatory
+                Contains the settings for the groups to be selected. Should
+                contain the settings for the following groups:
+                - histogram_features
+                - shape_features
+                - orientation_features
+                - semantic_features
+                - patient_features
+                - coliage_features
+                - phase_features
+                - vessel_features
+                - log_features
+                - texture_features
+
+        '''
         params = list()
-        if parameters['histogram_features']:
+        if parameters['histogram_features'] == 'True':
             params.append('hf_')
-        if parameters['shape_features']:
+        if parameters['shape_features'] == 'True':
             params.append('sf_')
-        if parameters['orientation_features']:
+        if parameters['orientation_features'] == 'True':
             params.append('of_')
-        if parameters['semantic_features']:
+        if parameters['semantic_features'] == 'True':
             params.append('semf_')
-        if parameters['patient_features']:
+        if parameters['patient_features'] == 'True':
             params.append('pf_')
-        if parameters['coliage_features']:
+        if parameters['coliage_features'] == 'True':
             params.append('cf_')
-        if parameters['texture_features']:
+        if parameters['phase_features'] == 'True':
+            params.append('phasef_')
+        if parameters['vessel_features'] == 'True':
+            params.append('vf_')
+        if parameters['log_features'] == 'True':
+            params.append('logf_')
+        if parameters['texture_features'] == 'True':
             params.append('tf_')
-        elif not parameters['texture_features']:
+        elif parameters['texture_features'] == 'False':
             pass
         else:
             params.append('tf_' + parameters['texture_features'])
@@ -46,7 +74,13 @@ class SelectGroups(BaseEstimator, SelectorMixin):
 
     def fit(self, feature_labels):
         '''
-        Select only features specificed by parameters per patient
+        Select only features specificed by parameters per patient.
+
+        Parameters
+        ----------
+        feature_labels: list, optional
+                Contains the labels of all features used. The index in this
+                list will be used in the transform funtion to select features.
         '''
         # Remove NAN
         selectrows = list()
@@ -57,7 +91,18 @@ class SelectGroups(BaseEstimator, SelectorMixin):
         self.selectrows = selectrows
 
     def transform(self, inputarray):
-        return np.asarray([x[self.selectrows] for x in inputarray])
+        '''
+        Transform the inputarray to select only the features based on the
+        result from the fit function.
+
+        Parameters
+        ----------
+        inputarray: numpy array, mandatory
+                Array containing the items to use selection on. The type of
+                item in this list does not matter, e.g. floats, strings etc.
+        '''
+        return np.asarray([np.asarray(x)[self.selectrows].tolist() for x in inputarray])
 
     def _get_support_mask(self):
+        # NOTE: Method is required for the Selector class, but can be empty
         pass

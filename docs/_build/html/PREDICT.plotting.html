@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>PREDICT.plotting package &#8212; PREDICT rc1.0.0 documentation</title>
+    <title>PREDICT.plotting package &#8212; PREDICT 2.0.0 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     'rc1.0.0',
+        VERSION:     '2.0.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -52,29 +52,32 @@
 <div class="section" id="predict-plotting-compute-ci-module">
 <h2>PREDICT.plotting.compute_CI module<a class="headerlink" href="#predict-plotting-compute-ci-module" title="Permalink to this headline">¶</a></h2>
 </div>
+<div class="section" id="predict-plotting-fitcoxmodel-module">
+<h2>PREDICT.plotting.fitcoxmodel module<a class="headerlink" href="#predict-plotting-fitcoxmodel-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="predict-plotting-getfeatureimages-module">
+<h2>PREDICT.plotting.getfeatureimages module<a class="headerlink" href="#predict-plotting-getfeatureimages-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="predict-plotting-linstretch-module">
+<h2>PREDICT.plotting.linstretch module<a class="headerlink" href="#predict-plotting-linstretch-module" title="Permalink to this headline">¶</a></h2>
+</div>
 <div class="section" id="predict-plotting-plot-roc-module">
 <h2>PREDICT.plotting.plot_ROC module<a class="headerlink" href="#predict-plotting-plot-roc-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="predict-plotting-plot-svm-module">
 <h2>PREDICT.plotting.plot_SVM module<a class="headerlink" href="#predict-plotting-plot-svm-module" title="Permalink to this headline">¶</a></h2>
 </div>
+<div class="section" id="predict-plotting-plot-svr-module">
+<h2>PREDICT.plotting.plot_SVR module<a class="headerlink" href="#predict-plotting-plot-svr-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="predict-plotting-plotminmaxresponse-module">
+<h2>PREDICT.plotting.plotminmaxresponse module<a class="headerlink" href="#predict-plotting-plotminmaxresponse-module" title="Permalink to this headline">¶</a></h2>
+</div>
 <div class="section" id="predict-plotting-plotposteriors-module">
 <h2>PREDICT.plotting.plotposteriors module<a class="headerlink" href="#predict-plotting-plotposteriors-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="predict-plotting-scatterplot-module">
 <h2>PREDICT.plotting.scatterplot module<a class="headerlink" href="#predict-plotting-scatterplot-module" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="predict-plotting-showallscores-module">
-<h2>PREDICT.plotting.showallscores module<a class="headerlink" href="#predict-plotting-showallscores-module" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="predict-plotting-showprobs-module">
-<h2>PREDICT.plotting.showprobs module<a class="headerlink" href="#predict-plotting-showprobs-module" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="predict-plotting-showscores-module">
-<h2>PREDICT.plotting.showscores module<a class="headerlink" href="#predict-plotting-showscores-module" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="predict-plotting-showsensspec-module">
-<h2>PREDICT.plotting.showsensspec module<a class="headerlink" href="#predict-plotting-showsensspec-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-contents">
 <h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
@@ -93,14 +96,15 @@
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
 <li><a class="reference internal" href="#predict-plotting-boxplot-module">PREDICT.plotting.boxplot module</a></li>
 <li><a class="reference internal" href="#predict-plotting-compute-ci-module">PREDICT.plotting.compute_CI module</a></li>
+<li><a class="reference internal" href="#predict-plotting-fitcoxmodel-module">PREDICT.plotting.fitcoxmodel module</a></li>
+<li><a class="reference internal" href="#predict-plotting-getfeatureimages-module">PREDICT.plotting.getfeatureimages module</a></li>
+<li><a class="reference internal" href="#predict-plotting-linstretch-module">PREDICT.plotting.linstretch module</a></li>
 <li><a class="reference internal" href="#predict-plotting-plot-roc-module">PREDICT.plotting.plot_ROC module</a></li>
 <li><a class="reference internal" href="#predict-plotting-plot-svm-module">PREDICT.plotting.plot_SVM module</a></li>
+<li><a class="reference internal" href="#predict-plotting-plot-svr-module">PREDICT.plotting.plot_SVR module</a></li>
+<li><a class="reference internal" href="#predict-plotting-plotminmaxresponse-module">PREDICT.plotting.plotminmaxresponse module</a></li>
 <li><a class="reference internal" href="#predict-plotting-plotposteriors-module">PREDICT.plotting.plotposteriors module</a></li>
 <li><a class="reference internal" href="#predict-plotting-scatterplot-module">PREDICT.plotting.scatterplot module</a></li>
-<li><a class="reference internal" href="#predict-plotting-showallscores-module">PREDICT.plotting.showallscores module</a></li>
-<li><a class="reference internal" href="#predict-plotting-showprobs-module">PREDICT.plotting.showprobs module</a></li>
-<li><a class="reference internal" href="#predict-plotting-showscores-module">PREDICT.plotting.showscores module</a></li>
-<li><a class="reference internal" href="#predict-plotting-showsensspec-module">PREDICT.plotting.showsensspec module</a></li>
 <li><a class="reference internal" href="#module-contents">Module contents</a></li>
 </ul>
 </li>
@@ -134,7 +138,7 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017, Sebastian van der Voort, Martijn Starmans.
+      &copy;2018, Sebastian van der Voort, Martijn Starmans.
       
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.3</a>

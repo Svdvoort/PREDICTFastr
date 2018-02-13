@@ -34,6 +34,14 @@ PREDICT.trainclassifier module
     :undoc-members:
     :show-inheritance:
 
+PREDICT.ttest module
+--------------------
+
+.. automodule:: PREDICT.ttest
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 
 Module contents
 ---------------

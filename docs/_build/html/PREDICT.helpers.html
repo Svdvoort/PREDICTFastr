@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>PREDICT.helpers package &#8212; PREDICT rc1.0.0 documentation</title>
+    <title>PREDICT.helpers package &#8212; PREDICT 2.0.0 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     'rc1.0.0',
+        VERSION:     '2.0.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -46,224 +46,23 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.helpers.contour_functions">
-<span id="predict-helpers-contour-functions-module"></span><h2>PREDICT.helpers.contour_functions module<a class="headerlink" href="#module-PREDICT.helpers.contour_functions" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="PREDICT.helpers.contour_functions.cmp">
-<code class="descclassname">PREDICT.helpers.contour_functions.</code><code class="descname">cmp</code><span class="sig-paren">(</span><em>a</em>, <em>b</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.helpers.contour_functions.cmp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Built in in python 2, but defined for python 3</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.helpers.contour_functions.convex_hull">
-<code class="descclassname">PREDICT.helpers.contour_functions.</code><code class="descname">convex_hull</code><span class="sig-paren">(</span><em>contour</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.helpers.contour_functions.convex_hull" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns points on convex hull for contour, uses Graham Scan</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.helpers.contour_functions.convex_hull_points">
-<code class="descclassname">PREDICT.helpers.contour_functions.</code><code class="descname">convex_hull_points</code><span class="sig-paren">(</span><em>points</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.helpers.contour_functions.convex_hull_points" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns points on convex hull of an array of points in CCW order.
-Uses Graham Scan</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.helpers.contour_functions.get_contour_boundary">
-<code class="descclassname">PREDICT.helpers.contour_functions.</code><code class="descname">get_contour_boundary</code><span class="sig-paren">(</span><em>contour</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.helpers.contour_functions.get_contour_boundary" title="Permalink to this definition">¶</a></dt>
-<dd><p>Labels pixels on edge of boundary</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.helpers.contour_functions.get_contour_boundary_points">
-<code class="descclassname">PREDICT.helpers.contour_functions.</code><code class="descname">get_contour_boundary_points</code><span class="sig-paren">(</span><em>contour</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.helpers.contour_functions.get_contour_boundary_points" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get boundary coordinates from contour</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.helpers.contour_functions.get_not_voi_voxels">
-<code class="descclassname">PREDICT.helpers.contour_functions.</code><code class="descname">get_not_voi_voxels</code><span class="sig-paren">(</span><em>contour</em>, <em>image</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.helpers.contour_functions.get_not_voi_voxels" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets all voxels within VOI to 0</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.helpers.contour_functions.get_smooth_contour">
-<code class="descclassname">PREDICT.helpers.contour_functions.</code><code class="descname">get_smooth_contour</code><span class="sig-paren">(</span><em>mask</em>, <em>N_min</em>, <em>N_max</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.helpers.contour_functions.get_smooth_contour" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find local convex hull for given contour</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.helpers.contour_functions.get_voi_voxels">
-<code class="descclassname">PREDICT.helpers.contour_functions.</code><code class="descname">get_voi_voxels</code><span class="sig-paren">(</span><em>contour</em>, <em>image</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.helpers.contour_functions.get_voi_voxels" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gives back VOI (non-zero slices),  and indices of slices</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.helpers.contour_functions.local_convex_hull">
-<code class="descclassname">PREDICT.helpers.contour_functions.</code><code class="descname">local_convex_hull</code><span class="sig-paren">(</span><em>contour</em>, <em>N_min</em>, <em>N_max</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.helpers.contour_functions.local_convex_hull" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find local convex hull for given contour</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.helpers.contour_functions.local_convex_hull_points">
-<code class="descclassname">PREDICT.helpers.contour_functions.</code><code class="descname">local_convex_hull_points</code><span class="sig-paren">(</span><em>points</em>, <em>N_min</em>, <em>N_max</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.helpers.contour_functions.local_convex_hull_points" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find local convex points, can be used for smoothing boundary</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.helpers.contour_functions.sort_points">
-<code class="descclassname">PREDICT.helpers.contour_functions.</code><code class="descname">sort_points</code><span class="sig-paren">(</span><em>points</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.helpers.contour_functions.sort_points" title="Permalink to this definition">¶</a></dt>
-<dd><p>Order supplied points in clockwise order</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.helpers.contour_functions.turn">
-<code class="descclassname">PREDICT.helpers.contour_functions.</code><code class="descname">turn</code><span class="sig-paren">(</span><em>p</em>, <em>q</em>, <em>r</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.helpers.contour_functions.turn" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<div class="section" id="predict-helpers-contour-functions-module">
+<h2>PREDICT.helpers.contour_functions module<a class="headerlink" href="#predict-helpers-contour-functions-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.helpers.contour_functions_3d">
-<span id="predict-helpers-contour-functions-3d-module"></span><h2>PREDICT.helpers.contour_functions_3d module<a class="headerlink" href="#module-PREDICT.helpers.contour_functions_3d" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="PREDICT.helpers.contour_functions_3d.cmp">
-<code class="descclassname">PREDICT.helpers.contour_functions_3d.</code><code class="descname">cmp</code><span class="sig-paren">(</span><em>a</em>, <em>b</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.helpers.contour_functions_3d.cmp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Built in in python 2, but defined for python 3</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.helpers.contour_functions_3d.convex_hull">
-<code class="descclassname">PREDICT.helpers.contour_functions_3d.</code><code class="descname">convex_hull</code><span class="sig-paren">(</span><em>contour</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.helpers.contour_functions_3d.convex_hull" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns points on convex hull for contour, uses Graham Scan</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.helpers.contour_functions_3d.convex_hull_points">
-<code class="descclassname">PREDICT.helpers.contour_functions_3d.</code><code class="descname">convex_hull_points</code><span class="sig-paren">(</span><em>points</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.helpers.contour_functions_3d.convex_hull_points" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns points on convex hull of an array of points in CCW order.
-Uses Graham Scan</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.helpers.contour_functions_3d.get_contour_boundary">
-<code class="descclassname">PREDICT.helpers.contour_functions_3d.</code><code class="descname">get_contour_boundary</code><span class="sig-paren">(</span><em>contour</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.helpers.contour_functions_3d.get_contour_boundary" title="Permalink to this definition">¶</a></dt>
-<dd><p>Labels pixels on edge of boundary</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.helpers.contour_functions_3d.get_contour_boundary_points">
-<code class="descclassname">PREDICT.helpers.contour_functions_3d.</code><code class="descname">get_contour_boundary_points</code><span class="sig-paren">(</span><em>contour</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.helpers.contour_functions_3d.get_contour_boundary_points" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get boundary coordinates from contour</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.helpers.contour_functions_3d.get_not_voi_voxels">
-<code class="descclassname">PREDICT.helpers.contour_functions_3d.</code><code class="descname">get_not_voi_voxels</code><span class="sig-paren">(</span><em>contour</em>, <em>image</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.helpers.contour_functions_3d.get_not_voi_voxels" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets all voxels within VOI to 0</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.helpers.contour_functions_3d.get_smooth_contour">
-<code class="descclassname">PREDICT.helpers.contour_functions_3d.</code><code class="descname">get_smooth_contour</code><span class="sig-paren">(</span><em>mask</em>, <em>N_min</em>, <em>N_max</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.helpers.contour_functions_3d.get_smooth_contour" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find local convex hull for given contour</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.helpers.contour_functions_3d.get_voi_voxels">
-<code class="descclassname">PREDICT.helpers.contour_functions_3d.</code><code class="descname">get_voi_voxels</code><span class="sig-paren">(</span><em>contour</em>, <em>image</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.helpers.contour_functions_3d.get_voi_voxels" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gives back VOI (non-zero slices),  and indices of slices</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.helpers.contour_functions_3d.local_convex_hull">
-<code class="descclassname">PREDICT.helpers.contour_functions_3d.</code><code class="descname">local_convex_hull</code><span class="sig-paren">(</span><em>contour</em>, <em>N_min</em>, <em>N_max</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.helpers.contour_functions_3d.local_convex_hull" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find local convex hull for given contour</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.helpers.contour_functions_3d.local_convex_hull_points">
-<code class="descclassname">PREDICT.helpers.contour_functions_3d.</code><code class="descname">local_convex_hull_points</code><span class="sig-paren">(</span><em>points</em>, <em>N_min</em>, <em>N_max</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.helpers.contour_functions_3d.local_convex_hull_points" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find local convex points, can be used for smoothing boundary</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.helpers.contour_functions_3d.sort_points">
-<code class="descclassname">PREDICT.helpers.contour_functions_3d.</code><code class="descname">sort_points</code><span class="sig-paren">(</span><em>points</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.helpers.contour_functions_3d.sort_points" title="Permalink to this definition">¶</a></dt>
-<dd><p>Order supplied points in clockwise order</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.helpers.contour_functions_3d.turn">
-<code class="descclassname">PREDICT.helpers.contour_functions_3d.</code><code class="descname">turn</code><span class="sig-paren">(</span><em>p</em>, <em>q</em>, <em>r</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.helpers.contour_functions_3d.turn" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<div class="section" id="predict-helpers-contour-functions-3d-module">
+<h2>PREDICT.helpers.contour_functions_3d module<a class="headerlink" href="#predict-helpers-contour-functions-3d-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.helpers.image_helper">
-<span id="predict-helpers-image-helper-module"></span><h2>PREDICT.helpers.image_helper module<a class="headerlink" href="#module-PREDICT.helpers.image_helper" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="PREDICT.helpers.image_helper.get_masked_slices_image">
-<code class="descclassname">PREDICT.helpers.image_helper.</code><code class="descname">get_masked_slices_image</code><span class="sig-paren">(</span><em>image_array</em>, <em>mask_array</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.helpers.image_helper.get_masked_slices_image" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.helpers.image_helper.get_masked_slices_mask">
-<code class="descclassname">PREDICT.helpers.image_helper.</code><code class="descname">get_masked_slices_mask</code><span class="sig-paren">(</span><em>mask_image</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.helpers.image_helper.get_masked_slices_mask" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.helpers.image_helper.get_masked_voxels">
-<code class="descclassname">PREDICT.helpers.image_helper.</code><code class="descname">get_masked_voxels</code><span class="sig-paren">(</span><em>image_array</em>, <em>mask_array</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.helpers.image_helper.get_masked_voxels" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<div class="section" id="predict-helpers-image-helper-module">
+<h2>PREDICT.helpers.image_helper module<a class="headerlink" href="#predict-helpers-image-helper-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.helpers.orientation_functions">
-<span id="predict-helpers-orientation-functions-module"></span><h2>PREDICT.helpers.orientation_functions module<a class="headerlink" href="#module-PREDICT.helpers.orientation_functions" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="PREDICT.helpers.orientation_functions.data_regularize">
-<code class="descclassname">PREDICT.helpers.orientation_functions.</code><code class="descname">data_regularize</code><span class="sig-paren">(</span><em>data</em>, <em>type='spheric'</em>, <em>divs=10</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.helpers.orientation_functions.data_regularize" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.helpers.orientation_functions.ellipsoid_fit">
-<code class="descclassname">PREDICT.helpers.orientation_functions.</code><code class="descname">ellipsoid_fit</code><span class="sig-paren">(</span><em>X</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.helpers.orientation_functions.ellipsoid_fit" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.helpers.orientation_functions.ellipsoid_plot">
-<code class="descclassname">PREDICT.helpers.orientation_functions.</code><code class="descname">ellipsoid_plot</code><span class="sig-paren">(</span><em>center</em>, <em>radii</em>, <em>rotation</em>, <em>ax</em>, <em>plotAxes=False</em>, <em>cageColor='b'</em>, <em>cageAlpha=0.2</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.helpers.orientation_functions.ellipsoid_plot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot an ellipsoid</p>
-</dd></dl>
-
+<div class="section" id="predict-helpers-orientation-functions-module">
+<h2>PREDICT.helpers.orientation_functions module<a class="headerlink" href="#predict-helpers-orientation-functions-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.helpers.sitk_helper">
-<span id="predict-helpers-sitk-helper-module"></span><h2>PREDICT.helpers.sitk_helper module<a class="headerlink" href="#module-PREDICT.helpers.sitk_helper" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="PREDICT.helpers.sitk_helper.GetArrayFromImage">
-<code class="descclassname">PREDICT.helpers.sitk_helper.</code><code class="descname">GetArrayFromImage</code><span class="sig-paren">(</span><em>image</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.helpers.sitk_helper.GetArrayFromImage" title="Permalink to this definition">¶</a></dt>
-<dd><p>GetArrayFromImage converts an ITK image to a numpy array, while ensuring
-the orientation is kept the same.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>image (ITK image): 2D or 3D ITK image</dd>
-<dt>Returns:</dt>
-<dd>numpy array</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.helpers.sitk_helper.GetImageFromArray">
-<code class="descclassname">PREDICT.helpers.sitk_helper.</code><code class="descname">GetImageFromArray</code><span class="sig-paren">(</span><em>array</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.helpers.sitk_helper.GetImageFromArray" title="Permalink to this definition">¶</a></dt>
-<dd><p>GetImageFromArray converts a numpy array to an ITK image, while ensuring
-the orientation is kept the same.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>array (numpy array): 2D or 3D array of image</dd>
-<dt>Returns:</dt>
-<dd>ITK image</dd>
-</dl>
-</dd></dl>
-
+<div class="section" id="predict-helpers-sitk-helper-module">
+<h2>PREDICT.helpers.sitk_helper module<a class="headerlink" href="#predict-helpers-sitk-helper-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.helpers">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-PREDICT.helpers" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -277,12 +76,12 @@ the orientation is kept the same.</p>
   <ul>
 <li><a class="reference internal" href="#">PREDICT.helpers package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-PREDICT.helpers.contour_functions">PREDICT.helpers.contour_functions module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.helpers.contour_functions_3d">PREDICT.helpers.contour_functions_3d module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.helpers.image_helper">PREDICT.helpers.image_helper module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.helpers.orientation_functions">PREDICT.helpers.orientation_functions module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.helpers.sitk_helper">PREDICT.helpers.sitk_helper module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.helpers">Module contents</a></li>
+<li><a class="reference internal" href="#predict-helpers-contour-functions-module">PREDICT.helpers.contour_functions module</a></li>
+<li><a class="reference internal" href="#predict-helpers-contour-functions-3d-module">PREDICT.helpers.contour_functions_3d module</a></li>
+<li><a class="reference internal" href="#predict-helpers-image-helper-module">PREDICT.helpers.image_helper module</a></li>
+<li><a class="reference internal" href="#predict-helpers-orientation-functions-module">PREDICT.helpers.orientation_functions module</a></li>
+<li><a class="reference internal" href="#predict-helpers-sitk-helper-module">PREDICT.helpers.sitk_helper module</a></li>
+<li><a class="reference internal" href="#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -315,7 +114,7 @@ the orientation is kept the same.</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017, Sebastian van der Voort, Martijn Starmans.
+      &copy;2018, Sebastian van der Voort, Martijn Starmans.
       
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.3</a>

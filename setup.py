@@ -100,15 +100,15 @@ class MyInstall(install):
             # subprocess.call(['pip install -r requirements-setup.txt'])
             # for i in setup_requirements:
             # regcommand = ('pip install ' + i)
-            regcommand = 'pip install -r requirements.txt'
-            print regcommand
-            proc = subprocess.Popen(regcommand,
-                                    shell=True,
-                                    stdin=subprocess.PIPE,
-                                    stdout=subprocess.PIPE,
-                                    stderr=subprocess.STDOUT,
-                                    )
-            stdout_value, stderr_value = proc.communicate('through stdin to stdout\n')
+            # regcommand = 'pip install -r requirements.txt'
+            # print regcommand
+            # proc = subprocess.Popen(regcommand,
+            #                         shell=True,
+            #                         stdin=subprocess.PIPE,
+            #                         stdout=subprocess.PIPE,
+            #                         stderr=subprocess.STDOUT,
+            #                         )
+            # stdout_value, stderr_value = proc.communicate('through stdin to stdout\n')
 
             # Install pyradiomics
             commands = 'git clone https://github.com/Radiomics/pyradiomics; cd pyradiomics; pip install -r requirements.txt; python setup.py -q install; cd ..; rm -r pyradiomics;'
@@ -133,7 +133,7 @@ setup(
     version='0.1.0',
     description='Predict: a Radiomics Extensive D.... Interchangable Classification Toolkit.',
     long_description=_description,
-    url='https://github.com/MStarmans91/PREDICT',
+    url='https://github.com/Svdvoort/PREDICTFastr',
     author='S. van der Voort, M. Starmans',
     author_email='s.vandervoort@erasmusmc.nl, m.starmans@erasmusmc.nl',
     license='Apache License, Version 2.0',
@@ -146,7 +146,7 @@ setup(
         'Intended Audience :: Education',
         'License :: OSI Approved :: Apache Software License',
         'Natural Language :: English',
-        'Operating System :: OS Independent',
+        'Operating Scd /hoystem :: OS Independent',
         'Programming Language :: Python :: 2.7',
         'Topic :: Scientific/Engineering :: Information Analysis',
         'Topic :: System :: Distributed Computing',

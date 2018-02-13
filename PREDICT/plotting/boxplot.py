@@ -13,10 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import matplotlib.pyplot as plt
+try:
+    import matplotlib.pyplot as plt
+except ImportError:
+    print("[PREDICT Warning] Cannot use boxplot function, as _tkinter is not installed")
+    
 import pandas as pd
 import argparse
-import genetics.genetic_processing as gp
+import PREDICT.genetics.genetic_processing as gp
 import os
 import glob
 from natsort import natsorted
@@ -53,23 +57,17 @@ def main():
     print("Reading features.")
     image_features_temp = list()
     for i_feat in range(len(args.feat)):
-        feat = dict()
-        print args.feat[i_feat]
         feat_temp = pd.read_hdf(args.feat[i_feat])
-        feat_temp = feat_temp.image_features
+        feat_values = feat_temp.feature_values
+        feat_labels = feat_temp.feature_labels
 
-        for feattype in feat_temp.keys():
-            feat_type = feat_temp[feattype]
-            for subtype in feat_type.keys():
-                subfeat = feat_type[subtype]
-                for k in subfeat.keys():
-                    feat[k] = subfeat[k]
+        feat = {k: v for k, v in zip(feat_labels, feat_values)}
 
         image_features_temp.append(feat)
 
     # Get the mutation labels and patient IDs
     print("Reading class labels.")
-    mutation_type = [['GP']]
+    mutation_type = [['T41A']]
     mutation_data, image_features = gp.findmutationdata(args.classs,
                                                         mutation_type,
                                                         args.feat,

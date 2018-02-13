@@ -17,11 +17,14 @@
 
 import numpy as np
 from sklearn.utils import check_random_state
-from sklearn.model_selection import StratifiedShuffleSplit
-
+from sklearn.model_selection import StratifiedShuffleSplit, ShuffleSplit
 import PREDICT.IOparser.config_general as config_io
-from PREDICT.processing.SearchCVfastr import RandomizedSearchCVfastr
-from PREDICT.processing.SearchCVJoblib import RandomizedSearchCVJoblib
+from PREDICT.processing.SearchCV import RandomizedSearchCVfastr, RandomizedSearchCVJoblib
+
+from sklearn.svm import SVR
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.linear_model import ElasticNet, SGDRegressor
+from sklearn.linear_model import Lasso
 
 
 def random_search_parameters(features, labels, N_iter, test_size,
@@ -55,8 +58,14 @@ def random_search_parameters(features, labels, N_iter, test_size,
     random_seed = np.random.randint(1, 5000)
     random_state = check_random_state(random_seed)
 
-    cv = StratifiedShuffleSplit(n_splits=5, test_size=test_size,
-                                random_state=random_state)
+    if type(classifier) in [SVR, RandomForestRegressor, ElasticNet,
+                            SGDRegressor, Lasso]:
+        # We cannot do a stratified shuffle split with regression
+        cv = ShuffleSplit(n_splits=5, test_size=test_size,
+                          random_state=random_state)
+    else:
+        cv = StratifiedShuffleSplit(n_splits=5, test_size=test_size,
+                                    random_state=random_state)
 
     config = config_io.load_config()
     n_cores = config['Joblib']['ncores']
@@ -77,6 +86,7 @@ def random_search_parameters(features, labels, N_iter, test_size,
                                                  n_jobs=n_cores,
                                                  verbose=1, cv=cv)
     random_search.fit(features, labels)
+    print("Best found parameters:")
     print(random_search.best_score_)
     print(random_search.best_params_)
 

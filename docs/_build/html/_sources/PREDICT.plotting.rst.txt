@@ -20,6 +20,30 @@ PREDICT.plotting.compute_CI module
     :undoc-members:
     :show-inheritance:
 
+PREDICT.plotting.fitcoxmodel module
+-----------------------------------
+
+.. automodule:: PREDICT.plotting.fitcoxmodel
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+PREDICT.plotting.getfeatureimages module
+----------------------------------------
+
+.. automodule:: PREDICT.plotting.getfeatureimages
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+PREDICT.plotting.linstretch module
+----------------------------------
+
+.. automodule:: PREDICT.plotting.linstretch
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 PREDICT.plotting.plot_ROC module
 --------------------------------
 
@@ -36,6 +60,22 @@ PREDICT.plotting.plot_SVM module
     :undoc-members:
     :show-inheritance:
 
+PREDICT.plotting.plot_SVR module
+--------------------------------
+
+.. automodule:: PREDICT.plotting.plot_SVR
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+PREDICT.plotting.plotminmaxresponse module
+------------------------------------------
+
+.. automodule:: PREDICT.plotting.plotminmaxresponse
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 PREDICT.plotting.plotposteriors module
 --------------------------------------
 
@@ -48,38 +88,6 @@ PREDICT.plotting.scatterplot module
 -----------------------------------
 
 .. automodule:: PREDICT.plotting.scatterplot
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-PREDICT.plotting.showallscores module
--------------------------------------
-
-.. automodule:: PREDICT.plotting.showallscores
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-PREDICT.plotting.showprobs module
----------------------------------
-
-.. automodule:: PREDICT.plotting.showprobs
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-PREDICT.plotting.showscores module
-----------------------------------
-
-.. automodule:: PREDICT.plotting.showscores
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-PREDICT.plotting.showsensspec module
-------------------------------------
-
-.. automodule:: PREDICT.plotting.showsensspec
     :members:
     :undoc-members:
     :show-inheritance:

@@ -12,6 +12,14 @@ PREDICT.imagefeatures.coliage_features module
     :undoc-members:
     :show-inheritance:
 
+PREDICT.imagefeatures.contour_functions module
+----------------------------------------------
+
+.. automodule:: PREDICT.imagefeatures.contour_functions
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 PREDICT.imagefeatures.dti_features module
 -----------------------------------------
 
@@ -36,6 +44,22 @@ PREDICT.imagefeatures.histogram_features module
     :undoc-members:
     :show-inheritance:
 
+PREDICT.imagefeatures.image_helper module
+-----------------------------------------
+
+.. automodule:: PREDICT.imagefeatures.image_helper
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+PREDICT.imagefeatures.log_features module
+-----------------------------------------
+
+.. automodule:: PREDICT.imagefeatures.log_features
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 PREDICT.imagefeatures.orientation_features module
 -------------------------------------------------
 
@@ -48,6 +72,14 @@ PREDICT.imagefeatures.patient_features module
 ---------------------------------------------
 
 .. automodule:: PREDICT.imagefeatures.patient_features
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+PREDICT.imagefeatures.phase_features module
+-------------------------------------------
+
+.. automodule:: PREDICT.imagefeatures.phase_features
     :members:
     :undoc-members:
     :show-inheritance:
@@ -68,10 +100,34 @@ PREDICT.imagefeatures.shape_features module
     :undoc-members:
     :show-inheritance:
 
+PREDICT.imagefeatures.sitk_helper module
+----------------------------------------
+
+.. automodule:: PREDICT.imagefeatures.sitk_helper
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+PREDICT.imagefeatures.tester module
+-----------------------------------
+
+.. automodule:: PREDICT.imagefeatures.tester
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 PREDICT.imagefeatures.texture_features module
 ---------------------------------------------
 
 .. automodule:: PREDICT.imagefeatures.texture_features
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+PREDICT.imagefeatures.vessel_features module
+--------------------------------------------
+
+.. automodule:: PREDICT.imagefeatures.vessel_features
     :members:
     :undoc-members:
     :show-inheritance:

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright 2011-2017 Biomedical Imaging Group Rotterdam, Departments of
+# Copyright 2017-2018 Biomedical Imaging Group Rotterdam, Departments of
 # Medical Informatics and Radiology, Erasmus MC, Rotterdam, The Netherlands
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,15 +35,47 @@ sitk.ProcessObject.SetGlobalDefaultCoordinateTolerance(5e-5)
 
 def CalcFeatures(image, segmentation, parameters, output,
                  metadata_file=None, semantics_file=None, verbose=True):
+    '''
+    Calculate features from a ROI of an image.
 
+    Parameters
+    ----------
+    image: string, mandatory
+            path referring to image file. Should be a format compatible
+            with ITK, e.g. .nii, .nii.gz, .mhd, .raw, .tiff, .nrrd.
+
+    segmentation: string, mandatory
+            path referring to segmentation file. Should be a format compatible
+            with ITK, e.g. .nii, .nii.gz, .mhd, .raw, .tiff, .nrrd.
+
+    parameters: string, mandatory,
+            path referring to a .ini file containing the parameters
+            used for feature extraction. See the Github Wiki for the possible
+            fields and their description.
+
+    output: string, mandatory
+            path referring to the .hdf5 file to which the output should be written.
+
+    metadata_file: string, optional
+            path referring to a .dcm file from which the patient features will
+            be extracted.
+
+    semantics_file: string, optional
+            path referring to a .csv file from which the semantic features will
+            be extracted. See the Github Wiki for the correct format.
+
+    verbose: boolean, default True
+            print final feature values and labels to command line or not.
+
+    '''
     # Load variables from the confilg file
     config = config_io.load_config(parameters)
 
     # Calculate the image features
-    gabor_settings = config['ImageFeatures']['gabor_settings']
+    parameters = config['ImageFeatures']['parameters']
     image_type = config['ImageFeatures']['image_type']
 
-    panda_labels = ['image_type', 'gabor_settings', 'feature_values',
+    panda_labels = ['image_type', 'parameters', 'feature_values',
                     'feature_labels']
 
     print('Calculating image features!')
@@ -54,12 +86,31 @@ def CalcFeatures(image, segmentation, parameters, output,
         segmentation = ''.join(segmentation)
     contours = [sitk.ReadImage(segmentation)]
 
+    # FIXME: Bug in some of our own segmentations
+    szi = image_data['images'][0].GetSize()
+    szs = contours[0].GetSize()
+    if szi != szs:
+        message = ('Shapes of image({}) and mask ({}) do not match!').format(str(szi), str(szs))
+        print message
+        # FIXME: Now excluding last slice
+        c = contours[0]
+        c = sitk.GetArrayFromImage(c)
+        c = c[0:-1, :, :]
+        contours = [sitk.GetImageFromArray(c)]
+
+        szs = contours[0].GetSize()
+        if szi != szs:
+            message = ('Shapes of image({}) and mask ({}) do not match!').format(str(szi), str(szs))
+            raise IndexError(message)
+        else:
+            print("['FIXED'] Excluded last slice.")
+
     feature_values, feature_labels =\
         gf.get_image_features(image_data, contours,
-                              gabor_settings, 0, False,
+                              parameters, 0, False,
                               config["ImageFeatures"], output)
 
-    panda_data = pd.Series([image_type, gabor_settings, feature_values,
+    panda_data = pd.Series([image_type, parameters, feature_values,
                             feature_labels],
                            index=panda_labels,
                            name='Image features'
