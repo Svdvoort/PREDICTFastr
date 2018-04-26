@@ -24,6 +24,7 @@ import string
 import fastr
 from joblib import Parallel, delayed
 from PREDICT.processing.fitandscore import fit_and_score
+import PREDICT.addexceptions as PREDICTexceptions
 import pandas as pd
 import json
 import glob
@@ -449,18 +450,26 @@ class BaseSearchCVfastr(BaseSearchCV):
             VarSel.extend(list(data['VarSelection']))
             SelectModel.extend(list(data['SelectModel']))
 
+        # if one choose to see train score, "out" will contain train score info
+        try:
+            if self.return_train_score:
+                (train_scores, test_scores, test_sample_counts,
+                 fit_time, score_time, parameters_est, parameters_all) =\
+                  zip(*save_data)
+            else:
+                (test_scores, test_sample_counts,
+                 fit_time, score_time, parameters_est, parameters_all) =\
+                  zip(*save_data)
+        except ValueError:
+            message = ('Fitting classifiers has failed. The temporary' +
+                       'results where not deleted and can be found in {}. ' +
+                       'Probably your fitting and scoring failed: check out ' +
+                       'the tmp/fitandscore folder within the tempfolder for' +
+                       'the fastr job temporary results.').format(tempfolder)
+            raise PREDICTexceptions.PREDICTValueError(message)
+
         # Remove the temporary folder used
         shutil.rmtree(tempfolder)
-
-        # if one choose to see train score, "out" will contain train score info
-        if self.return_train_score:
-            (train_scores, test_scores, test_sample_counts,
-             fit_time, score_time, parameters_est, parameters_all) =\
-              zip(*save_data)
-        else:
-            (test_scores, test_sample_counts,
-             fit_time, score_time, parameters_est, parameters_all) =\
-              zip(*save_data)
 
         # We take only one result per split, default by sklearn
         candidate_params_est = list(parameters_est[::n_splits])

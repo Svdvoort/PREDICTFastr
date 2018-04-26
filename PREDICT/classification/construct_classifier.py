@@ -110,7 +110,7 @@ def construct_SVM(config, regression=False):
     else:
         clf = SVMR(max_iter=100000)
 
-    if config['Classification']['Kernel'] == "polynomial":
+    if config['Classification']['Kernel'] == "polynomial" or config['Classification']['Kernel'] == "poly":
         param_grid = {'kernel': ['poly'], 'C': scipy.stats.uniform(loc=0.5e8, scale=0.5e8), 'degree': scipy.stats.uniform(loc=3, scale=2), 'coef0': scipy.stats.uniform(loc=0.5, scale=0.5)}
 
     elif config['Classification']['Kernel'] == "linear":
@@ -118,5 +118,7 @@ def construct_SVM(config, regression=False):
 
     elif config['Classification']['Kernel'] == "rbf":
         param_grid = {'kernel': ['rbf'], 'gamma':  scipy.stats.uniform(loc=0.5e-3, scale=0.5e-3), 'nu': scipy.stats.uniform(loc=0.5, scale=0.5)}
+    else:
+        raise KeyError("{} is not a valid SVM kernel type!").format(config['Classification']['Kernel'])
 
     return clf, param_grid

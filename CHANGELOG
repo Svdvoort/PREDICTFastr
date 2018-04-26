@@ -6,6 +6,32 @@ All notable changes to this project will be documented in this file.
 The format is based on `Keep a Changelog <http://keepachangelog.com/>`_
 and this project adheres to `Semantic Versioning <http://semver.org/>`_
 
+2.0.1 - Unreleased
+------------------
+
+
+Added
+~~~~~
+
+- PREDICT Exceptions in general.
+- A PREDICT ValueError catch when fitting the classifiers has failed and thus output is missing.
+
+Changed
+~~~~~~~
+
+- LoG features are now computed per 2-D slice, as is done with most other
+  features as well.
+
+
+Fixed
+~~~~~
+
+- The load_data function in trainclassifier didn't work properly for multiple
+  modalities.
+- SMOTE was not working properly in the nocrossval function in the classification/crossval.py script.
+- Added ravel of labels to nocrossval function, as it was missing.
+- Conversion to numpy uint8 for vessel features, as skimage cannot filter certain float images.
+- construct_classifier gives an error for SVM's if a kernel type is not recognized.
 
 2.0.0 - 2018-02-13
 ------------------

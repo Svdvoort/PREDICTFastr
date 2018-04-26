@@ -89,8 +89,8 @@ def trainclassifier(feat_train, patientinfo_train, config,
     # Load variables from the config file
     config = config_io.load_config(config)
 
-    if type(feat_train) is list:
-        feat_train = ''.join(feat_train)
+    # if type(feat_train) is list:
+    #     feat_train = ''.join(feat_train)
 
     if type(patientinfo_train) is list:
         patientinfo_train = ''.join(patientinfo_train)
@@ -100,23 +100,26 @@ def trainclassifier(feat_train, patientinfo_train, config,
 
     label_type = config['Genetics']['label_names']
 
-    # Split the features per modality
-    feat_train_temp = [str(item).strip() for item in feat_train.split('=')]
-    feat_train_temp = feat_train_temp[1::]  # First item is the first modality name
-    feat_train = list()
-    for feat_mod in feat_train_temp:
+    # Split the feature files per modality
+    feat_train_temp = list()
+    modnames = list()
+    for feat_mod in feat_train:
         feat_mod_temp = [str(item).strip() for item in feat_mod.split(',')]
 
-        # Last item contains name of next modality if multiple, seperated by a space
-        space = feat_mod_temp[-1].find(' ')
-        if space != -1:
-            feat_mod_temp[-1] = feat_mod_temp[-1][0:space]
-        feat_train.append(feat_mod_temp)
+        # The first item contains the name of the modality, followed by a = sign
+        temp = [str(item).strip() for item in feat_mod_temp[0].split('=')]
+        modnames.append(temp[0])
+        feat_mod_temp[0] = temp[1]
+
+        # Append the files to the main list
+        feat_train_temp.append(feat_mod_temp)
+
+    feat_train = feat_train_temp
 
     # Read the features and classification data
     label_data_train, image_features_train =\
         load_data(feat_train, patientinfo_train,
-                       label_type)
+                  label_type, modnames)
 
     if feat_test is not None:
         # Split the features per modality
@@ -133,8 +136,8 @@ def trainclassifier(feat_train, patientinfo_train, config,
             feat_test.append(feat_mod_temp)
 
         label_data_test, image_features_test =\
-            load_data(feat_test, patientinfo_test,
-                           label_type)
+            load_data(feat_test, patientinfo_test, label_type,
+                      modnames=modnames)
 
     # Create tempdir name from patientinfo file name
     basename = os.path.basename(patientinfo_train)
@@ -227,7 +230,8 @@ def trainclassifier(feat_train, patientinfo_train, config,
 
     print("Saved data!")
 
-def load_data(featurefiles, patientinfo=None, label_names=None):
+
+def load_data(featurefiles, patientinfo=None, label_names=None, modnames=[]):
     ''' Read feature files and stack the features per patient in an array.
         Additionally, if a patient label file is supplied, the features from
         a patient will be matched to the labels.
@@ -256,7 +260,12 @@ def load_data(featurefiles, patientinfo=None, label_names=None):
         for i_mod in range(0, len(featurefiles)):
             feat_temp = pd.read_hdf(featurefiles[i_mod][i_patient])
             feature_values_temp += feat_temp.feature_values
-            feature_labels_temp += [f + '_M' + str(i_mod) for f in feat_temp.feature_labels]
+            if not modnames:
+                # Create artificial names
+                feature_labels_temp += [f + '_M' + str(i_mod) for f in feat_temp.feature_labels]
+            else:
+                # Use the provides modality names
+                feature_labels_temp += [f + '_' + str(modnames[i_mod]) for f in feat_temp.feature_labels]
 
         image_features.append((feature_values_temp, feature_labels_temp))
 

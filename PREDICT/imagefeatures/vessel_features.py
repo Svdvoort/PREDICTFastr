@@ -60,7 +60,8 @@ def get_vessel_features(image, mask, parameters=dict()):
         # Compute Frangi Filter image
         Frangi_image = np.zeros(image.shape)
         for i_slice in range(0, image.shape[2]):
-            Frangi_image[:, :, i_slice] = frangi(image[:, :, i_slice], scale_range=i_sr, scale_step=i_ss)
+            # Note: conversion to uint8, as skimage cannot filter certain float images
+            Frangi_image[:, :, i_slice] = frangi(image[:, :, i_slice].astype(np.uint8), scale_range=i_sr, scale_step=i_ss)
 
         # Get histogram features of Frangi image for full tumor
         masked_voxels = ih.get_masked_voxels(Frangi_image, mask)

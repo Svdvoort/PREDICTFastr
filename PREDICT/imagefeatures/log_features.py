@@ -17,8 +17,9 @@
 import PREDICT.imagefeatures.histogram_features as hf
 import PREDICT.helpers.image_helper as ih
 # import imagefeatures.histogram_features as hf
-# import helpers.image_helper as ih
+# import PREIDCT.helpers.sitk_helper as sh
 import SimpleITK as sitk
+import numpy as np
 
 N_BINS = 50
 
@@ -26,6 +27,7 @@ N_BINS = 50
 def get_log_features(image, mask, parameters=dict()):
     # Alternatively, one could use the pxehancement function
     image = sitk.GetImageFromArray(image)
+    # mask = sh.GetImageFromArray(mask.astype(np.uint8))
     if "sigma" in parameters.keys():
         sigma = parameters["sigma"]
     else:
@@ -38,11 +40,17 @@ def get_log_features(image, mask, parameters=dict()):
     # Create LoG filter object
     LoGFilter = sitk.LaplacianRecursiveGaussianImageFilter()
     LoGFilter.SetNormalizeAcrossScale(True)
+
+    # Iterate over sigmas
     for i_index, i_sigma in enumerate(sigma):
-        # Compute LoG Filter image
         LoGFilter.SetSigma(i_sigma)
-        LoG_image = LoGFilter.Execute(image)
-        LoG_image = sitk.GetArrayFromImage(LoG_image)
+        LoG_image = np.zeros(image.GetSize())
+
+        # Iterate over slices
+        for i_slice in range(0, image.GetSize()[0]):
+            # Compute LoG Filter image
+            LoG_image_temp = LoGFilter.Execute(image[i_slice, :, :])
+            LoG_image[i_slice, :, :] = sitk.GetArrayFromImage(LoG_image_temp)
 
         # Get histogram features of LoG image for full tumor
         masked_voxels = ih.get_masked_voxels(LoG_image, mask)

@@ -332,17 +332,37 @@ def nocrossval(config, label_data_train, label_data_test, image_features_train,
         # label is maintained
         X_train = image_features_train
         X_test = image_features_test
-        Y_train = label_value_train
-        Y_test = label_value_test
+        Y_train = label_value_train.ravel()
+        Y_test = label_value_test.ravel()
 
         if config['SampleProcessing']['SMOTE']:
+            print("Sampling with SMOTE.")
+            for num, x in enumerate(X_train):
+                if num == 0:
+                    X_train_temp = np.zeros((len(x[0]), 1))
+                    X_train_temp[:, 0] = np.asarray(x[0])
+                else:
+                    xt = np.zeros((len(x[0]), 1))
+                    xt[:, 0] = np.asarray(x[0])
+                    X_train_temp = np.column_stack((X_train_temp, xt))
+
+            X_train_temp = np.transpose(X_train_temp)
             config_gen = config_io.load_config()
             N_jobs = config_gen['Joblib']['ncores']
             sm = SMOTE(random_state=random_state,
                        ratio=config['SampleProcessing']['SMOTE_ratio'],
+                       m_neighbors=config['SampleProcessing']['SMOTE_neighbors'],
                        kind='borderline1',
                        n_jobs=N_jobs)
-            X_train, Y_train = sm.fit_sample(X_train, Y_train)
+
+            # First, replace the NaNs:
+            for pnum, (pid, X) in enumerate(zip(patient_IDs_train, X_train_temp)):
+                for fnum, (f, l) in enumerate(zip(X, feature_labels)):
+                    if np.isnan(f):
+                        print("[PREDICT WARNING] NaN found, patient {}, label {}. Replacing with zero.").format(pid, l)
+                        X_train_temp[pnum, fnum] = 0
+            X_train, Y_train = sm.fit_sample(X_train_temp, Y_train)
+            X_train = [(x.tolist(), feature_labels) for x in X_train]
 
         # Find best hyperparameters and construct classifier
         config['HyperOptimization']['use_fastr'] = use_fastr
