@@ -68,6 +68,7 @@ def get_phase_features(image, mask, parameters=dict()):
 
         # Get histogram features
         masked_voxels = ih.get_masked_voxels(monogenic_image, mask)
+        masked_voxels = replacenan(masked_voxels)
         histogram_features, histogram_labels = hf.get_histogram_features(masked_voxels, N_BINS)
         histogram_labels = [l.replace('hf_', 'phasef_monogenic_') for l in histogram_labels]
         phase_features.extend(histogram_features)
@@ -75,6 +76,7 @@ def get_phase_features(image, mask, parameters=dict()):
         phase_labels.extend(final_feature_names)
 
         masked_voxels = ih.get_masked_voxels(phasecon_image, mask)
+        masked_voxels = replacenan(masked_voxels)
         histogram_features, histogram_labels = hf.get_histogram_features(masked_voxels, N_BINS)
         histogram_labels = [l.replace('hf_', 'phasef_phasecong_') for l in histogram_labels]
         phase_features.extend(histogram_features)
@@ -82,6 +84,7 @@ def get_phase_features(image, mask, parameters=dict()):
         phase_labels.extend(final_feature_names)
 
         masked_voxels = ih.get_masked_voxels(phasesym_image, mask)
+        masked_voxels = replacenan(masked_voxels)
         histogram_features, histogram_labels = hf.get_histogram_features(masked_voxels, N_BINS)
         histogram_labels = [l.replace('hf_', 'phasef_phasesym_') for l in histogram_labels]
         phase_features.extend(histogram_features)
@@ -89,3 +92,14 @@ def get_phase_features(image, mask, parameters=dict()):
         phase_labels.extend(final_feature_names)
 
     return phase_features, phase_labels
+
+
+def replacenan(x):
+    # First, replace the NaNs:
+    X_notnan = x[:]
+    for fnum, f in enumerate(x):
+        if np.isnan(f):
+            print("[PREDICT WARNING] NaN found in phase features. Replacing with zero.")
+            X_notnan[fnum] = 0
+
+    return X_notnan

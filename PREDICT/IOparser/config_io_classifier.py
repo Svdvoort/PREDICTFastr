@@ -37,7 +37,7 @@ def load_config(config_file_path):
                      'Genetics': dict(), 'HyperOptimization': dict(),
                      'Classification': dict(), 'SelectFeatGroup': dict(),
                      'Featsel': dict(), 'FeatureScaling': dict(),
-                     'SampleProcessing': dict()}
+                     'SampleProcessing': dict(), 'Imputation': dict()}
 
     settings_dict['General']['cross_validation'] =\
         settings['General'].getboolean('cross_validation')
@@ -45,6 +45,23 @@ def load_config(config_file_path):
     settings_dict['Featsel']['Variance'] =\
         [str(item).strip() for item in
          settings['Featsel']['Variance'].split(',')]
+
+    settings_dict['Featsel']['SelectFromModel'] =\
+        [str(item).strip() for item in
+         settings['Featsel']['SelectFromModel'].split(',')]
+
+    settings_dict['Featsel']['UsePCA'] =\
+        [str(item).strip() for item in
+         settings['Featsel']['UsePCA'].split(',')]
+
+    settings_dict['Featsel']['PCAType'] =\
+        [str(item).strip() for item in
+         settings['Featsel']['PCAType'].split(',')]
+
+    for label in ['Use', 'strategy', 'n_neighbors']:
+        settings_dict['Imputation'][label] =\
+            [str(item).strip() for item in
+             settings['Imputation'][label].split(',')]
 
     settings_dict['General']['FeatureCalculator'] =\
         str(settings['General']['FeatureCalculator'])

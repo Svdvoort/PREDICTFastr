@@ -42,6 +42,11 @@ When using FASTR >1.3.0, the PREDICT config file will be automatically created f
 
 Note that the Python site package does not work properly in virtual environments. You must then manually locate the packagedir.
 
+### Preprocessing
+From version 1.0.2 and on, preprocessing has been removed from PREDICT. It is now available as a separate tool in the
+[WORC package](https://github.com/MStarmans91/WORC), as it's also a separate step in the radiomics workflow.
+We do advice to use the preprocessing function.
+
 ### 3rd-party packages used in PREDICT:
 We mainly rely on the following packages:
 

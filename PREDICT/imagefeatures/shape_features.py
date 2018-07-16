@@ -118,14 +118,15 @@ def get_shape_features_2D_old(mask, metadata=None):
                       solidity_std]
 
     if metadata is not None:
-        # import dicom as pydicom
-        # metadata = pydicom.read_file(metadata)
-        pixel_spacing = metadata[0x28, 0x30].value
-        slice_thickness = int(metadata[0x18, 0x50].value)
-        voxel_volume = pixel_spacing[0] * pixel_spacing[1] * slice_thickness
-        volume = np.sum(mask) * voxel_volume
-        shape_labels.append('sf_volume')
-        shape_features.append(volume)
+        if (0x18, 0x50) in metadata.keys():
+            # import dicom as pydicom
+            # metadata = pydicom.read_file(metadata)
+            pixel_spacing = metadata[0x28, 0x30].value
+            slice_thickness = int(metadata[0x18, 0x50].value)
+            voxel_volume = pixel_spacing[0] * pixel_spacing[1] * slice_thickness
+            volume = np.sum(mask) * voxel_volume
+            shape_labels.append('sf_volume')
+            shape_features.append(volume)
 
     return shape_features, shape_labels
 
@@ -243,14 +244,15 @@ def get_shape_features_3D(mask, metadata=None):
                       solidity_std]
 
     if metadata is not None:
-        # import dicom as pydicom
-        # metadata = pydicom.read_file(metadata)
-        pixel_spacing = metadata[0x28, 0x30].value
-        slice_thickness = int(metadata[0x18, 0x50].value)
-        voxel_volume = pixel_spacing[0] * pixel_spacing[1] * slice_thickness
-        volume = np.sum(mask) * voxel_volume
-        shape_labels.append('sf_volume')
-        shape_features.append(volume)
+        if (0x18, 0x50) in metadata.keys():
+            # import dicom as pydicom
+            # metadata = pydicom.read_file(metadata)
+            pixel_spacing = metadata[0x28, 0x30].value
+            slice_thickness = int(metadata[0x18, 0x50].value)
+            voxel_volume = pixel_spacing[0] * pixel_spacing[1] * slice_thickness
+            volume = np.sum(mask) * voxel_volume
+            shape_labels.append('sf_volume')
+            shape_features.append(volume)
 
     return shape_features, shape_labels
 
@@ -359,14 +361,15 @@ def get_shape_features_2D(mask, metadata=None):
                       solidity_std]
 
     if metadata is not None:
-        # import dicom as pydicom
-        # metadata = pydicom.read_file(metadata)
-        pixel_spacing = metadata[0x28, 0x30].value
-        slice_thickness = int(metadata[0x18, 0x50].value)
-        voxel_volume = pixel_spacing[0] * pixel_spacing[1] * slice_thickness
-        volume = np.sum(mask) * voxel_volume
-        shape_labels.append('sf_volume')
-        shape_features.append(volume)
+        if (0x18, 0x50) in metadata.keys():
+            # import dicom as pydicom
+            # metadata = pydicom.read_file(metadata)
+            pixel_spacing = metadata[0x28, 0x30].value
+            slice_thickness = int(metadata[0x18, 0x50].value)
+            voxel_volume = pixel_spacing[0] * pixel_spacing[1] * slice_thickness
+            volume = np.sum(mask) * voxel_volume
+            shape_labels.append('sf_volume')
+            shape_features.append(volume)
 
     return shape_features, shape_labels
 

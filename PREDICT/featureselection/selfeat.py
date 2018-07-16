@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright 2011-2017 Biomedical Imaging Group Rotterdam, Departments of
+# Copyright 2011-2018 Biomedical Imaging Group Rotterdam, Departments of
 # Medical Informatics and Radiology, Erasmus MC, Rotterdam, The Netherlands
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,49 @@
 # limitations under the License.
 
 from sklearn.feature_selection import VarianceThreshold
+from sklearn.base import BaseEstimator
+from sklearn.feature_selection.base import SelectorMixin
+import numpy as np
 
 
-def selfeat_variance(image_features, labels=None, thresh=0.99):
+class VarianceThresholdMean(BaseEstimator, SelectorMixin):
+    '''
+    Select features based on variance among objects. Similar to VarianceThreshold
+    from sklearn, but does take the mean of the feature into account.
+    '''
+    def __init__(self, threshold):
+        self.threshold = threshold
+
+    def fit(self, image_features):
+        selectrows = list()
+        means = np.mean(image_features, axis=0)
+        variances = np.var(image_features, axis=0)
+
+        for i in range(image_features.shape[1]):
+            if variances[i] > self.threshold*(1-self.threshold)*means[i]:
+                selectrows.append(i)
+
+        self.selectrows = selectrows
+        return self
+
+
+    def transform(self, inputarray):
+        '''
+        Transform the inputarray to select only the features based on the
+        result from the fit function.
+        Parameters
+        ----------
+        inputarray: numpy array, mandatory
+                Array containing the items to use selection on. The type of
+                item in this list does not matter, e.g. floats, strings etc.
+        '''
+        return np.asarray([np.asarray(x)[self.selectrows].tolist() for x in inputarray])
+
+    def _get_support_mask(self):
+        # NOTE: Method is required for the Selector class, but can be empty
+        pass
+
+def selfeat_variance(image_features, labels=None, thresh=0.99, method='nomean'):
     '''
     Select features using a variance threshold.
 
@@ -36,6 +76,9 @@ def selfeat_variance(image_features, labels=None, thresh=0.99):
     thresh: float, default 0.99
             Threshold to be used as lower boundary for feature variance among
             patients.
+    method: string, default nomean.
+            Method to use for selection. Default: do not use the mean of the
+            features. Other valid option is 'mean'.
 
     Returns
     ----------
@@ -48,9 +91,13 @@ def selfeat_variance(image_features, labels=None, thresh=0.99):
 
     sel: VarianceThreshold object
             The fitted variance threshold object.
-            
+
     '''
-    sel = VarianceThreshold(threshold=thresh*(1 - thresh))
+    if method == 'nomean':
+        sel = VarianceThreshold(threshold=thresh*(1 - thresh))
+    else:
+        sel = VarianceThresholdMean(threshold=thresh*(1 - thresh))
+
     sel = sel.fit(image_features)
     image_features = sel.transform(image_features)
     if labels is not None:

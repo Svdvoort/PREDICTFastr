@@ -14,7 +14,10 @@
 # limitations under the License.
 
 try:
+    import matplotlib
+    matplotlib.use('Agg')
     import matplotlib.pyplot as plt
+    from matplotlib.patches import Ellipse
     from matplotlib2tikz import save as tikz_save
 except ImportError:
     print("[PREDICT Warning] Cannot use plot_ROC function, as _tkinter is not installed")
@@ -32,20 +35,25 @@ import natsort
 import os
 import json
 
-from PREDICT.plotting.plot_SVM import plot_multi_SVM
+from PREDICT.processing.fitandscore import fit_and_score
+from sklearn.base import clone
 
 
-def new_ROC(y_truth, y_score, verbose=False):
-    # fpr_old, tpr_old, _ = roc_curve(y_truth, y_score)
+
+def new_ROC(L, f, verbose=False):
+    # fpr_old, tpr_old, _ = roc_curve(L, f)
     # Sort both lists based on scores
-    # y_score -= np.min(y_score)
-    # y_score = y_score / np.max(np.abs(y_score))
-    y_truth = np.asarray(y_truth)
-    y_truth = np.int_(y_truth)
-    y_score = np.asarray(y_score)
-    inds = y_score.argsort()
-    y_truth_sorted = y_truth[inds]
-    y_score = y_score[inds]
+    # f -= np.min(f)
+    # f = f / np.max(np.abs(f))
+
+    # Added
+    L = [int(l) for l in L]
+
+    L = np.asarray(L)
+    f = np.asarray(f)
+    inds = f.argsort()
+    Lsorted = L[inds]
+    f = f[inds]
 
     # Compute the TPR and FPR
     FP = 0
@@ -55,17 +63,17 @@ def new_ROC(y_truth, y_score, verbose=False):
     thresholds = list()
     fprev = -np.inf
     i = 0
-    N = float(np.bincount(y_truth)[0])
-    P = float(np.bincount(y_truth)[1])
+    N = float(np.bincount(L)[0])
+    P = float(np.bincount(L)[1])
 
-    while i < len(y_truth_sorted):
-        if y_score[i] != fprev:
+    while i < len(Lsorted):
+        if f[i] != fprev:
             fpr.append(1 - FP/N)
             tpr.append(1 - TP/P)
-            thresholds.append(y_score[i])
-            fprev = y_score[i]
+            thresholds.append(f[i])
+            fprev = f[i]
 
-        if y_truth_sorted[i] == 1:
+        if Lsorted[i] == 1:
             TP += 1
         else:
             FP += 1
@@ -311,7 +319,7 @@ def plot_ROC_CIc(y_test, y_score, N_1, N_2, plot='default', alpha=0.95, verbose=
     f = plt.figure()
     lw = 2
     subplot = f.add_subplot(111)
-    subplot.plot(CIs_fpr_means, CIs_tpr_means, color='orange',
+    subplot.plot(CIs_fpr_means, CIs_tpr_means, color='black',
                  lw=lw, label='ROC curve (AUC = (%0.2f, %0.2f))' % (roc_auc[0], roc_auc[1]))
 
     for i in range(0, len(CIs_fpr_means)):
@@ -345,12 +353,12 @@ def plot_ROC_CIc(y_test, y_score, N_1, N_2, plot='default', alpha=0.95, verbose=
         else:
             xmean = 1
 
-        # subplot.plot([xmin, xmax],
-        #              [ymean, ymean],
-        #              color='black', alpha=0.15)
-        # subplot.plot([xmean, xmean],
-        #              [ymin, ymax],
-        #              color='black', alpha=0.15)
+        subplot.plot([xmin, xmax],
+                     [ymean, ymean],
+                     color='black', alpha=0.15)
+        subplot.plot([xmean, xmean],
+                     [ymin, ymax],
+                     color='black', alpha=0.15)
 
         # e = Ellipse(xy=[CIs_fpr_means[i], CIs_tpr_means[i]],
         #             height=(CIs_tpr[i, 1] - CIs_tpr[i, 0])/dw2,
@@ -409,12 +417,12 @@ def plot_ROC_CIc(y_test, y_score, N_1, N_2, plot='default', alpha=0.95, verbose=
             else:
                 xmean = 1
 
-            # subplot.plot([xmin, xmax],
-            #              [ymean, ymean],
-            #              color='black', alpha=0.15)
-            # subplot.plot([xmean, xmean],
-            #              [ymin, ymax],
-            #              color='black', alpha=0.15)
+            subplot.plot([xmin, xmax],
+                         [ymean, ymean],
+                         color='black', alpha=0.15)
+            subplot.plot([xmean, xmean],
+                         [ymin, ymax],
+                         color='black', alpha=0.15)
 
         subplot.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
         plt.xlim([0.0, 1.0])
@@ -556,95 +564,133 @@ def main_old():
     print(("ROC saved as {} !").format(output))
 
 
-def main():
+def main_1class():
     parser = argparse.ArgumentParser(description='Radiomics results')
     parser.add_argument('-svm', '--svm', metavar='svm',
                         nargs='+', dest='svm', type=str, required=True,
                         help='SVM file (HDF)')
-    parser.add_argument('-pinfo', '--pinfo', metavar='pinfo',
-                        nargs='+', dest='pinfo', type=str, required=True,
-                        help='Patient Info File (txt)')
     args = parser.parse_args()
 
     if type(args.svm) is list:
         args.svm = ''.join(args.svm)
 
-    if type(args.pinfo) is list:
-        args.pinfo = ''.join(args.pinfo)
+    if os.path.isfile(args.svm):
+        with open(args.svm, 'r') as fp:
+            scores = json.load(fp)
 
-    #
-    # if os.path.isfile(args.svm):
-    #     with open(args.svm, 'r') as fp:
-    #         scores = json.load(fp)
-    #
-    #     y_test = scores['y_test']
-    #     y_score = scores['y_score']
-    #     N_1 = scores['N_1']
-    #     N_2 = scores['N_2']
-    #
-    #     args.svm = os.path.dirname(args.svm)
-    #
-    # else:
-    #     svms = glob.glob(args.svm + '/*.hdf5')
-    #
-    #     # Loop over all svms and test sets
-    #     # NOTE: sklearn advices decision_function for ROC, Sebastian uses predict?
-    #     y_score = list()
-    #     y_test = list()
-    #     svms = natsort.natsorted(svms)
-    #     # svms = svms[16:]
-    #     for num, svm in enumerate(svms):
-    #         print("Processing svm {} / {}.").format(str(num+1), str(len(svms)))
-    #         svm = pd.read_hdf(svm)
-    #         k = svm.keys()[0]
-    #         X_test = svm[k].X_test
-    #         Y_test = svm[k].Y_test
-    #         y_score.append(svm[k].trained_classifier.decision_function(X_test).tolist())
-    #         y_test.append(Y_test.tolist())
-    #
-    #     N_1 = float(len(svm[k].patient_ID_train[0]))
-    #     N_2 = float(len(svm[k].patient_ID_test[0]))
-    #
-    #     scores = dict()
-    #     scores['y_test'] = y_test
-    #     scores['y_score'] = y_score
-    #     scores['N_1'] = N_1
-    #     scores['N_2'] = N_2
-    #     output = os.path.join(args.svm, 'scores.json')
-    #     with open(output, 'wb') as fp:
-    #         json.dump(scores, fp)
+        y_test = scores['y_test']
+        y_score = scores['y_score']
+        N_1 = scores['N_1']
+        N_2 = scores['N_2']
+
+        args.svm = os.path.dirname(args.svm)
+
+    else:
+        svms = glob.glob(args.svm + '/*.hdf5')
+
+        # Loop over all svms and test sets
+        # NOTE: sklearn advices decision_function for ROC, Sebastian uses predict?
+        y_score = list()
+        y_test = list()
+        svms = natsort.natsorted(svms)
+        # svms = svms[:10]
+        for num, svm in enumerate(svms):
+            print("Processing svm {} / {}.").format(str(num+1), str(len(svms)))
+            svm = pd.read_hdf(svm)
+            k = svm.keys()[0]
+            X_test = svm[k].X_test
+            Y_test = svm[k].Y_test
+            y_score.append(svm[k].trained_classifier.decision_function(X_test).tolist())
+            y_test.append(Y_test.tolist())
+
+        N_1 = float(len(svm[k].patient_ID_train[0]))
+        N_2 = float(len(svm[k].patient_ID_test[0]))
+
+        scores = dict()
+        scores['y_test'] = y_test
+        scores['y_score'] = y_score
+        scores['N_1'] = N_1
+        scores['N_2'] = N_2
+        output = os.path.join(args.svm, 'scores.json')
+        with open(output, 'wb') as fp:
+            json.dump(scores, fp)
 
     # y_score = np.asarray(y_score)
     # y_test = np.asarray(y_test)
 
-    prediction = pd.read_hdf(args.svm)
-    n_class = 50
-    label_type = prediction.keys()[0] #NOTE: Assume we want to have the first key
-    N_1 = len(prediction[label_type].Y_train[0])
-    N_2 = len(prediction[label_type].Y_test[0])
-    _, predictions = plot_multi_SVM(prediction, args.pinfo, label_type, show_plots=False,
-                                    key=None, n_classifiers=[n_class], alpha=0.95)
-
-    y_score = predictions[str(n_class)]['y_score']
-    y_test = predictions[str(n_class)]['y_test']
     plot = 'default'
     f, fpr, tpr = plot_ROC_CIc(y_test, y_score, N_1, N_2)
 
     if plot == 'default':
         plot = ''
 
-    output = os.path.dirname(args.svm)
-    output = os.path.join(output, 'roc' + plot + '.png')
+    output = os.path.join(args.svm, 'roc' + plot + '.png')
     f.savefig(output)
     print(("ROC saved as {} !").format(output))
 
-    output = os.path.dirname(args.svm)
-    output = os.path.join(output, 'roc' + plot + '.tex')
+    output = os.path.join(args.svm, 'roc' + plot + '.tex')
     tikz_save(output)
 
     # Save ROC values as JSON
-    output = os.path.dirname(args.svm)
-    output = os.path.join(output, 'roc' + plot + '.csv')
+    output = os.path.join(args.svm, 'roc' + plot + '.csv')
+    with open(output, 'wb') as csv_file:
+        writer = csv.writer(csv_file)
+        writer.writerow(['FPR', 'TPR'])
+        for i in range(0, len(fpr)):
+            data = [str(fpr[i]), str(tpr[i])]
+            writer.writerow(data)
+
+    print(("ROC saved as {} !").format(output))
+
+
+def main():
+parser = argparse.ArgumentParser(description='Radiomics results')
+parser.add_argument('-svm', '--svm', metavar='svm',
+                    nargs='+', dest='svm', type=str, required=True,
+                    help='SVM file (HDF)')
+parser.add_argument('-pinfo', '--pinfo', metavar='pinfo',
+                    nargs='+', dest='pinfo', type=str, required=True,
+                    help='Patient Info File (txt)')
+args = parser.parse_args()
+
+if type(args.svm) is list:
+    args.svm = ''.join(args.svm)
+
+if type(args.pinfo) is list:
+    args.pinfo = ''.join(args.pinfo)
+
+
+
+prediction = pd.read_hdf(args.svm)
+n_class = 1
+label_type = prediction.keys()[0] #NOTE: Assume we want to have the first key
+N_1 = len(prediction[label_type].Y_train[0])
+N_2 = len(prediction[label_type].Y_test[0])
+_, predictions = plot_multi_SVM(prediction, args.pinfo, label_type, show_plots=False,
+                                key=None, n_classifiers=[n_class], alpha=0.95)
+
+y_score = predictions[str(n_class)]['y_score']
+y_test = predictions[str(n_class)]['y_test']
+plot = 'default'
+print(len(y_test), len(y_score))
+    # y_score = np.asarray(y_score)
+    # y_test = np.asarray(y_test)
+
+    plot = 'default'
+    f, fpr, tpr = plot_ROC_CIc(y_tests, y_scores, N_1, N_2)
+
+    if plot == 'default':
+        plot = '_' + str(n_class)
+
+    output = os.path.join(args.svm, 'roc' + plot + '.png')
+    f.savefig(output)
+    print(("ROC saved as {} !").format(output))
+
+    output = os.path.join(args.svm, 'roc' + plot + '.tex')
+    tikz_save(output)
+
+    # Save ROC values as JSON
+    output = os.path.join(args.svm, 'roc' + plot + '.csv')
     with open(output, 'wb') as csv_file:
         writer = csv.writer(csv_file)
         writer.writerow(['FPR', 'TPR'])

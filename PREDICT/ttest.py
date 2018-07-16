@@ -15,15 +15,46 @@
 
 
 import numpy as np
-import pandas as pd
 import PREDICT.IOparser.config_io_classifier as config_io
-import PREDICT.genetics.genetic_processing as gp
 import os
 from scipy.stats import ttest_ind, ranksums, mannwhitneyu
 import csv
+import PREDICT.IOparser.file_io as file_io
+from PREDICT.plotting.boxplot import generate_boxplots
 
 
-def ttest(features, patientinfo, config, output, verbose=True):
+def ttest(features, patientinfo, config, output_directory, output_csv,
+          verbose=True):
+    '''
+    Perform several statistical tests on features, such as a student t-test.
+    Useage is similar to trainclassifier.
+
+    Parameters
+    ----------
+    features: string, mandatory
+            contains the paths to all .hdf5 feature files used.
+            modalityname1=file1,file2,file3,... modalityname2=file1,...
+            Thus, modalities names are always between a space and a equal
+            sign, files are split by commas. We assume that the lists of
+            files for each modality has the same length. Files on the
+            same position on each list should belong to the same patient.
+
+    patientinfo: string, mandatory
+            Contains the path referring to a .txt file containing the
+            patient label(s) and value(s) to be used for learning. See
+            the Github Wiki for the format.
+
+    config: string, mandatory
+            path referring to a .ini file containing the parameters
+            used for feature extraction. See the Github Wiki for the possible
+            fields and their description.
+
+    # TODO: outputs
+
+    verbose: boolean, default True
+            print final feature values and labels to command line or not.
+
+    '''
     # Load variables from the config file
     config = config_io.load_config(config)
 
@@ -33,20 +64,37 @@ def ttest(features, patientinfo, config, output, verbose=True):
     if type(config) is list:
         config = ''.join(config)
 
-    if type(output) is list:
-        output = ''.join(output)
+    if type(output_csv) is list:
+        output_csv = ''.join(output_csv)
 
     # Create output folder if required
-    if not os.path.exists(os.path.dirname(output)):
-        os.makedirs(os.path.dirname(output))
+    if not os.path.exists(os.path.dirname(output_csv)):
+        os.makedirs(os.path.dirname(output_csv))
 
     label_type = config['Genetics']['mutation_type']
 
     # Read the features and classification data
     print("Reading features and label data.")
+    # Split the feature files per modality
+    image_features_temp = list()
+    modnames = list()
+    for feat_mod in features:
+        feat_mod_temp = [str(item).strip() for item in feat_mod.split(',')]
+
+        # The first item contains the name of the modality, followed by a = sign
+        temp = [str(item).strip() for item in feat_mod_temp[0].split('=')]
+        modnames.append(temp[0])
+        feat_mod_temp[0] = temp[1]
+
+        # Append the files to the main list
+        image_features_temp.append(feat_mod_temp)
+
+    image_features = image_features_temp
+
+    # Read the features and classification data
     label_data, image_features =\
-        readsingledata(features, patientinfo,
-                       label_type)
+        file_io.load_data(image_features, patientinfo,
+                          label_type, modnames)
 
     # Extract feature labels and put values in an array
     feature_labels = image_features[0][1]
@@ -55,10 +103,11 @@ def ttest(features, patientinfo, config, output, verbose=True):
         feature_values[num, :] = x[0]
 
     # Open the output file
-    myfile = open(output, 'wb')
+    myfile = open(output_csv, 'wb')
     wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
 
-    # Do a t-test on all feature values
+    # -----------------------------------------------------------------------
+    # Perform statistical tests
     label_value = label_data['mutation_label']
     label_name = label_data['mutation_name']
 
@@ -69,14 +118,14 @@ def ttest(features, patientinfo, config, output, verbose=True):
         header.append('')
         header.append('')
         header.append('')
-        # header.append('')
+        header.append('')
         header.append('')
 
         subheader.append('Label')
         subheader.append('Ttest')
         subheader.append('Welch')
         subheader.append('Wilcoxon')
-        # subheader.append('Mann-Whitney')
+        subheader.append('Mann-Whitney')
         subheader.append('')
 
     wr.writerow(header)
@@ -88,7 +137,7 @@ def ttest(features, patientinfo, config, output, verbose=True):
         pvalues = list()
         pvalueswelch = list()
         pvalueswil = list()
-        # pvaluesmw = list()
+        pvaluesmw = list()
 
         for num, fl in enumerate(feature_labels):
             fv = feature_values[:, num]
@@ -100,7 +149,7 @@ def ttest(features, patientinfo, config, output, verbose=True):
             pvalues.append(ttest_ind(class1, class2)[1])
             pvalueswelch.append(ttest_ind(class1, class2, equal_var=False)[1])
             pvalueswil.append(ranksums(class1, class2)[1])
-            # pvaluesmw.append(mannwhitneyu(class1, class2)[1])
+            pvaluesmw.append(mannwhitneyu(class1, class2)[1])
 
         # Sort based on p-values:
         pvalues = np.asarray(pvalues)
@@ -109,12 +158,12 @@ def ttest(features, patientinfo, config, output, verbose=True):
         feature_labels_o = np.asarray(feature_labels)[indices].tolist()
         pvalueswelch = np.asarray(pvalueswelch)[indices].tolist()
         pvalueswil = np.asarray(pvalueswil)[indices].tolist()
-        # pvaluesmw = np.asarray(pvaluesmw)[indices].tolist()
+        pvaluesmw = np.asarray(pvaluesmw)[indices].tolist()
 
         savedict[i_name[0]]['ttest'] = pvalues
         savedict[i_name[0]]['welch'] = pvalueswelch
         savedict[i_name[0]]['wil'] = pvalueswil
-        # savedict[i_name[0]]['mw'] = pvaluesmw
+        savedict[i_name[0]]['mw'] = pvaluesmw
         savedict[i_name[0]]['labels'] = feature_labels_o
 
     for num in range(0, len(savedict[i_name[0]]['ttest'])):
@@ -125,44 +174,13 @@ def ttest(features, patientinfo, config, output, verbose=True):
             writelist.append(labeldict['ttest'][num])
             writelist.append(labeldict['welch'][num])
             writelist.append(labeldict['wil'][num])
-            # writelist.append(labeldict['mw'][num])
+            writelist.append(labeldict['mw'][num])
             writelist.append('')
 
         wr.writerow(writelist)
 
+    # ------------------------------------------------------------------------
+    # Generate boxplots
+    generate_boxplots(image_features, label_data, output_directory)
+
     print("Saved data!")
-
-
-def readsingledata(featurefiles, patientinfo=None, mutation_type=None):
-    # Read and stack the features
-    image_features = list()
-    for i_feat in range(len(featurefiles)):
-        feat_temp = pd.read_hdf(featurefiles[i_feat])
-        feature_values_temp = feat_temp.feature_values
-        feature_labels_temp = feat_temp.feature_labels
-        image_features.append((feature_values_temp, feature_labels_temp))
-
-    # Get the mutation labels and patient IDs
-    if patientinfo is not None:
-        mutation_data, image_features =\
-            gp.findmutationdata(patientinfo,
-                                mutation_type,
-                                featurefiles,
-                                image_features)
-
-        print("Mutation Labels:")
-        print(mutation_data['mutation_label'])
-        print('Total of ' + str(mutation_data['patient_IDs'].shape[0]) +
-              ' patients')
-        pos = np.sum(mutation_data['mutation_label'])
-        neg = mutation_data['patient_IDs'].shape[0] - pos
-        print(('{} positives, {} negatives').format(pos, neg))
-    else:
-        # Use filenames as patient ID s
-        patient_IDs = list()
-        for i in featurefiles:
-            patient_IDs.append(os.path.basename(i))
-        mutation_data = dict()
-        mutation_data['patient_IDs'] = patient_IDs
-
-    return mutation_data, image_features

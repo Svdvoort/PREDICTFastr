@@ -14,13 +14,30 @@ Added
 ~~~~~
 
 - PREDICT Exceptions in general.
-- A PREDICT ValueError catch when fitting the classifiers has failed and thus output is missing.
+- A PREDICT ValueError catch when fitting the classifiers has failed and thus
+  output is missing.
+- Feature imputation added in fitandscore. Made additions in scripts parsing
+  these fields
+  towards fitandscore.
+- Logistic regression classifier.
+- Ensemble performance computing in plot_SVM.
+- Feature selection based on variance taking the mean of the features into
+  account.
+- Added PCA as feature selection method.
+- Added plot_feature_groups function. Note that it's not used yet by default in
+  the trainclassifier analysis
+- Some more docstrings and cleaned some functions.
 
 Changed
 ~~~~~~~
 
 - LoG features are now computed per 2-D slice, as is done with most other
   features as well.
+- SVM parameters slack is now dependent on features.
+- Removed normalization in calcfeatures: now in separate node in WORC.
+- Moved load_data function from trainclassifier to file_io for broader use.
+- Removed preprocessing. It is now part of the WORC Python package and thus a
+  step separated from the feature calculation.
 
 
 Fixed
@@ -28,10 +45,20 @@ Fixed
 
 - The load_data function in trainclassifier didn't work properly for multiple
   modalities.
+- LoG filter needs a minimum of 4 voxels in each direction. These are therefore
+  now extracted on the full image instead of o nly the ROI slices. Plus there
+  is a catch if the full image also does not meet these criteria.
 - SMOTE was not working properly in the nocrossval function in the classification/crossval.py script.
 - Added ravel of labels to nocrossval function, as it was missing.
 - Conversion to numpy uint8 for vessel features, as skimage cannot filter certain float images.
 - construct_classifier gives an error for SVM's if a kernel type is not recognized.
+- Param grids in construct_crossval were using loc and scale incorrectly.
+- NaN in phase images are replaced by zeros to prevent errors.
+- In vessel features, when segmentation is small, there is not inner or outer edge.
+  PREDICT gave an error, now those features are just zeros.
+- In shape_features, first check if (0x18, 0x50) is present in metadata before
+  computing volume.
+- No more unnecessary use of lists in CalcFeatures and get_features for the image data.
 
 2.0.0 - 2018-02-13
 ------------------

@@ -19,11 +19,13 @@ from sklearn.svm import SVC
 from sklearn.svm import SVR as SVMR
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.linear_model import SGDClassifier, ElasticNet, SGDRegressor
+from sklearn.linear_model import LogisticRegression
 from sklearn.linear_model import Lasso
 import scipy
+import numpy as np
 
 
-def construct_classifier(config):
+def construct_classifier(config, image_features):
     """Interface to create classification
 
     Different classifications can be created using this common interface
@@ -40,11 +42,11 @@ def construct_classifier(config):
 
     if config['Classification']['classifier'] == 'SVM':
         # Support Vector Machine
-        classifier, param_grid = construct_SVM(config)
+        classifier, param_grid = construct_SVM(config, image_features)
 
     elif config['Classification']['classifier'] == 'SVR':
         # Support Vector Regression
-        classifier, param_grid = construct_SVM(config, True)
+        classifier, param_grid = construct_SVM(config, image_features, True)
 
     elif config['Classification']['classifier'] == 'RF':
         # Random forest kernel
@@ -56,7 +58,7 @@ def construct_classifier(config):
 
     elif config['Classification']['classifier'] == 'RFR':
         # Random forest kernel regression
-        param_grid = {'n_estimators': scipy.stats.randint(low=300, high=500),
+        param_grid = {'n_estimators': scipy.stats.randint(low=100, high=300),
                       'min_samples_split': scipy.stats.randint(low=2, high=5),
                       'max_depth': scipy.stats.randint(low=5, high=10)}
         classifier = RandomForestRegressor(verbose=0)
@@ -87,10 +89,16 @@ def construct_classifier(config):
                       'loss': ['hinge', 'squared_hinge', 'modified_huber'],
                       'penalty': ['none', 'l2', 'l1']}
 
+    elif config['Classification']['classifier'] == 'LR':
+        # Logistic Regression
+        classifier = LogisticRegression(max_iter=100000)
+        param_grid = {'penalty': ['l2', 'l1'],
+                      'C': scipy.stats.uniform(loc=0, scale=np.sqrt(len(image_features)))}
+
     return classifier, param_grid
 
 
-def construct_SVM(config, regression=False):
+def construct_SVM(config, image_features, regression=False):
     """
     Constructs a SVM classifier
 
@@ -111,13 +119,15 @@ def construct_SVM(config, regression=False):
         clf = SVMR(max_iter=100000)
 
     if config['Classification']['Kernel'] == "polynomial" or config['Classification']['Kernel'] == "poly":
-        param_grid = {'kernel': ['poly'], 'C': scipy.stats.uniform(loc=0.5e8, scale=0.5e8), 'degree': scipy.stats.uniform(loc=3, scale=2), 'coef0': scipy.stats.uniform(loc=0.5, scale=0.5)}
+        param_grid = {'kernel': ['poly'], 'C': scipy.stats.uniform(loc=0, scale=np.sqrt(len(image_features))), 'degree': scipy.stats.uniform(loc=2, scale=3), 'coef0': scipy.stats.uniform(loc=0, scale=1)}
 
     elif config['Classification']['Kernel'] == "linear":
-        param_grid = {'kernel': ['linear'], 'C': scipy.stats.uniform(loc=0.5e8, scale=0.5e8), 'coef0': scipy.stats.uniform(loc=0.5, scale=0.5)}
+        param_grid = {'kernel': ['linear'], 'C': scipy.stats.uniform(loc=0, scale=np.sqrt(len(image_features))), 'coef0': scipy.stats.uniform(loc=0, scale=1)}
 
     elif config['Classification']['Kernel'] == "rbf":
-        param_grid = {'kernel': ['rbf'], 'gamma':  scipy.stats.uniform(loc=0.5e-3, scale=0.5e-3), 'nu': scipy.stats.uniform(loc=0.5, scale=0.5)}
+        param_grid = {'kernel': ['rbf'],
+                      'C': scipy.stats.uniform(loc=0, scale=np.sqrt(len(image_features))),
+                      'gamma':  scipy.stats.uniform(loc=0, scale=1e-3)}
     else:
         raise KeyError("{} is not a valid SVM kernel type!").format(config['Classification']['Kernel'])
 

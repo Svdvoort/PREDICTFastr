@@ -17,7 +17,7 @@ try:
     import matplotlib.pyplot as plt
 except ImportError:
     print("[PREDICT Warning] Cannot use boxplot function, as _tkinter is not installed")
-    
+
 import pandas as pd
 import argparse
 import PREDICT.genetics.genetic_processing as gp
@@ -73,6 +73,10 @@ def main():
                                                         args.feat,
                                                         image_features_temp)
 
+    generate_boxplots(image_features, mutation_data, args.out)
+
+
+def generate_boxplots(image_features, mutation_data, outputfolder):
     labels = image_features[0].keys()
     featvect = dict()
     flab = dict()
@@ -137,8 +141,10 @@ def main():
         # plt.show()
 
         # High DTI to  make sure we save the maximized image
-        f.savefig(args.out + ('_{}.png').format(str(fi)), dpi=600)
-        print(("Boxplot saved as {} !").format(args.out + ('_{}.png').format(str(fi))))
+        fname = ('boxplot_{}.png').format(str(fi))
+        outputname = os.path.join(outputfolder, fname)
+        f.savefig(outputname, dpi=600)
+        print(("Boxplot saved as {} !").format(outputname))
 
 
 if __name__ == '__main__':

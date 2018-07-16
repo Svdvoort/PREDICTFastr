@@ -13,25 +13,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-import numpy as np
-import pandas as pd
-import PREDICT.IOparser.config_io_classifier as config_io
-import PREDICT.genetics.genetic_processing as gp
 import json
 import os
 import sklearn
 
 from PREDICT.classification import crossval as cv
 from PREDICT.classification import construct_classifier as cc
-from PREDICT.plotting.plot_SVM import plot_single_SVM
+from PREDICT.plotting.plot_SVM import plot_multi_SVM
 from PREDICT.plotting.plot_SVR import plot_single_SVR
+import PREDICT.IOparser.file_io as file_io
+import PREDICT.IOparser.config_io_classifier as config_io
 
 
 def trainclassifier(feat_train, patientinfo_train, config,
-                        output_hdf, output_json,
-                        feat_test=None, patientinfo_test=None,
-                        fixedsplits=None, verbose=True):
+                    output_hdf, output_json,
+                    feat_test=None, patientinfo_test=None,
+                    fixedsplits=None, verbose=True):
     '''
     Train a classifier using machine learning from features. By default, if no
     split in training and test is supplied, a cross validation
@@ -118,8 +115,8 @@ def trainclassifier(feat_train, patientinfo_train, config,
 
     # Read the features and classification data
     label_data_train, image_features_train =\
-        load_data(feat_train, patientinfo_train,
-                  label_type, modnames)
+        file_io.load_data(feat_train, patientinfo_train,
+                          label_type, modnames)
 
     if feat_test is not None:
         # Split the features per modality
@@ -136,8 +133,8 @@ def trainclassifier(feat_train, patientinfo_train, config,
             feat_test.append(feat_mod_temp)
 
         label_data_test, image_features_test =\
-            load_data(feat_test, patientinfo_test, label_type,
-                      modnames=modnames)
+            file_io.load_data(feat_test, patientinfo_test, label_type,
+                              modnames=modnames)
 
     # Create tempdir name from patientinfo file name
     basename = os.path.basename(patientinfo_train)
@@ -152,7 +149,7 @@ def trainclassifier(feat_train, patientinfo_train, config,
 
     # Construct the required classifier
     classifier, param_grid =\
-        cc.construct_classifier(config)
+        cc.construct_classifier(config, image_features_train)
 
     # Append the feature groups to the parameter grid
     if config['General']['FeatureCalculator'] == 'CalcFeatures':
@@ -169,7 +166,14 @@ def trainclassifier(feat_train, patientinfo_train, config,
         else:
             param_grid['FeatureScaling'] = config['FeatureScaling']['scaling_method']
 
+    # Extract parameter grid settings for SearchCV from config
     param_grid['Featsel_Variance'] = config['Featsel']['Variance']
+    param_grid['Imputation'] = config['Imputation']['Use']
+    param_grid['ImputationMethod'] = config['Imputation']['strategy']
+    param_grid['ImputationNeighbours'] = config['Imputation']['n_neighbors']
+    param_grid['SelectFromModel'] = config['Featsel']['SelectFromModel']
+    param_grid['UsePCA'] = config['Featsel']['UsePCA']
+    param_grid['PCAType'] = config['Featsel']['PCAType']
 
     # For N_iter, perform k-fold crossvalidation
     if feat_test is None:
@@ -200,8 +204,8 @@ def trainclassifier(feat_train, patientinfo_train, config,
             statistics = plot_single_SVR(trained_classifier, label_data_train,
                                          label_type)
         else:
-            statistics = plot_single_SVM(trained_classifier, label_data_train,
-                                         label_type)
+            statistics, _ = plot_multi_SVM(trained_classifier, label_data_train,
+                                           label_type)
     else:
         if patientinfo_test is not None:
             if type(classifier) == sklearn.svm.SVR:
@@ -209,9 +213,9 @@ def trainclassifier(feat_train, patientinfo_train, config,
                                              label_data_test,
                                              label_type)
             else:
-                statistics = plot_single_SVM(trained_classifier,
-                                             label_data_test,
-                                             label_type)
+                statistics, _ = plot_multi_SVM(trained_classifier,
+                                               label_data_test,
+                                               label_type)
         else:
             statistics = None
 
@@ -229,69 +233,3 @@ def trainclassifier(feat_train, patientinfo_train, config,
         json.dump(savedict, fp, indent=4)
 
     print("Saved data!")
-
-
-def load_data(featurefiles, patientinfo=None, label_names=None, modnames=[]):
-    ''' Read feature files and stack the features per patient in an array.
-        Additionally, if a patient label file is supplied, the features from
-        a patient will be matched to the labels.
-
-        Parameters
-        ----------
-        featurefiles: list, mandatory
-                List containing all paths to the .hdf5 feature files to be loaded.
-                The argument should contain a list per modelity, e.g.
-                [[features_mod1_patient1, features_mod1_patient2, ...],
-                 [features_mod2_patient1, features_mod2_patient2, ...]].
-
-        patientinfo: string, optional
-                Path referring to the .txt file to be used to read patient
-                labels from. See the Github Wiki for the format.
-
-        label_names: list, optional
-                List containing all the labels that should be extracted from
-                the patientinfo file.
-
-    '''
-    image_features = list()
-    for i_patient in range(0, len(featurefiles[0])):
-        feature_values_temp = list()
-        feature_labels_temp = list()
-        for i_mod in range(0, len(featurefiles)):
-            feat_temp = pd.read_hdf(featurefiles[i_mod][i_patient])
-            feature_values_temp += feat_temp.feature_values
-            if not modnames:
-                # Create artificial names
-                feature_labels_temp += [f + '_M' + str(i_mod) for f in feat_temp.feature_labels]
-            else:
-                # Use the provides modality names
-                feature_labels_temp += [f + '_' + str(modnames[i_mod]) for f in feat_temp.feature_labels]
-
-        image_features.append((feature_values_temp, feature_labels_temp))
-
-    # Get the mutation labels and patient IDs
-    if patientinfo is not None:
-        # We use the feature files of the first modality to match to patient name
-        pfiles = featurefiles[0]
-        mutation_data, image_features =\
-            gp.findmutationdata(patientinfo,
-                                label_names,
-                                pfiles,
-                                image_features)
-
-        print("Mutation Labels:")
-        print(mutation_data['mutation_label'])
-        print('Total of ' + str(mutation_data['patient_IDs'].shape[0]) +
-              ' patients')
-        pos = np.sum(mutation_data['mutation_label'])
-        neg = mutation_data['patient_IDs'].shape[0] - pos
-        print(('{} positives, {} negatives').format(pos, neg))
-    else:
-        # Use filenames as patient ID s
-        patient_IDs = list()
-        for i in featurefiles:
-            patient_IDs.append(os.path.basename(i))
-        mutation_data = dict()
-        mutation_data['patient_IDs'] = patient_IDs
-
-    return mutation_data, image_features

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright 2011-2017 Biomedical Imaging Group Rotterdam, Departments of
+# Copyright 2011-2018 Biomedical Imaging Group Rotterdam, Departments of
 # Medical Informatics and Radiology, Erasmus MC, Rotterdam, The Netherlands
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,6 +25,73 @@ import os
 
 import SimpleITK as sitk
 import PREDICT.helpers.sitk_helper as sitkh
+import PREDICT.genetics.genetic_processing as gp
+
+
+def load_data(featurefiles, patientinfo=None, label_names=None, modnames=[]):
+    ''' Read feature files and stack the features per patient in an array.
+        Additionally, if a patient label file is supplied, the features from
+        a patient will be matched to the labels.
+
+        Parameters
+        ----------
+        featurefiles: list, mandatory
+                List containing all paths to the .hdf5 feature files to be loaded.
+                The argument should contain a list per modelity, e.g.
+                [[features_mod1_patient1, features_mod1_patient2, ...],
+                 [features_mod2_patient1, features_mod2_patient2, ...]].
+
+        patientinfo: string, optional
+                Path referring to the .txt file to be used to read patient
+                labels from. See the Github Wiki for the format.
+
+        label_names: list, optional
+                List containing all the labels that should be extracted from
+                the patientinfo file.
+
+    '''
+    image_features = list()
+    for i_patient in range(0, len(featurefiles[0])):
+        feature_values_temp = list()
+        feature_labels_temp = list()
+        for i_mod in range(0, len(featurefiles)):
+            feat_temp = pd.read_hdf(featurefiles[i_mod][i_patient])
+            feature_values_temp += feat_temp.feature_values
+            if not modnames:
+                # Create artificial names
+                feature_labels_temp += [f + '_M' + str(i_mod) for f in feat_temp.feature_labels]
+            else:
+                # Use the provides modality names
+                feature_labels_temp += [f + '_' + str(modnames[i_mod]) for f in feat_temp.feature_labels]
+
+        image_features.append((feature_values_temp, feature_labels_temp))
+
+    # Get the mutation labels and patient IDs
+    if patientinfo is not None:
+        # We use the feature files of the first modality to match to patient name
+        pfiles = featurefiles[0]
+        mutation_data, image_features =\
+            gp.findmutationdata(patientinfo,
+                                label_names,
+                                pfiles,
+                                image_features)
+
+        print("Mutation Labels:")
+        print(mutation_data['mutation_label'])
+        print('Total of ' + str(mutation_data['patient_IDs'].shape[0]) +
+              ' patients')
+        pos = np.sum(mutation_data['mutation_label'])
+        neg = mutation_data['patient_IDs'].shape[0] - pos
+        print(('{} positives, {} negatives').format(pos, neg))
+    else:
+        # Use filenames as patient ID s
+        patient_IDs = list()
+        for i in featurefiles:
+            patient_IDs.append(os.path.basename(i))
+        mutation_data = dict()
+        mutation_data['patient_IDs'] = patient_IDs
+
+    return mutation_data, image_features
 
 
 def load_dicom(dicom_folder):

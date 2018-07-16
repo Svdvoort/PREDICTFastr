@@ -1,3 +1,21 @@
+#!/usr/bin/env python
+
+# Copyright 2011-2017 Biomedical Imaging Group Rotterdam, Departments of
+# Medical Informatics and Radiology, Erasmus MC, Rotterdam, The Netherlands
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
 from sklearn.base import BaseEstimator, is_classifier, clone
 from sklearn.base import MetaEstimatorMixin
 from sklearn.exceptions import NotFittedError
@@ -250,12 +268,16 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
 
         if self.best_groupsel is not None:
             X = self.best_groupsel.transform(X)
+        if self.best_imputer is not None:
+            X = self.best_imputer.transform(X)
         if self.best_modelsel is not None:
             X = self.best_modelsel.transform(X)
         if self.best_varsel is not None:
             X = self.best_varsel.transform(X)
         if self.best_scaler is not None:
             X = self.best_scaler.transform(X)
+        if self.best_pca is not None:
+            X = self.best_pca.transform(X)
 
         return X
 
@@ -327,8 +349,6 @@ class BaseSearchCVfastr(BaseSearchCV):
                                      n_candidates * n_splits))
 
         cv_iter = list(cv.split(X, y, groups))
-
-
         name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
         tempfolder = os.path.join(fastr.config.mounts['tmp'], 'GS', name)
         if not os.path.exists(tempfolder):
@@ -441,6 +461,8 @@ class BaseSearchCVfastr(BaseSearchCV):
         GroupSel = list()
         VarSel = list()
         SelectModel = list()
+        Imputers = list()
+        PCAs = list()
         for output in sink_files:
             data = pd.read_hdf(output)
             save_data.extend(list(data['RET']))
@@ -449,6 +471,8 @@ class BaseSearchCVfastr(BaseSearchCV):
             GroupSel.extend(list(data['GroupSelection']))
             VarSel.extend(list(data['VarSelection']))
             SelectModel.extend(list(data['SelectModel']))
+            Imputers.extend(list(data['Imputer']))
+            PCAs.extend(list(data['PCA']))
 
         # if one choose to see train score, "out" will contain train score info
         try:
@@ -475,9 +499,11 @@ class BaseSearchCVfastr(BaseSearchCV):
         candidate_params_est = list(parameters_est[::n_splits])
         candidate_params_all = list(parameters_all[::n_splits])
         GroupSel = list(GroupSel[::n_splits])
+        Imputers = list(Imputers[::n_splits])
         SelectModel = list(SelectModel[::n_splits])
         VarSel = list(VarSel[::n_splits])
         scalers = list(scalers[::n_splits])
+        PCAs = list(PCAs[::n_splits])
         feature_labels = list(feature_labels[::n_splits])
         n_candidates = len(candidate_params_est)
 
@@ -530,9 +556,11 @@ class BaseSearchCVfastr(BaseSearchCV):
         candidate_params_est = np.asarray(candidate_params_est)[bestindices].tolist()
         candidate_params_all = np.asarray(candidate_params_all)[bestindices].tolist()
         GroupSel = np.asarray(GroupSel)[bestindices].tolist()
+        Imputers = np.asarray(Imputers)[bestindices].tolist()
         SelectModel = np.asarray(SelectModel)[bestindices].tolist()
         VarSel = np.asarray(VarSel)[bestindices].tolist()
         scalers = np.asarray(scalers)[bestindices].tolist()
+        PCAs = np.asarray(PCAs)[bestindices].tolist()
 
         # Feature labels cannot be indiced, as it is a list of sequences and
         # cannot be converted to a numpy aray
@@ -550,9 +578,11 @@ class BaseSearchCVfastr(BaseSearchCV):
         best_parameters_est = candidate_params_est[best_index]
         best_groupsel = GroupSel[best_index]
         best_modelsel = SelectModel[best_index]
+        best_imputer = Imputers[best_index]
         best_varsel = VarSel[best_index]
         best_scaler = scalers[best_index]
         best_featlab = feature_labels[best_index]
+        best_pca = PCAs[best_index]
 
         # Use one MaskedArray and mask all the places where the param is not
         # applicable for that candidate. Use defaultdict as each candidate may
@@ -576,6 +606,8 @@ class BaseSearchCVfastr(BaseSearchCV):
         self.best_scaler = best_scaler
         self.best_varsel = best_varsel
         self.best_modelsel = best_modelsel
+        self.best_imputer = best_imputer
+        self.best_pca = best_pca
         self.cv_results_ = results
         self.best_index_ = best_index
         self.best_featlab = best_featlab
@@ -893,7 +925,7 @@ class BaseSearchCVJoblib(BaseSearchCV):
                                  error_score=self.error_score)
           for parameters in parameter_iterable
           for train, test in cv_iter)
-        (save_data, GroupSel, VarSel, SelectModel, feature_labels, scalers) = zip(*out)
+        (save_data, GroupSel, VarSel, SelectModel, feature_labels, scalers, Imputers, PCAs) = zip(*out)
 
         # if one choose to see train score, "out" will contain train score info
         if self.return_train_score:
@@ -909,9 +941,11 @@ class BaseSearchCVJoblib(BaseSearchCV):
         candidate_params_est = list(parameters_est[::n_splits])
         candidate_params_all = list(parameters_all[::n_splits])
         GroupSel = list(GroupSel[::n_splits])
+        Imputers = list(Imputers[::n_splits])
         SelectModel = list(SelectModel[::n_splits])
         VarSel = list(VarSel[::n_splits])
         scalers = list(scalers[::n_splits])
+        PCAs = list(PCAs[::n_splits])
         feature_labels = list(feature_labels[::n_splits])
         n_candidates = len(candidate_params_est)
 
@@ -963,6 +997,8 @@ class BaseSearchCVJoblib(BaseSearchCV):
         candidate_params_est = np.asarray(candidate_params_est)[bestindices].tolist()
         candidate_params_all = np.asarray(candidate_params_all)[bestindices].tolist()
         GroupSel = np.asarray(GroupSel)[bestindices].tolist()
+        Imputers = np.asarray(Imputers)[bestindices].tolist()
+        PCAs = np.asarray(PCAs)[bestindices].tolist()
         SelectModel = np.asarray(SelectModel)[bestindices].tolist()
         VarSel = np.asarray(VarSel)[bestindices].tolist()
         scalers = np.asarray(scalers)[bestindices].tolist()
@@ -982,9 +1018,11 @@ class BaseSearchCVJoblib(BaseSearchCV):
         best_index = np.flatnonzero(results["rank_test_score"] == 1)[0]
         best_parameters_est = candidate_params_est[best_index]
         best_groupsel = GroupSel[best_index]
+        best_imputer = Imputers[best_index]
         best_modelsel = SelectModel[best_index]
         best_varsel = VarSel[best_index]
         best_scaler = scalers[best_index]
+        best_pca = PCAs[best_index]
         best_featlab = feature_labels[best_index]
 
         # Use one MaskedArray and mask all the places where the param is not
@@ -1013,9 +1051,11 @@ class BaseSearchCVJoblib(BaseSearchCV):
         self.best_scaler = best_scaler
         self.best_varsel = best_varsel
         self.best_modelsel = best_modelsel
+        self.best_imputer = best_imputer
         self.cv_results_ = results
         self.best_index_ = best_index
         self.best_featlab = best_featlab
+        self.best_pca = best_pca
         self.n_splits_ = n_splits
 
         if self.refit:
@@ -1541,6 +1581,7 @@ class RandomizedSearchCVJoblib(BaseSearchCVJoblib):
                                           self.n_iter,
                                           random_state=self.random_state)
         return self._fit(X, y, groups, sampled_params)
+
 
 class GridSearchCVJoblib(BaseSearchCVJoblib):
     """Exhaustive search over specified parameter values for an estimator.
