@@ -217,6 +217,10 @@ def fit_and_score(estimator, X, y, scorer,
             if 'FeatureScaling' in para_estimator:
                 if verbose:
                     print("Fitting scaler and transforming features.")
+
+                # First, replace the NaN feature values
+                feature_values = replacenan(feature_values)
+
                 if para_estimator['FeatureScaling'] == 'z_score':
                     scaler = StandardScaler().fit(feature_values)
                 elif para_estimator['FeatureScaling'] == 'minmax':
@@ -342,3 +346,18 @@ def delete_nonestimator_parameters(parameters):
         del parameters['FeatureScaling']
 
     return parameters
+
+
+def replacenan(image_features):
+    '''
+    Replace the NaNs in an image feature matrix.
+    '''
+    image_features_temp = image_features.copy()
+    for pnum, x in enumerate(image_features_temp):
+        for fnum, value in enumerate(x):
+            if np.isnan(value):
+                print("[PREDICT WARNING] NaN found, patient {}, label {}. Replacing with zero.").format(pnum, fnum)
+                # Note: X is a list of lists, hence we cannot index the element directly
+                image_features_temp[pnum, fnum] = 0
+
+    return image_features_temp

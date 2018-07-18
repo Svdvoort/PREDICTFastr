@@ -80,11 +80,12 @@ def CalcFeatures(image, segmentation, parameters, output,
     panda_labels = ['image_type', 'parameters', 'feature_values',
                     'feature_labels']
 
-    print('Calculating image features!')
+    print('Loading inputs.')
     # Read the image data, metadata and semantics
     image_data = load_images(image, image_type, metadata_file, semantics_file)
 
     # Read the contour
+    print('Load segmentation.')
     if type(segmentation) is list:
         segmentation = ''.join(segmentation)
 
@@ -110,6 +111,7 @@ def CalcFeatures(image, segmentation, parameters, output,
             print("['FIXED'] Excluded last slice.")
 
     # Extract the actual features
+    print('Calculating image features.')
     feature_values, feature_labels =\
         gf.get_image_features(image_data, contour,
                               parameters,
@@ -167,6 +169,7 @@ def load_images(image_file, image_type, metadata_file=None,
         semantics_file = ''.join(semantics_file)
 
     # Read the input image based on the filetype provided
+    print('Load image and metadata file.')
     extension = os.path.splitext(image_file)
     if extension == '.dcm':
         # Single DICOM, so convert back to a list to use load_dicom
@@ -201,6 +204,7 @@ def load_images(image_file, image_type, metadata_file=None,
             metadata.pixel_array = None  # save memory
 
     # Read the semantics CSV and match values to the image file
+    print('Load semantics file.')
     if semantics_file is not None:
         _, file_extension = os.path.splitext(semantics_file)
         if file_extension == '.txt':

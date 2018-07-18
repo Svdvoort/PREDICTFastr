@@ -191,7 +191,12 @@ def trainclassifier(feat_train, patientinfo_train, config,
                                            config['Classification']['fastr'])
 
     if type(output_hdf) is list:
-        output_hdf = ''.join(output_hdf)
+        if len(output_hdf) == 1:
+            output_hdf = ''.join(output_hdf)
+        else:
+            # FIXME
+            print('[PREDICT Warning] You provided multiple configuration files: only the first one will be used!')
+            output_hdf = output_hdf[0]
 
     if not os.path.exists(os.path.dirname(output_hdf)):
         os.makedirs(os.path.dirname(output_hdf))
@@ -224,7 +229,12 @@ def trainclassifier(feat_train, patientinfo_train, config,
     savedict["Statistics"] = statistics
 
     if type(output_json) is list:
-        output_json = ''.join(output_json)
+        if len(output_json) == 1:
+            output_json = ''.join(output_json)
+        else:
+            # FIXME
+            print('[PREDICT Warning] You provided multiple configuration files: only the first one will be used!')
+            output_json = output_json[0]
 
     if not os.path.exists(os.path.dirname(output_json)):
         os.makedirs(os.path.dirname(output_json))

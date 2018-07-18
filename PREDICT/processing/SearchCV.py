@@ -917,12 +917,13 @@ class BaseSearchCVJoblib(BaseSearchCV):
             n_jobs=self.n_jobs, verbose=self.verbose,
             pre_dispatch=pre_dispatch
         )(delayed(fit_and_score)(clone(base_estimator), X, y, self.scorer_,
-                                 train, test, self.verbose, parameters,
+                                 train, test, parameters,
                                  fit_params=self.fit_params,
                                  return_train_score=self.return_train_score,
                                  return_n_test_samples=True,
                                  return_times=True, return_parameters=True,
-                                 error_score=self.error_score)
+                                 error_score=self.error_score,
+                                 verbose=self.verbose)
           for parameters in parameter_iterable
           for train, test in cv_iter)
         (save_data, GroupSel, VarSel, SelectModel, feature_labels, scalers, Imputers, PCAs) = zip(*out)
