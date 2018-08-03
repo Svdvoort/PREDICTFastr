@@ -37,7 +37,8 @@ def load_config(config_file_path):
                      'Genetics': dict(), 'HyperOptimization': dict(),
                      'Classification': dict(), 'SelectFeatGroup': dict(),
                      'Featsel': dict(), 'FeatureScaling': dict(),
-                     'SampleProcessing': dict(), 'Imputation': dict()}
+                     'SampleProcessing': dict(), 'Imputation': dict(),
+                     'Ensemble': dict()}
 
     settings_dict['General']['cross_validation'] =\
         settings['General'].getboolean('cross_validation')
@@ -57,6 +58,18 @@ def load_config(config_file_path):
     settings_dict['Featsel']['PCAType'] =\
         [str(item).strip() for item in
          settings['Featsel']['PCAType'].split(',')]
+
+    settings_dict['Featsel']['StatisticalTestUse'] =\
+        [str(item).strip() for item in
+         settings['Featsel']['StatisticalTestUse'].split(',')]
+
+    settings_dict['Featsel']['StatisticalTestMetric'] =\
+        [str(item).strip() for item in
+         settings['Featsel']['StatisticalTestMetric'].split(',')]
+
+    settings_dict['Featsel']['StatisticalTestThreshold'] =\
+        [float(str(item).strip()) for item in
+         settings['Featsel']['StatisticalTestThreshold'].split(',')]
 
     for label in ['Use', 'strategy', 'n_neighbors']:
         settings_dict['Imputation'][label] =\
@@ -122,5 +135,8 @@ def load_config(config_file_path):
         settings['SampleProcessing'].getfloat('SMOTE_ratio')
     settings_dict['SampleProcessing']['SMOTE_neighbors'] =\
         settings['SampleProcessing'].getint('SMOTE_neighbors')
+
+    settings_dict['Ensemble']['Use'] =\
+        settings['Ensemble'].getboolean('Use')
 
     return settings_dict

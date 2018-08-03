@@ -32,7 +32,10 @@ def compute_confidence(metric, N_train, N_test, alpha=0.95):
     alpha: float ranging from 0 to 1 to calculate the alpha*100% CI, default 95%
     """
 
-    N_iterations = len(metric)
+    # Convert to floats, as python 2 rounds the divisions if we have integers
+    N_train = float(N_train)
+    N_test = float(N_test)
+    N_iterations = float(len(metric))
 
     metric_average = np.mean(metric)
     S_uj = 1.0 / (N_iterations - 1) * np.sum((metric_average - metric)**2.0)

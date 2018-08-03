@@ -98,3 +98,10 @@ class PREDICTValueError(PREDICTError, ValueError):
     TypeError in the PREDICT system
     """
     pass
+
+
+class PREDICTKeyError(PREDICTError, KeyError):
+    """
+    KeyError in the PREDICT system
+    """
+    pass

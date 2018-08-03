@@ -44,12 +44,11 @@ def load_mutation_status(genetic_file, mutation_type):
     else:
         raise IOError(extension + ' is not valid genetic file extension.')
 
-    print("Label names to extract: "+ str(mutation_type))
+    print("Label names to extract: " + str(mutation_type))
     mutation_label = list()
     for i_mutation in mutation_type:
         if len(i_mutation) == 1:
             mutation_index = np.where(mutation_names == i_mutation[0])[0]
-            print(i_mutation[0])
             if mutation_index.size == 0:
                 raise ValueError('Could not find mutation: ' + i_mutation[0])
             else:
@@ -188,7 +187,6 @@ def findmutationdata(patientinfo, mutation_type, filenames,
     """
     # Get the mutation labels and patient IDs
     mutation_data_temp = load_mutation_status(patientinfo, mutation_type)
-    print mutation_data_temp
     mutation_data = dict()
     patient_IDs = list()
     mutation_label = list()
@@ -199,7 +197,6 @@ def findmutationdata(patientinfo, mutation_type, filenames,
     for i_num, i_patient in enumerate(mutation_data_temp['patient_IDs']):
         for i_feat, feat in enumerate(filenames):
             if i_patient in str(feat):
-                print i_patient
                 patient_IDs.append(i_patient)
                 if image_features_temp is not None:
                     image_features.append(image_features_temp[i_feat])

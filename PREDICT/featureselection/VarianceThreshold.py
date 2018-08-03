@@ -41,7 +41,6 @@ class VarianceThresholdMean(BaseEstimator, SelectorMixin):
         self.selectrows = selectrows
         return self
 
-
     def transform(self, inputarray):
         '''
         Transform the inputarray to select only the features based on the
@@ -57,6 +56,7 @@ class VarianceThresholdMean(BaseEstimator, SelectorMixin):
     def _get_support_mask(self):
         # NOTE: Method is required for the Selector class, but can be empty
         pass
+
 
 def selfeat_variance(image_features, labels=None, thresh=0.99, method='nomean'):
     '''
@@ -100,7 +100,6 @@ def selfeat_variance(image_features, labels=None, thresh=0.99, method='nomean'):
 
     sel = sel.fit(image_features)
     image_features = sel.transform(image_features)
-    if labels is not None:
-        labels = sel.transform(labels).tolist()[0]
+    labels = sel.transform(labels)
 
     return image_features, labels, sel

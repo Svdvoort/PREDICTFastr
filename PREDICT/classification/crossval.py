@@ -30,8 +30,8 @@ import PREDICT.classification.parameter_optimization as po
 
 
 def crossval(config, label_data, image_features,
-             classifier, param_grid = {}, use_fastr=False, tempsave=False,
-             fixedsplits=None):
+             classifier, param_grid={}, use_fastr=False, tempsave=False,
+             fixedsplits=None, ensemble={'Use': False}, outputfolder=None):
     """
     Constructs multiple individual classifiers based on the label settings
 
@@ -87,6 +87,9 @@ def crossval(config, label_data, image_features,
             a .xlsx file containing fixed splits to be used. See the Github Wiki
             for the format.
 
+    ensemble: dictionary, optional
+            Contains the configuration for constructing an ensemble.
+
     Returns
     ----------
     panda_data: pandas dataframe
@@ -100,7 +103,11 @@ def crossval(config, label_data, image_features,
     label_value = label_data['mutation_label']
     label_name = label_data['mutation_name']
 
-    logfilename = os.path.join(os.getcwd(), 'classifier.log')
+    if outputfolder is None:
+        logfilename = os.path.join(os.getcwd(), 'classifier.log')
+    else:
+        logfilename = os.path.join(outputfolder, 'classifier.log')
+
     logging.basicConfig(filename=logfilename, level=logging.DEBUG)
     N_iterations = config['CrossValidation']['N_iterations']
     test_size = config['CrossValidation']['test_size']
@@ -126,6 +133,7 @@ def crossval(config, label_data, image_features,
         save_data = list()
 
         for i in range(0, N_iterations):
+            print(('Cross validation iteration {} / {} .').format(str(i + 1), str(N_iterations)))
             random_seed = np.random.randint(5000)
             random_state = check_random_state(random_seed)
 
@@ -138,12 +146,35 @@ def crossval(config, label_data, image_features,
                 stratify = i_class
 
             if fixedsplits is None:
-                # Use Random Split
-                X_train, X_test, Y_train, Y_test,\
-                    patient_ID_train, patient_ID_test\
-                    = train_test_split(image_features, i_class, patient_IDs,
-                                       test_size=test_size, random_state=random_seed,
-                                       stratify=stratify)
+                # Use Random Split. Split per patient, not per sample
+                unique_patient_IDs, unique_indices =\
+                    np.unique(np.asarray(patient_IDs), return_index=True)
+                unique_stratify = [stratify[i] for i in unique_indices]
+                unique_PID_train, indices_PID_test\
+                    = train_test_split(unique_patient_IDs,
+                                       test_size=test_size,
+                                       random_state=random_seed,
+                                       stratify=unique_stratify)
+
+                # Check for all IDs if they are in test or training
+                indices_train = list()
+                indices_test = list()
+                patient_ID_train = list()
+                patient_ID_test = list()
+                for num, pid in enumerate(patient_IDs):
+                    if pid in unique_PID_train:
+                        indices_train.append(num)
+                        patient_ID_train.append(pid)
+                    else:
+                        indices_test.append(num)
+                        patient_ID_test.append(pid)
+
+                # Split features and labels accordingly
+                X_train = [image_features[i] for i in indices_train]
+                X_test = [image_features[i] for i in indices_test]
+                Y_train = i_class[indices_train]
+                Y_test = i_class[indices_test]
+
             else:
                 # Use pre defined splits
                 indices = wb.col_values(i)
@@ -218,6 +249,10 @@ def crossval(config, label_data, image_features,
                                                              param_grid=param_grid,
                                                              **config['HyperOptimization'])
 
+            # Create an ensemble if required
+            if ensemble['Use']:
+                trained_classifier.create_ensemble(X_train, Y_train)
+
             # We only want to save the feature values and one label array
             X_train = [x[0] for x in X_train]
             X_test = [x[0] for x in X_test]
@@ -277,7 +312,8 @@ def crossval(config, label_data, image_features,
 
 
 def nocrossval(config, label_data_train, label_data_test, image_features_train,
-               image_features_test, classifier, param_grid, use_fastr=False):
+               image_features_test, classifier, param_grid, use_fastr=False,
+               ensemble={'Use': False}):
     """
     Constructs multiple individual classifiers based on the label settings
 
@@ -293,6 +329,9 @@ def nocrossval(config, label_data_train, label_data_test, image_features_train,
                                   in the mutation_label
         image_features (numpy array): Consists of a tuple of two lists for each patient:
                                     (feature_values, feature_labels)
+
+    ensemble: dictionary, optional
+            Contains the configuration for constructing an ensemble.
 
 
     Returns:
@@ -371,6 +410,10 @@ def nocrossval(config, label_data_train, label_data_test, image_features_train,
                                                          classifier=classifier,
                                                          param_grid=param_grid,
                                                          **config['HyperOptimization'])
+
+        # Create an ensemble if required
+        if ensemble['Use']:
+            trained_classifier.create_ensemble(X_train, Y_train)
 
         # Extract the feature values
         X_train = np.asarray([x[0] for x in X_train])

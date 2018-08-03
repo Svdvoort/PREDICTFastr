@@ -19,10 +19,11 @@ import sklearn
 
 from PREDICT.classification import crossval as cv
 from PREDICT.classification import construct_classifier as cc
-from PREDICT.plotting.plot_SVM import plot_multi_SVM
+from PREDICT.plotting.plot_SVM import plot_SVM
 from PREDICT.plotting.plot_SVR import plot_single_SVR
 import PREDICT.IOparser.file_io as file_io
 import PREDICT.IOparser.config_io_classifier as config_io
+from scipy.stats import uniform
 
 
 def trainclassifier(feat_train, patientinfo_train, config,
@@ -83,58 +84,41 @@ def trainclassifier(feat_train, patientinfo_train, config,
             print final feature values and labels to command line or not.
 
     '''
-    # Load variables from the config file
-    config = config_io.load_config(config)
 
-    # if type(feat_train) is list:
-    #     feat_train = ''.join(feat_train)
-
+    # Convert inputs from lists to strings
     if type(patientinfo_train) is list:
         patientinfo_train = ''.join(patientinfo_train)
 
     if type(config) is list:
-        config = ''.join(config)
+        config = ''.join(config[0])
 
+    if type(output_hdf) is list:
+        if len(output_hdf) == 1:
+            output_hdf = ''.join(output_hdf)
+        else:
+            # FIXME
+            print('[PREDICT Warning] You provided multiple configuration files: only the first one will be used!')
+            output_hdf = output_hdf[0]
+            
+    if type(output_json) is list:
+        if len(output_json) == 1:
+            output_json = ''.join(output_json)
+        else:
+            # FIXME
+            print('[PREDICT Warning] You provided multiple configuration files: only the first one will be used!')
+            output_json = output_json[0]
+
+    # Load variables from the config file
+    config = config_io.load_config(config)
     label_type = config['Genetics']['label_names']
 
-    # Split the feature files per modality
-    feat_train_temp = list()
-    modnames = list()
-    for feat_mod in feat_train:
-        feat_mod_temp = [str(item).strip() for item in feat_mod.split(',')]
-
-        # The first item contains the name of the modality, followed by a = sign
-        temp = [str(item).strip() for item in feat_mod_temp[0].split('=')]
-        modnames.append(temp[0])
-        feat_mod_temp[0] = temp[1]
-
-        # Append the files to the main list
-        feat_train_temp.append(feat_mod_temp)
-
-    feat_train = feat_train_temp
-
-    # Read the features and classification data
+    # Load the feature files and match to label data
     label_data_train, image_features_train =\
-        file_io.load_data(feat_train, patientinfo_train,
-                          label_type, modnames)
+        load_features(feat_train, patientinfo_train, label_type)
 
-    if feat_test is not None:
-        # Split the features per modality
-        feat_test_temp = [str(item).strip() for item in feat_test.split('=')]
-        feat_test_temp = feat_test_temp[1::]  # First item is the first modality name
-        feat_test = list()
-        for feat_mod in feat_test_temp:
-            feat_mod_temp = [str(item).strip() for item in feat_mod.split(',')]
-
-            # Last item contains name of next modality if multiple, seperated by a space
-            space = feat_mod_temp[-1].find(' ')
-            if space != -1:
-                feat_mod_temp[-1] = feat_mod_temp[-1][0:space]
-            feat_test.append(feat_mod_temp)
-
+    if feat_test:
         label_data_test, image_features_test =\
-            file_io.load_data(feat_test, patientinfo_test, label_type,
-                              modnames=modnames)
+            load_features(feat_test, patientinfo_test, label_type)
 
     # Create tempdir name from patientinfo file name
     basename = os.path.basename(patientinfo_train)
@@ -157,46 +141,51 @@ def trainclassifier(feat_train, patientinfo_train, config,
         for group in config['SelectFeatGroup'].keys():
             param_grid[group] = config['SelectFeatGroup'][group]
 
-    # if config['FeatureSelection']['SelectFromModel']:
-    #     param_grid['SelectFromModel'] = ['Lasso', False]
-
+    # If scaling is to be applied, add to parameters
     if config['FeatureScaling']['scale_features']:
         if type(config['FeatureScaling']['scaling_method']) is not list:
             param_grid['FeatureScaling'] = [config['FeatureScaling']['scaling_method']]
         else:
             param_grid['FeatureScaling'] = config['FeatureScaling']['scaling_method']
 
-    # Extract parameter grid settings for SearchCV from config
+    # Extract hyperparameter grid settings for SearchCV from config
     param_grid['Featsel_Variance'] = config['Featsel']['Variance']
+
     param_grid['Imputation'] = config['Imputation']['Use']
     param_grid['ImputationMethod'] = config['Imputation']['strategy']
     param_grid['ImputationNeighbours'] = config['Imputation']['n_neighbors']
+
     param_grid['SelectFromModel'] = config['Featsel']['SelectFromModel']
+
     param_grid['UsePCA'] = config['Featsel']['UsePCA']
     param_grid['PCAType'] = config['Featsel']['PCAType']
 
+    param_grid['StatisticalTestUse'] =\
+        config['Featsel']['StatisticalTestUse']
+    param_grid['StatisticalTestMetric'] =\
+        config['Featsel']['StatisticalTestMetric']
+    param_grid['StatisticalTestThreshold'] =\
+        uniform(loc=config['Featsel']['StatisticalTestThreshold'][0],
+                scale=config['Featsel']['StatisticalTestThreshold'][1])
+
     # For N_iter, perform k-fold crossvalidation
+    outputfolder = os.path.dirname(output_hdf)
     if feat_test is None:
         trained_classifier = cv.crossval(config, label_data_train,
                                          image_features_train,
                                          classifier, param_grid,
                                          use_fastr=config['Classification']['fastr'],
-                                         fixedsplits=fixedsplits)
+                                         fixedsplits=fixedsplits,
+                                         ensemble=config['Ensemble'],
+                                         outputfolder=outputfolder)
     else:
         trained_classifier = cv.nocrossval(config, label_data_train,
                                            label_data_test,
                                            image_features_train,
                                            image_features_test,
                                            classifier, param_grid,
-                                           config['Classification']['fastr'])
-
-    if type(output_hdf) is list:
-        if len(output_hdf) == 1:
-            output_hdf = ''.join(output_hdf)
-        else:
-            # FIXME
-            print('[PREDICT Warning] You provided multiple configuration files: only the first one will be used!')
-            output_hdf = output_hdf[0]
+                                           config['Classification']['fastr'],
+                                           ensemble=config['Ensemble'])
 
     if not os.path.exists(os.path.dirname(output_hdf)):
         os.makedirs(os.path.dirname(output_hdf))
@@ -209,8 +198,8 @@ def trainclassifier(feat_train, patientinfo_train, config,
             statistics = plot_single_SVR(trained_classifier, label_data_train,
                                          label_type)
         else:
-            statistics, _ = plot_multi_SVM(trained_classifier, label_data_train,
-                                           label_type)
+            statistics = plot_SVM(trained_classifier, label_data_train,
+                                  label_type)
     else:
         if patientinfo_test is not None:
             if type(classifier) == sklearn.svm.SVR:
@@ -218,23 +207,15 @@ def trainclassifier(feat_train, patientinfo_train, config,
                                              label_data_test,
                                              label_type)
             else:
-                statistics, _ = plot_multi_SVM(trained_classifier,
-                                               label_data_test,
-                                               label_type)
+                statistics = plot_SVM(trained_classifier,
+                                      label_data_test,
+                                      label_type)
         else:
             statistics = None
 
     # Save output
     savedict = dict()
     savedict["Statistics"] = statistics
-
-    if type(output_json) is list:
-        if len(output_json) == 1:
-            output_json = ''.join(output_json)
-        else:
-            # FIXME
-            print('[PREDICT Warning] You provided multiple configuration files: only the first one will be used!')
-            output_json = output_json[0]
 
     if not os.path.exists(os.path.dirname(output_json)):
         os.makedirs(os.path.dirname(output_json))
@@ -243,3 +224,49 @@ def trainclassifier(feat_train, patientinfo_train, config,
         json.dump(savedict, fp, indent=4)
 
     print("Saved data!")
+
+
+def load_features(feat, patientinfo, label_type):
+    ''' Read feature files and stack the features per patient in an array.
+        Additionally, if a patient label file is supplied, the features from
+        a patient will be matched to the labels.
+
+        Parameters
+        ----------
+        featurefiles: list, mandatory
+                List containing all paths to the .hdf5 feature files to be loaded.
+                The argument should contain a list per modelity, e.g.
+                [[features_mod1_patient1, features_mod1_patient2, ...],
+                 [features_mod2_patient1, features_mod2_patient2, ...]].
+
+        patientinfo: string, optional
+                Path referring to the .txt file to be used to read patient
+                labels from. See the Github Wiki for the format.
+
+        label_names: list, optional
+                List containing all the labels that should be extracted from
+                the patientinfo file.
+
+    '''
+    # Split the feature files per modality
+    feat_temp = list()
+    modnames = list()
+    for feat_mod in feat:
+        feat_mod_temp = [str(item).strip() for item in feat_mod.split(',')]
+
+        # The first item contains the name of the modality, followed by a = sign
+        temp = [str(item).strip() for item in feat_mod_temp[0].split('=')]
+        modnames.append(temp[0])
+        feat_mod_temp[0] = temp[1]
+
+        # Append the files to the main list
+        feat_temp.append(feat_mod_temp)
+
+    feat = feat_temp
+
+    # Read the features and classification data
+    label_data, image_features =\
+        file_io.load_data(feat, patientinfo,
+                          label_type, modnames)
+
+    return label_data, image_features

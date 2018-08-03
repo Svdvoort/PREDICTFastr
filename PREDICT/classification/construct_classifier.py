@@ -119,10 +119,15 @@ def construct_SVM(config, image_features, regression=False):
         clf = SVMR(max_iter=100000)
 
     if config['Classification']['Kernel'] == "polynomial" or config['Classification']['Kernel'] == "poly":
-        param_grid = {'kernel': ['poly'], 'C': scipy.stats.uniform(loc=0, scale=np.sqrt(len(image_features))), 'degree': scipy.stats.uniform(loc=2, scale=3), 'coef0': scipy.stats.uniform(loc=0, scale=1)}
+        param_grid = {'kernel': ['poly'],
+                      'C': scipy.stats.uniform(loc=0, scale=np.sqrt(len(image_features))),
+                      'degree': scipy.stats.uniform(loc=1, scale=4),
+                      'coef0': scipy.stats.uniform(loc=0, scale=1)}
 
     elif config['Classification']['Kernel'] == "linear":
-        param_grid = {'kernel': ['linear'], 'C': scipy.stats.uniform(loc=0, scale=np.sqrt(len(image_features))), 'coef0': scipy.stats.uniform(loc=0, scale=1)}
+        param_grid = {'kernel': ['linear'],
+                      'C': scipy.stats.uniform(loc=0, scale=np.sqrt(len(image_features))),
+                      'coef0': scipy.stats.uniform(loc=0, scale=1)}
 
     elif config['Classification']['Kernel'] == "rbf":
         param_grid = {'kernel': ['rbf'],

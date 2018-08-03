@@ -27,6 +27,12 @@ Added
 - Added plot_feature_groups function. Note that it's not used yet by default in
   the trainclassifier analysis
 - Some more docstrings and cleaned some functions.
+- Save the cv_iter object in the SearchCV so you can re-use the
+  training/validation splits.
+- Ensembling based on Caruana et al. 2004 in the SearchCV object.
+- plot_SVM function also outputs percentage of crossval iterations in which
+  patient got classified correctly.
+
 
 Changed
 ~~~~~~~
@@ -38,6 +44,10 @@ Changed
 - Moved load_data function from trainclassifier to file_io for broader use.
 - Removed preprocessing. It is now part of the WORC Python package and thus a
   step separated from the feature calculation.
+- Updated ttest tool to comply with new way of inputting feature files.
+- SVM Polynomial kernel now spans [1, 5] instead of [2, 5]
+- Cross validation splitting is now based on patient IDs, hence all samples
+  from all patients are either in the training or the testing set.
 
 
 Fixed
@@ -59,6 +69,9 @@ Fixed
 - In shape_features, first check if (0x18, 0x50) is present in metadata before
   computing volume.
 - No more unnecessary use of lists in CalcFeatures and get_features for the image data.
+- Convert all integer inputs in compute_CI to floats, as divisions were
+  previously uncorrectly rounded when providing integers.
+- plot_ROC function now works properly.
 
 2.0.0 - 2018-02-13
 ------------------
