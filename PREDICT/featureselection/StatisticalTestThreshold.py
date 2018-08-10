@@ -19,7 +19,6 @@ from sklearn.base import BaseEstimator
 from sklearn.feature_selection.base import SelectorMixin
 import numpy as np
 from scipy.stats import ttest_ind, ranksums, mannwhitneyu
-from PREDICT.addexceptions import PREDICTValueError
 
 
 class StatisticalTestThreshold(BaseEstimator, SelectorMixin):

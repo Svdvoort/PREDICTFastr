@@ -23,8 +23,17 @@ def load_config(config_file_path):
     settings = configparser.ConfigParser()
     settings.read(config_file_path)
 
-    settings_dict = {'ImageFeatures': dict(), 'DataPaths': dict()}
+    settings_dict = {'ImageFeatures': dict(), 'DataPaths': dict(),
+                     'General': dict()}
 
+    # Extract some general settings
+    settings_dict['General']['Joblib_ncores'] =\
+        settings['PREDICTGeneral'].getint('Joblib_ncores')
+
+    settings_dict['General']['Joblib_backend'] =\
+        str(settings['PREDICTGeneral']['Joblib_backend'])
+
+    # Extract image feature specific settings
     settings_dict['ImageFeatures']['image_type'] =\
         [str(item).strip() for item in
          settings['ImageFeatures']['image_type'].split(',')]

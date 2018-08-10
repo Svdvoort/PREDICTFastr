@@ -210,7 +210,7 @@ def fit_and_score(estimator, X, y, scorer,
         feature_labels = np.reshape(feature_labels, (feature_labels.shape[0], feature_labels.shape[1]))
 
     # Remove any NaN feature values if these are still left after imputation
-    feature_values = replacenan(feature_values, verbose=verbose)
+    feature_values = replacenan(feature_values, verbose=verbose, feature_labels=feature_labels[0])
 
     # --------------------------------------------------------------------
     # Feature selection based on variance
@@ -430,7 +430,7 @@ def delete_nonestimator_parameters(parameters):
     return parameters
 
 
-def replacenan(image_features, verbose=True):
+def replacenan(image_features, verbose=True, feature_labels=None):
     '''
     Replace the NaNs in an image feature matrix.
     '''
@@ -439,7 +439,10 @@ def replacenan(image_features, verbose=True):
         for fnum, value in enumerate(x):
             if np.isnan(value):
                 if verbose:
-                    print("[PREDICT WARNING] NaN found, patient {}, label {}. Replacing with zero.").format(pnum, fnum)
+                    if feature_labels is not None:
+                        print("[PREDICT WARNING] NaN found, patient {}, label {}. Replacing with zero.").format(pnum, feature_labels[fnum])
+                    else:
+                        print("[PREDICT WARNING] NaN found, patient {}, label {}. Replacing with zero.").format(pnum, fnum)
                 # Note: X is a list of lists, hence we cannot index the element directly
                 image_features_temp[pnum, fnum] = 0
 

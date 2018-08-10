@@ -1,4 +1,4 @@
-# PREDICT v2.0.1
+# PREDICT v2.1.0
 
 ## PREDICT: a Radiomics Extensive Differentiable Interchangable Classification Toolkit
 
@@ -45,7 +45,7 @@ Note that the Python site package does not work properly in virtual environments
 ### Preprocessing
 From version 1.0.2 and on, preprocessing has been removed from PREDICT. It is now available as a separate tool in the
 [WORC package](https://github.com/MStarmans91/WORC), as it's also a separate step in the radiomics workflow.
-We do advice to use the preprocessing function.
+We do advice to use the preprocessing function and thus also WORC.
 
 ### 3rd-party packages used in PREDICT:
 We mainly rely on the following packages:
@@ -58,10 +58,6 @@ We mainly rely on the following packages:
  - PyRadiomics
 
 See also the [requirements file](requirements.txt).
-
-### WIP
-- We are working on improving the documentation.
-- Examples and unit tests will be added.
 
 ### License
 This package is covered by the open source [APACHE 2.0 License](APACHE-LICENSE-2.0).

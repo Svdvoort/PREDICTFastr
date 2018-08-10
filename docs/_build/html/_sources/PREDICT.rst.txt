@@ -26,18 +26,26 @@ PREDICT.CalcFeatures module
     :undoc-members:
     :show-inheritance:
 
-PREDICT.trainclassifier module
-------------------------------
+PREDICT.StatisticalTestFeatures module
+--------------------------------------
 
-.. automodule:: PREDICT.trainclassifier
+.. automodule:: PREDICT.StatisticalTestFeatures
     :members:
     :undoc-members:
     :show-inheritance:
 
-PREDICT.ttest module
---------------------
+PREDICT.addexceptions module
+----------------------------
 
-.. automodule:: PREDICT.ttest
+.. automodule:: PREDICT.addexceptions
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+PREDICT.trainclassifier module
+------------------------------
+
+.. automodule:: PREDICT.trainclassifier
     :members:
     :undoc-members:
     :show-inheritance:

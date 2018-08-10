@@ -4,8 +4,8 @@ PREDICT.classification package
 Submodules
 ----------
 
-PREDICT.classification.construct_classifier module
---------------------------------------------------
+PREDICT.classification.construct\_classifier module
+---------------------------------------------------
 
 .. automodule:: PREDICT.classification.construct_classifier
     :members:
@@ -20,8 +20,8 @@ PREDICT.classification.crossval module
     :undoc-members:
     :show-inheritance:
 
-PREDICT.classification.parameter_optimization module
-----------------------------------------------------
+PREDICT.classification.parameter\_optimization module
+-----------------------------------------------------
 
 .. automodule:: PREDICT.classification.parameter_optimization
     :members:

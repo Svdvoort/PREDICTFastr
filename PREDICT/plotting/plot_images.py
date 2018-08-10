@@ -78,6 +78,9 @@ def slicer(image, mask, output_name, output_name_zoom, thresholds=[-240, 160],
 
 
 def plot_im_and_overlay(image, mask, figsize=(3, 3), alpha=0.15):
+    '''
+    Plot an image in a matplotlib figure and overlay with a mask.
+    '''
     # Create a normalized colormap for the image and mask
     imin = np.min(image)
     imax = np.max(image)

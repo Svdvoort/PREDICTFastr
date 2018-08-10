@@ -12,10 +12,26 @@ PREDICT.featureselection.SelectGroups module
     :undoc-members:
     :show-inheritance:
 
-PREDICT.featureselection.selfeat module
----------------------------------------
+PREDICT.featureselection.SelectIndividuals module
+-------------------------------------------------
 
-.. automodule:: PREDICT.featureselection.selfeat
+.. automodule:: PREDICT.featureselection.SelectIndividuals
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+PREDICT.featureselection.StatisticalTestThreshold module
+--------------------------------------------------------
+
+.. automodule:: PREDICT.featureselection.StatisticalTestThreshold
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+PREDICT.featureselection.VarianceThreshold module
+-------------------------------------------------
+
+.. automodule:: PREDICT.featureselection.VarianceThreshold
     :members:
     :undoc-members:
     :show-inheritance:

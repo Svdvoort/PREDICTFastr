@@ -297,10 +297,56 @@ def plot_ranked_posteriors(estimator, pinfo, label_type=None,
     return ranked_mean_scores, ranked_truths, ranked_PIDs
 
 
-def plot_ranked_scores(estimator, pinfo, label_type, scores,
-                       images, segmentations, ensemble,
-                       output_csv, output_zip, output_itk=None):
+def plot_ranked_scores(estimator, pinfo, label_type, scores='percentages',
+                       images=[], segmentations=[], ensemble=50,
+                       output_csv=None, output_zip=None, output_itk=None):
+    '''
+    Rank the patients according to their average score. The score can either
+    be the average posterior or the percentage of times the patient was
+    classified correctly in the cross validations. Additionally,
+    the middle slice of each patient is plot and saved according to the ranking.
 
+    Parameters
+    ----------
+    estimator: filepath, mandatory
+        Path pointing to the .hdf5 file which was is the output of the
+        trainclassifier function.
+
+    pinfo: filepath, mandatory
+        Path pointint to the .txt file which contains the patient label
+        information.
+
+    label_type: string, default None
+        The name of the label predicted by the estimator. If None,
+        the first label from the prediction file will be used.
+
+    scores: string, default percentages
+        Type of scoring to be used. Either 'posteriors' or 'percentages'.
+
+    images: list, optional
+        List containing the filepaths to the ITKImage image files of the
+        patients.
+
+    segmentations: list, optional
+        List containing the filepaths to the ITKImage segmentation files of
+        the patients.
+
+    ensemble: integer or string, optional
+        Method to be used for ensembling. Either an integer for a fixed size
+        or 'Caruana' for the Caruana method, see the SearchCV function for more
+        details.
+
+    output_csv: filepath, optional
+        If given, the scores will be written to this csv file.
+
+    output_zip: filepath, optional
+        If given, the images will be plotted and the pngs saved to this
+        zip file.
+
+    output_itk: filepath, optional
+        WIP
+
+    '''
     prediction = pd.read_hdf(estimator)
     if label_type is None:
         # Assume we want to have the first key

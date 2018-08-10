@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+import PREDICT.addexceptions as ae
 import imagefeatures.get_features as gf
 import IOparser.config_io_CalcFeatures as config_io
 import IOparser.file_io as IO
@@ -106,7 +106,7 @@ def CalcFeatures(image, segmentation, parameters, output,
         szs = contour.GetSize()
         if szi != szs:
             message = ('Shapes of image({}) and mask ({}) do not match!').format(str(szi), str(szs))
-            raise IndexError(message)
+            raise ae.PREDICTIndexError(message)
         else:
             print("['FIXED'] Excluded last slice.")
 
@@ -115,7 +115,9 @@ def CalcFeatures(image, segmentation, parameters, output,
     feature_values, feature_labels =\
         gf.get_image_features(image_data, contour,
                               parameters,
-                              config["ImageFeatures"], output)
+                              config["ImageFeatures"],
+                              config["General"],
+                              output)
 
     # Convert to pandas Series and save as hdf5
     panda_data = pd.Series([image_type, parameters, feature_values,
@@ -219,7 +221,7 @@ def load_images(image_file, image_type, metadata_file=None,
                     if num == 0:
                         header = row
                         if header[0] != 'Patient':
-                            raise AssertionError('First column of the semantics file should be patient ID!')
+                            raise ae.PREDICTAssertionError('First column of the semantics file should be patient ID!')
 
                         keys = list()
                         for key in header:

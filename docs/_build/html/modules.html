@@ -1,26 +1,15 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>PREDICT &#8212; PREDICT 2.0.0 documentation</title>
-    
+    <title>PREDICT &#8212; PREDICT 2.1.0 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '2.0.0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
@@ -32,13 +21,14 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body role="document">
+  </head><body>
   
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
   <div class="section" id="predict">
@@ -49,7 +39,6 @@
 <li class="toctree-l2"><a class="reference internal" href="PREDICT.html#subpackages">Subpackages</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="PREDICT.IOparser.html">PREDICT.IOparser package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="PREDICT.IOparser.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="PREDICT.IOparser.html#predict-ioparser-config-general-module">PREDICT.IOparser.config_general module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PREDICT.IOparser.html#predict-ioparser-config-io-module">PREDICT.IOparser.config_io module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PREDICT.IOparser.html#predict-ioparser-config-io-calcfeatures-module">PREDICT.IOparser.config_io_CalcFeatures module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PREDICT.IOparser.html#predict-ioparser-config-io-classifier-module">PREDICT.IOparser.config_io_classifier module</a></li>
@@ -68,7 +57,9 @@
 <li class="toctree-l3"><a class="reference internal" href="PREDICT.featureselection.html">PREDICT.featureselection package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="PREDICT.featureselection.html#submodules">Submodules</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PREDICT.featureselection.html#predict-featureselection-selectgroups-module">PREDICT.featureselection.SelectGroups module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="PREDICT.featureselection.html#predict-featureselection-selfeat-module">PREDICT.featureselection.selfeat module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PREDICT.featureselection.html#predict-featureselection-selectindividuals-module">PREDICT.featureselection.SelectIndividuals module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PREDICT.featureselection.html#predict-featureselection-statisticaltestthreshold-module">PREDICT.featureselection.StatisticalTestThreshold module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PREDICT.featureselection.html#predict-featureselection-variancethreshold-module">PREDICT.featureselection.VarianceThreshold module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PREDICT.featureselection.html#module-contents">Module contents</a></li>
 </ul>
 </li>
@@ -103,7 +94,6 @@
 <li class="toctree-l4"><a class="reference internal" href="PREDICT.imagefeatures.html#predict-imagefeatures-semantic-features-module">PREDICT.imagefeatures.semantic_features module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PREDICT.imagefeatures.html#predict-imagefeatures-shape-features-module">PREDICT.imagefeatures.shape_features module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PREDICT.imagefeatures.html#predict-imagefeatures-sitk-helper-module">PREDICT.imagefeatures.sitk_helper module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="PREDICT.imagefeatures.html#predict-imagefeatures-tester-module">PREDICT.imagefeatures.tester module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PREDICT.imagefeatures.html#predict-imagefeatures-texture-features-module">PREDICT.imagefeatures.texture_features module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PREDICT.imagefeatures.html#predict-imagefeatures-vessel-features-module">PREDICT.imagefeatures.vessel_features module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PREDICT.imagefeatures.html#module-contents">Module contents</a></li>
@@ -111,16 +101,17 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="PREDICT.plotting.html">PREDICT.plotting package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="PREDICT.plotting.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="PREDICT.plotting.html#predict-plotting-boxplot-module">PREDICT.plotting.boxplot module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PREDICT.plotting.html#predict-plotting-compute-ci-module">PREDICT.plotting.compute_CI module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="PREDICT.plotting.html#predict-plotting-fitcoxmodel-module">PREDICT.plotting.fitcoxmodel module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PREDICT.plotting.html#predict-plotting-getfeatureimages-module">PREDICT.plotting.getfeatureimages module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PREDICT.plotting.html#predict-plotting-linstretch-module">PREDICT.plotting.linstretch module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PREDICT.plotting.html#predict-plotting-plot-roc-module">PREDICT.plotting.plot_ROC module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PREDICT.plotting.html#predict-plotting-plot-svm-module">PREDICT.plotting.plot_SVM module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PREDICT.plotting.html#predict-plotting-plot-svr-module">PREDICT.plotting.plot_SVR module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PREDICT.plotting.html#predict-plotting-plot-barchart-module">PREDICT.plotting.plot_barchart module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PREDICT.plotting.html#predict-plotting-plot-boxplot-module">PREDICT.plotting.plot_boxplot module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PREDICT.plotting.html#predict-plotting-plot-images-module">PREDICT.plotting.plot_images module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PREDICT.plotting.html#predict-plotting-plot-ranked-scores-module">PREDICT.plotting.plot_ranked_scores module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PREDICT.plotting.html#predict-plotting-plotminmaxresponse-module">PREDICT.plotting.plotminmaxresponse module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="PREDICT.plotting.html#predict-plotting-plotposteriors-module">PREDICT.plotting.plotposteriors module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PREDICT.plotting.html#predict-plotting-scatterplot-module">PREDICT.plotting.scatterplot module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PREDICT.plotting.html#module-contents">Module contents</a></li>
 </ul>
@@ -130,9 +121,7 @@
 <li class="toctree-l4"><a class="reference internal" href="PREDICT.processing.html#predict-processing-icc-module">PREDICT.processing.ICC module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PREDICT.processing.html#predict-processing-imputer-module">PREDICT.processing.Imputer module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PREDICT.processing.html#predict-processing-searchcv-module">PREDICT.processing.SearchCV module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="PREDICT.processing.html#predict-processing-searchcvoldkslearn-module">PREDICT.processing.SearchCVoldkslearn module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PREDICT.processing.html#predict-processing-fitandscore-module">PREDICT.processing.fitandscore module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="PREDICT.processing.html#predict-processing-readcrossvalfunc-module">PREDICT.processing.readcrossvalfunc module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PREDICT.processing.html#module-contents">Module contents</a></li>
 </ul>
 </li>
@@ -140,8 +129,9 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="PREDICT.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="PREDICT.html#predict-calcfeatures-module">PREDICT.CalcFeatures module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.html#predict-statisticaltestfeatures-module">PREDICT.StatisticalTestFeatures module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.html#predict-addexceptions-module">PREDICT.addexceptions module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="PREDICT.html#predict-trainclassifier-module">PREDICT.trainclassifier module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="PREDICT.html#predict-ttest-module">PREDICT.ttest module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="PREDICT.html#module-contents">Module contents</a></li>
 </ul>
 </li>
@@ -151,31 +141,39 @@
 
 
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper"><div class="relations">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">PREDICT</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
   </ul></li>
 </ul>
 </div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/modules.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -183,11 +181,11 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2018, Sebastian van der Voort, Martijn Starmans.
+      &copy;2018, Sebastian van der Voort & Martijn Starmans.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.3</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
       
       |
       <a href="_sources/modules.rst.txt"

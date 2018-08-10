@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 The format is based on `Keep a Changelog <http://keepachangelog.com/>`_
 and this project adheres to `Semantic Versioning <http://semver.org/>`_
 
-2.0.1 - Unreleased
+2.1.0 - 2018-08-09
 ------------------
 
 
@@ -32,6 +32,8 @@ Added
 - Ensembling based on Caruana et al. 2004 in the SearchCV object.
 - plot_SVM function also outputs percentage of crossval iterations in which
   patient got classified correctly.
+- Temporary save setting for crossval function is now in general config.
+- Fastr execution plugin type is now also an argument for the SearchCV object.
 
 
 Changed
@@ -48,6 +50,9 @@ Changed
 - SVM Polynomial kernel now spans [1, 5] instead of [2, 5]
 - Cross validation splitting is now based on patient IDs, hence all samples
   from all patients are either in the training or the testing set.
+- Removed the general config.ini file and parser. These were used to determine
+  the settings for the Joblib Parallel function. These are now in the general
+  config. These had to be passed to both SMOTE and the Gabor feature computation.
 
 
 Fixed
@@ -72,6 +77,12 @@ Fixed
 - Convert all integer inputs in compute_CI to floats, as divisions were
   previously uncorrectly rounded when providing integers.
 - plot_ROC function now works properly.
+- Everything in the confidence interval function is now cast to floats,
+  as divisions with integers and floats are rounded to integers which gave
+  wrong values for the CI.
+- Confidence interval now has a catch when only a single iteration is provided.
+- Lot of error catches now have PREDICT errors.
+
 
 2.0.0 - 2018-02-13
 ------------------

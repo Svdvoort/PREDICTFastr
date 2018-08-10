@@ -24,28 +24,22 @@ from skimage.exposure import rescale_intensity
 from skimage.feature import local_binary_pattern
 import SimpleITK as sitk
 import scipy.stats
-import PREDICT.IOparser.config_general as config_io
 from radiomics import featureextractor
+import PREDICT.addexceptions as ae
 
 
-def gabor_filter_parallel(image, mask, parameters=dict(), n_jobs=None,
-                          backend=None):
+def gabor_filter_parallel(image, mask, parameters=dict(), n_jobs=1,
+                          backend='threading'):
     """
     Apply gabor filters to image, done in parallel.
     Note: on a cluster, where parallelisation of the gabor filters
     is not possible, use backend="threading"
     """
 
-    config = config_io.load_config()
-    if n_jobs is None:
-        n_jobs = config['Joblib']['ncores']
-    if backend is None:
-        backend = config['Joblib']['backend']
-
     if "gabor_frequencies" in parameters.keys():
         gabor_frequencies = parameters["gabor_frequencies"]
     else:
-        gabor_frequencies =  [0.05, 0.2, 0.5]
+        gabor_frequencies = [0.05, 0.2, 0.5]
 
     if "gabor_angles" in parameters.keys():
         gabor_angles = parameters["gabor_angles"]
@@ -115,12 +109,17 @@ def gabor_filter_parallel(image, mask, parameters=dict(), n_jobs=None,
         gabor_labels.append(label_kurt)
 
     if len(gabor_features) != len(gabor_labels):
-        raise ValueError('Label length does not fit feature length')
+        raise ae.PREDICTValueError('Label length does not fit feature length')
 
     return gabor_features, gabor_labels
 
 
 def gabor_filter(image, mask, kernel):
+    '''
+    Filter an image with a Gabor kernel. The kernel should be a list containing
+    the frequency and the angle. After filtering, the image is flattened and
+    masked by the mask.
+    '''
     filtered_image, _ = skimage.filters.gabor(image,
                                               frequency=kernel[0],
                                               theta=kernel[1])
@@ -222,12 +221,24 @@ def get_GLCM_features_multislice(image, mask, parameters=dict()):
     if len(GLCM_features) != len(GLCM_labels):
         print(len(GLCM_features))
         print(len(GLCM_labels))
-        raise ValueError('Label length does not fit feature length')
+        raise ae.PREDICTValueError('Label length does not fit feature length')
 
     return GLCM_features, GLCM_labels
 
 
 def get_GLCM_features(image, mask, parameters=dict()):
+    '''
+    Compute Gray Level Co-occurence Matrix (GLCM) features. The image is first
+    discretized to a set number of greyscale values. The GLCM will be computed
+    at multiple distances and angles. The pixels outside the mask will always
+    be set to zero.
+
+    As the GLCM is defined in 2D, the GLCM for a 3D image will be computed
+    by computing statistics over all the GLCM for all 2D axial slices, such
+    as the mean and std.
+
+    The output are two lists: the feature values and the labels.
+    '''
     if "levels" in parameters.keys():
         levels = parameters["levels"]
     else:
@@ -299,12 +310,23 @@ def get_GLCM_features(image, mask, parameters=dict()):
     if len(GLCM_features) != len(GLCM_labels):
         print(len(GLCM_features))
         print(len(GLCM_labels))
-        raise ValueError('Label length does not fit feature length')
+        raise ae.PREDICTValueError('Label length does not fit feature length')
 
     return GLCM_features, GLCM_labels
 
 
 def get_LBP_features(image, mask, parameters=dict()):
+    '''
+    Compute features by applying a Local Binary Pattern (LBP) filter to an image.
+    The LBP will be constructed with a radius and neighboorhood defined by N_points.
+    These must be provided as lists of integers.
+
+    As LBP are defined in 2D, the LBP for a 3D image will be computed
+    by computing statistics over all the LBP for all 2D axial slices, such
+    as the mean and std.
+
+    The output are two lists: the feature values and the labels.
+    '''
     if "radius" in parameters.keys():
         radius = parameters["radius"]
     else:
@@ -462,18 +484,31 @@ def get_NGTDM_features(image, mask):
     return NGTDM_features, NGTDM_labels
 
 
-def get_texture_features(image, mask, parameters=None, config='LBP'):
+def get_texture_features(image, mask, parameters=None, config='LBP',
+                         config_general=dict()):
     if parameters is None:
         parameters = dict()
         parameters['gabor_settings'] = dict()
         parameters['LBP'] = dict()
         parameters['GLCM'] = dict()
 
+    # Check whether specific parameters for using joblib are given
+    if 'Joblib_ncores' in config_general.keys():
+        n_jobs = config_general['Joblib_ncores']
+    else:
+        n_jobs = None
+
+    if 'Joblib_backend' in config_general.keys():
+        backend = config_general['Joblib_backend']
+    else:
+        backend = None
+
     texture_features = dict()
     if config == 'all':
         print("-   Computing Gabor features.")
         gabor_features, gabor_labels =\
-            gabor_filter_parallel(image, mask, parameters['gabor_settings'])
+            gabor_filter_parallel(image, mask, parameters['gabor_settings'],
+                                  n_jobs=n_jobs, backend=backend)
 
         print("-   Computing GLCM features.")
         GLCM_features, GLCM_labels = get_GLCM_features(image, mask,
@@ -523,7 +558,8 @@ def get_texture_features(image, mask, parameters=None, config='LBP'):
 
     elif config == 'Gabor':
         texture_features, texture_labels =\
-         gabor_filter_parallel(image, mask,  parameters['gabor_settings'])
+         gabor_filter_parallel(image, mask,  parameters['gabor_settings'],
+                               n_jobs=n_jobs, backend=backend)
 
     return texture_features, texture_labels
 

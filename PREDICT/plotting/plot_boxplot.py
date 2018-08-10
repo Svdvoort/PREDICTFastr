@@ -77,6 +77,22 @@ def main():
 
 
 def generate_boxplots(image_features, mutation_data, outputfolder):
+    '''
+    Generate boxplots of the feature values among different objects.
+
+    Parameters
+    ----------
+    features: list, mandatory
+        List with a dictionary of the feature labels and values for each patient.
+
+    mutation_data: pandas dataframe, mandatory
+        Dataframe containing the labels of the objects.
+
+    outputfolder: path, mandatory
+        Folder to which the output boxplots should be written.
+
+
+    '''
     labels = image_features[0].keys()
     featvect = dict()
     flab = dict()

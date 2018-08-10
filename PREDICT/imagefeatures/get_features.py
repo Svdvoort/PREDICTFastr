@@ -31,6 +31,8 @@ import PREDICT.imagefeatures.patient_features as pf
 import PREDICT.imagefeatures.log_features as logf
 import PREDICT.imagefeatures.vessel_features as vesf
 import PREDICT.imagefeatures.phase_features as phasef
+import PREDICT.addexceptions as ae
+
 
 # CONSTANTS
 N_BINS = 50
@@ -38,6 +40,7 @@ N_BINS = 50
 
 def get_image_features(image_data, mask, parameters,
                        config=None,
+                       config_general=None,
                        output=None):
     '''
     Calculate features from a ROI of an image.
@@ -67,6 +70,11 @@ def get_image_features(image_data, mask, parameters,
             Configuration for feature calculation. Mostly configures which
             features are calculated or not. See the Github Wiki for the possible
             fields and their description.
+
+    config_general: dictionary, mandatory
+            Configuration for general settings. Currently only configures
+            settings for the Joblib Parallel function. See the Github Wiki
+            for the possible fields and their description.
 
     output: string, mandatory
             path referring to the .hdf5 file to which the output should be
@@ -177,7 +185,8 @@ def get_image_features(image_data, mask, parameters,
             tf.get_texture_features(image_data_array,
                                     mask_array,
                                     parameters,
-                                    config['texture'])
+                                    config['texture'],
+                                    config_general)
 
         feature_values += histogram_features + texture_features
         feature_labels += histogram_labels + texture_labels
@@ -209,7 +218,6 @@ def get_image_features(image_data, mask, parameters,
             feature_labels += phase_labels
 
     else:
-        print("Invalid image type: {}").format(image_type)
-        raise TypeError
+        raise ae.PREDICTTypeError(("Invalid image type: {}").format(image_type))
 
     return feature_values, feature_labels

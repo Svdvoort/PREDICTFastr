@@ -246,7 +246,7 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
                  fit_params=None, n_jobs=1, iid=True,
                  refit=True, cv=None, verbose=0, pre_dispatch='2*n_jobs',
                  random_state=None, error_score='raise', return_train_score=True,
-                 n_jobspercore=100, maxlen=100):
+                 n_jobspercore=100, maxlen=100, fastr_plugin=None):
 
         # Added for fastr and joblib executions
         self.param_distributions = param_distributions
@@ -254,6 +254,7 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
         self.n_jobspercore = n_jobspercore
         self.random_state = random_state
         self.ensemble = list()
+        self.fastr_plugin = fastr_plugin
 
         # Below are the defaults from sklearn
         self.scoring = scoring
@@ -268,6 +269,7 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
         self.error_score = error_score
         self.return_train_score = return_train_score
         self.maxlen = maxlen
+
 
     @property
     def _estimator_type(self):
@@ -1117,7 +1119,9 @@ class BaseSearchCVfastr(BaseSearchCV):
                        'parameters': parameter_files}
         sink_data = {'output': ("vfs://tmp/{}/{}/output_{{sample_id}}_{{cardinality}}{{ext}}").format('GS', name)}
 
-        network.execute(source_data, sink_data, tmpdir=os.path.join(tempfolder, 'tmp'))
+        network.execute(source_data, sink_data,
+                        tmpdir=os.path.join(tempfolder, 'tmp'),
+                        execution_plugin=self.fastr_plugin)
 
         # Read in the output data once finished
         # TODO: expanding fastr url is probably a nicer way
@@ -1396,7 +1400,7 @@ class RandomizedSearchCVfastr(BaseSearchCVfastr):
         Does exhaustive search over a grid of parameters.
 
     :class:`ParameterSampler`:
-        A generator over parameter settins, constructed from
+        A generator over parameter settings, constructed from
         param_distributions.
 
     """
@@ -1405,13 +1409,13 @@ class RandomizedSearchCVfastr(BaseSearchCVfastr):
                  fit_params=None, n_jobs=1, iid=True, refit=True, cv=None,
                  verbose=0, pre_dispatch='2*n_jobs', random_state=None,
                  error_score='raise', return_train_score=True,
-                 n_jobspercore=100):
+                 n_jobspercore=100, fastr_plugin=None):
         super(RandomizedSearchCVfastr, self).__init__(
              estimator=estimator, param_distributions=param_distributions, scoring=scoring, fit_params=fit_params,
              n_iter=n_iter, random_state=random_state, n_jobs=n_jobs, iid=iid, refit=refit, cv=cv, verbose=verbose,
              pre_dispatch=pre_dispatch, error_score=error_score,
              return_train_score=return_train_score,
-             n_jobspercore=n_jobspercore)
+             n_jobspercore=n_jobspercore, fastr_plugin=None)
 
     def fit(self, X, y=None, groups=None):
         """Run fit on the estimator with randomly drawn parameters.
@@ -1749,7 +1753,7 @@ class GridSearchCVfastr(BaseSearchCVfastr):
             estimator=estimator, scoring=scoring, fit_params=fit_params,
             n_jobs=n_jobs, iid=iid, refit=refit, cv=cv, verbose=verbose,
             pre_dispatch=pre_dispatch, error_score=error_score,
-            return_train_score=return_train_score)
+            return_train_score=return_train_score, fastr_plugin=None)
         self.param_grid = param_grid
         _check_param_grid(param_grid)
 

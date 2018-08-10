@@ -130,7 +130,7 @@ class MyInstall(install):
 
 setup(
     name='PREDICT',
-    version='0.1.0',
+    version='2.1.0',
     description='Predict: a Radiomics Extensive D.... Interchangable Classification Toolkit.',
     long_description=_description,
     url='https://github.com/Svdvoort/PREDICTFastr',

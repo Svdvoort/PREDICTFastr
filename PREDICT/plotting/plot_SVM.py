@@ -37,30 +37,64 @@ def plot_SVM(prediction, label_data, label_type, show_plots=False,
     Parameters
     ----------
     prediction: pandas dataframe or string, mandatory
-                output of trainclassifier function, either a pandas dataframe
-                or a HDF5 file
+        output of trainclassifier function, either a pandas dataframe
+        or a HDF5 file
 
     label_data: string, mandatory
-            Contains the path referring to a .txt file containing the
-            patient label(s) and value(s) to be used for learning. See
-            the Github Wiki for the format.
+        Contains the path referring to a .txt file containing the
+        patient label(s) and value(s) to be used for learning. See
+        the Github Wiki for the format.
 
     label_type: string, mandatory
-            Name of the label to extract from the label data to test the
-            estimator on.
+        Name of the label to extract from the label data to test the
+        estimator on.
 
     show_plots: Boolean, default False
-            Determine whether matplotlib performance plots are made.
+        Determine whether matplotlib performance plots are made.
 
     alpha: float, default 0.95
-            Significance of confidence intervals.
+        Significance of confidence intervals.
 
     ensemble: False, integer or 'Caruana'
-            Determine whether an ensemble will be created. If so,
-            either provide an integer to determine how many of the
-            top performing classifiers should be in the ensemble, or use
-            the string "Caruana" to use smart ensembling based on
-            Caruana et al. 2004.
+        Determine whether an ensemble will be created. If so,
+        either provide an integer to determine how many of the
+        top performing classifiers should be in the ensemble, or use
+        the string "Caruana" to use smart ensembling based on
+        Caruana et al. 2004.
+
+    verbose: boolean, default True
+        Plot intermedate messages.
+
+    ensemble_scoring: string, default None
+        Metric to be used for evaluating the ensemble. If None,
+        the option set in the prediction object will be used.
+
+    output: string, default stats
+        Determine which results are put out. If stats, the statistics of the
+        estimator will be returned. If scores, the scores will be returned.
+
+    Returns
+    ----------
+    Depending on the output parameters, the following outputs are returned:
+
+    If output == 'stats':
+    stats: dictionary
+        Contains the confidence intervals of the performance metrics
+        and the number of times each patient was classifier correctly
+        or incorrectly.
+
+    If output == 'scores':
+    y_truths: list
+        Contains the true label for each object.
+
+    y_scores: list
+        Contains the score (e.g. posterior) for each object.
+
+    y_predictions: list
+        Contains the predicted label for each object.
+
+    PIDs: list
+        Contains the patient ID/name for each object.
     '''
 
     # Load the prediction object if it's a hdf5 file
@@ -73,8 +107,11 @@ def plot_SVM(prediction, label_data, label_type, show_plots=False,
     SVMs = list()
     if label_type is None:
         label_type = keys[0]
-    else:
-        label_type = label_type
+
+    if type(label_type) is list:
+        # FIXME: Support for multiple label types not supported yet.
+        print('[PREDICT Warning] Support for multiple label types not supported yet. Taking first label for plot_SVM.')
+        label_type = label_type[0]
 
     # Extract the estimators, features and labels
     SVMs = prediction[label_type]['classifiers']

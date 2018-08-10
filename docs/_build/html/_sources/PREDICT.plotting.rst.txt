@@ -4,26 +4,10 @@ PREDICT.plotting package
 Submodules
 ----------
 
-PREDICT.plotting.boxplot module
--------------------------------
-
-.. automodule:: PREDICT.plotting.boxplot
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-PREDICT.plotting.compute_CI module
-----------------------------------
-
-.. automodule:: PREDICT.plotting.compute_CI
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-PREDICT.plotting.fitcoxmodel module
+PREDICT.plotting.compute\_CI module
 -----------------------------------
 
-.. automodule:: PREDICT.plotting.fitcoxmodel
+.. automodule:: PREDICT.plotting.compute_CI
     :members:
     :undoc-members:
     :show-inheritance:
@@ -44,26 +28,58 @@ PREDICT.plotting.linstretch module
     :undoc-members:
     :show-inheritance:
 
-PREDICT.plotting.plot_ROC module
---------------------------------
+PREDICT.plotting.plot\_ROC module
+---------------------------------
 
 .. automodule:: PREDICT.plotting.plot_ROC
     :members:
     :undoc-members:
     :show-inheritance:
 
-PREDICT.plotting.plot_SVM module
---------------------------------
+PREDICT.plotting.plot\_SVM module
+---------------------------------
 
 .. automodule:: PREDICT.plotting.plot_SVM
     :members:
     :undoc-members:
     :show-inheritance:
 
-PREDICT.plotting.plot_SVR module
---------------------------------
+PREDICT.plotting.plot\_SVR module
+---------------------------------
 
 .. automodule:: PREDICT.plotting.plot_SVR
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+PREDICT.plotting.plot\_barchart module
+--------------------------------------
+
+.. automodule:: PREDICT.plotting.plot_barchart
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+PREDICT.plotting.plot\_boxplot module
+-------------------------------------
+
+.. automodule:: PREDICT.plotting.plot_boxplot
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+PREDICT.plotting.plot\_images module
+------------------------------------
+
+.. automodule:: PREDICT.plotting.plot_images
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+PREDICT.plotting.plot\_ranked\_scores module
+--------------------------------------------
+
+.. automodule:: PREDICT.plotting.plot_ranked_scores
     :members:
     :undoc-members:
     :show-inheritance:
@@ -72,14 +88,6 @@ PREDICT.plotting.plotminmaxresponse module
 ------------------------------------------
 
 .. automodule:: PREDICT.plotting.plotminmaxresponse
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-PREDICT.plotting.plotposteriors module
---------------------------------------
-
-.. automodule:: PREDICT.plotting.plotposteriors
     :members:
     :undoc-members:
     :show-inheritance:

@@ -37,12 +37,17 @@ def compute_confidence(metric, N_train, N_test, alpha=0.95):
     N_test = float(N_test)
     N_iterations = float(len(metric))
 
-    metric_average = np.mean(metric)
-    S_uj = 1.0 / (N_iterations - 1) * np.sum((metric_average - metric)**2.0)
+    if N_iterations == 1.0:
+        print('[PREDICT Warning] Cannot compute a confidence interval for a single iteration.')
+        print('[PREDICT Warning] CI will be set to value of single iteration.')
+        CI = (metric, metric)
+    else:
+        metric_average = np.mean(metric)
+        S_uj = 1.0 / (N_iterations - 1) * np.sum((metric_average - metric)**2.0)
 
-    metric_std = np.sqrt((1.0/N_iterations + N_test/N_train)*S_uj)
+        metric_std = np.sqrt((1.0/N_iterations + N_test/N_train)*S_uj)
 
-    CI = st.t.interval(alpha, N_iterations-1, loc=metric_average, scale=metric_std)
+        CI = st.t.interval(alpha, N_iterations-1, loc=metric_average, scale=metric_std)
 
     return CI
 

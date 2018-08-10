@@ -25,12 +25,13 @@ from sklearn.utils import check_random_state
 import sklearn
 import xlrd
 import natsort
-import PREDICT.IOparser.config_general as config_io
 import PREDICT.classification.parameter_optimization as po
+import PREDICT.addexceptions as ae
 
 
 def crossval(config, label_data, image_features,
-             classifier, param_grid={}, use_fastr=False, tempsave=False,
+             classifier, param_grid={}, use_fastr=False,
+             fastr_plugin=None, tempsave=False,
              fixedsplits=None, ensemble={'Use': False}, outputfolder=None):
     """
     Constructs multiple individual classifiers based on the label settings
@@ -73,6 +74,10 @@ def crossval(config, label_data, image_features,
             If True, fastr is used to split the hyperparameter optimization in
             separate jobs. Parameters for the splitting can be specified in the
             config file. Especially suited for clusters.
+
+    fastr_plugin: string, default None
+            Determines which plugin is used for fastr executions.
+            When None, uses the default plugin from the fastr config.
 
     tempsave: boolean, default False
             If True, create a .hdf5 file after each cross validation containing
@@ -192,7 +197,7 @@ def crossval(config, label_data, image_features,
                             success = True
                     if not success:
                         print natsort.natsorted(patient_IDs)
-                        raise IOError("Patient " + str(j).zfill(3) + " is not included!")
+                        raise ae.PREDICTIOError("Patient " + str(j).zfill(3) + " is not included!")
 
                 ind_test = list()
                 for j in test:
@@ -203,7 +208,7 @@ def crossval(config, label_data, image_features,
                             success = True
                     if not success:
                         print natsort.natsorted(patient_IDs)
-                        raise IOError("Patient " + str(j).zfill(3) + " is not included!")
+                        raise ae.PREDICTIOError("Patient " + str(j).zfill(3) + " is not included!")
 
                 X_train = np.asarray(image_features)[ind_train].tolist()
                 Y_train = np.asarray(i_class)[ind_train].tolist()
@@ -224,8 +229,7 @@ def crossval(config, label_data, image_features,
                         X_train_temp = np.column_stack((X_train_temp, xt))
 
                 X_train_temp = np.transpose(X_train_temp)
-                config_gen = config_io.load_config()
-                N_jobs = config_gen['Joblib']['ncores']
+                N_jobs = config['General']['Joblib_ncores']
                 sm = SMOTE(random_state=random_state,
                            ratio=config['SampleProcessing']['SMOTE_ratio'],
                            m_neighbors=config['SampleProcessing']['SMOTE_neighbors'],
@@ -243,10 +247,13 @@ def crossval(config, label_data, image_features,
 
             # Find best hyperparameters and construct classifier
             config['HyperOptimization']['use_fastr'] = use_fastr
+            config['HyperOptimization']['fastr_plugin'] = fastr_plugin
+            n_cores = config['General']['Joblib_ncores']
             trained_classifier = po.random_search_parameters(features=X_train,
                                                              labels=Y_train,
                                                              classifier=classifier,
                                                              param_grid=param_grid,
+                                                             n_cores=n_cores,
                                                              **config['HyperOptimization'])
 
             # Create an ensemble if required
@@ -313,25 +320,25 @@ def crossval(config, label_data, image_features,
 
 def nocrossval(config, label_data_train, label_data_test, image_features_train,
                image_features_test, classifier, param_grid, use_fastr=False,
-               ensemble={'Use': False}):
+               fastr_plugin=None, ensemble={'Use': False}):
     """
     Constructs multiple individual classifiers based on the label settings
 
     Arguments:
         config (Dict): Dictionary with config settings
         label_data (Dict): should contain:
-            patient_IDs (list): IDs of the patients, used to keep track of test and
-                     training sets, and genetic data
-            mutation_label (list): List of lists, where each list contains the
-                                   mutations status for that patient for each
-                                   mutations
-            mutation_name (list): Contains the different mutations that are stored
-                                  in the mutation_label
+        patient_IDs (list): IDs of the patients, used to keep track of test and
+                 training sets, and genetic data
+        mutation_label (list): List of lists, where each list contains the
+                               mutations status for that patient for each
+                               mutations
+        mutation_name (list): Contains the different mutations that are stored
+                              in the mutation_label
         image_features (numpy array): Consists of a tuple of two lists for each patient:
                                     (feature_values, feature_labels)
 
-    ensemble: dictionary, optional
-            Contains the configuration for constructing an ensemble.
+        ensemble: dictionary, optional
+                Contains the configuration for constructing an ensemble.
 
 
     Returns:
@@ -386,8 +393,7 @@ def nocrossval(config, label_data_train, label_data_test, image_features_train,
                     X_train_temp = np.column_stack((X_train_temp, xt))
 
             X_train_temp = np.transpose(X_train_temp)
-            config_gen = config_io.load_config()
-            N_jobs = config_gen['Joblib']['ncores']
+            N_jobs = config['General']['Joblib_ncores']
             sm = SMOTE(random_state=random_state,
                        ratio=config['SampleProcessing']['SMOTE_ratio'],
                        m_neighbors=config['SampleProcessing']['SMOTE_neighbors'],
@@ -405,10 +411,13 @@ def nocrossval(config, label_data_train, label_data_test, image_features_train,
 
         # Find best hyperparameters and construct classifier
         config['HyperOptimization']['use_fastr'] = use_fastr
+        config['HyperOptimization']['fastr_plugin'] = fastr_plugin
+        n_cores = config['General']['Joblib_ncores']
         trained_classifier = po.random_search_parameters(features=X_train,
                                                          labels=Y_train,
                                                          classifier=classifier,
                                                          param_grid=param_grid,
+                                                         n_cores=n_cores,
                                                          **config['HyperOptimization'])
 
         # Create an ensemble if required

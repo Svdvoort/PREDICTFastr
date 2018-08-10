@@ -23,6 +23,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.linear_model import Lasso
 import scipy
 import numpy as np
+import PREDICT.addexceptions as ae
 
 
 def construct_classifier(config, image_features):
@@ -134,6 +135,6 @@ def construct_SVM(config, image_features, regression=False):
                       'C': scipy.stats.uniform(loc=0, scale=np.sqrt(len(image_features))),
                       'gamma':  scipy.stats.uniform(loc=0, scale=1e-3)}
     else:
-        raise KeyError("{} is not a valid SVM kernel type!").format(config['Classification']['Kernel'])
+        raise ae.PREDICTKeyError("{} is not a valid SVM kernel type!").format(config['Classification']['Kernel'])
 
     return clf, param_grid

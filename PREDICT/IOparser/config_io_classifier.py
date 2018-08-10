@@ -43,6 +43,15 @@ def load_config(config_file_path):
     settings_dict['General']['cross_validation'] =\
         settings['General'].getboolean('cross_validation')
 
+    settings_dict['General']['Joblib_ncores'] =\
+        settings['PREDICTGeneral'].getint('Joblib_ncores')
+
+    settings_dict['General']['Joblib_backend'] =\
+        str(settings['PREDICTGeneral']['Joblib_backend'])
+
+    settings_dict['General']['tempsave'] =\
+        settings['PREDICTGeneral'].getboolean('tempsave')
+
     settings_dict['Featsel']['Variance'] =\
         [str(item).strip() for item in
          settings['Featsel']['Variance'].split(',')]
@@ -89,6 +98,9 @@ def load_config(config_file_path):
     settings_dict['Classification']['fastr'] =\
         settings['Classification'].getboolean('fastr')
 
+    settings_dict['Classification']['fastr_plugin'] =\
+        str(settings['Classification']['fastr_plugin'])
+
     settings_dict['Classification']['classifier'] =\
         str(settings['Classification']['classifier'])
 
@@ -103,16 +115,19 @@ def load_config(config_file_path):
         settings['CrossValidation'].getfloat('test_size')
 
     # Genetic settings
-    label_names_setting = str(settings['Genetics']['label_names'])
-
-    label_namess = re.findall("\[(.*?)\]", label_names_setting)
-
-    for i_index, i_label_names in enumerate(label_namess):
-        stripped_label_names = [x.strip() for x in i_label_names.split(',')]
-        label_namess[i_index] = stripped_label_names
-
+    # label_names_setting = str(settings['Genetics']['label_names'])
+    #
+    # label_namess = re.findall("\[(.*?)\]", label_names_setting)
+    #
+    # for i_index, i_label_names in enumerate(label_namess):
+    #     stripped_label_names = [x.strip() for x in i_label_names.split(',')]
+    #     label_namess[i_index] = stripped_label_names
+    #
+    # settings_dict['Genetics']['label_names'] =\
+    #     label_namess
     settings_dict['Genetics']['label_names'] =\
-        label_namess
+        [str(item).strip() for item in
+         settings['Genetics']['label_names'].split(',')]
 
     # Settings for hyper optimization
     settings_dict['HyperOptimization']['scoring_method'] =\

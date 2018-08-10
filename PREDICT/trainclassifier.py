@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Copyright 2017-2018 Biomedical Imaging Group Rotterdam, Departments of
 # Medical Informatics and Radiology, Erasmus MC, Rotterdam, The Netherlands
 #
@@ -99,7 +101,7 @@ def trainclassifier(feat_train, patientinfo_train, config,
             # FIXME
             print('[PREDICT Warning] You provided multiple configuration files: only the first one will be used!')
             output_hdf = output_hdf[0]
-            
+
     if type(output_json) is list:
         if len(output_json) == 1:
             output_json = ''.join(output_json)
@@ -111,6 +113,7 @@ def trainclassifier(feat_train, patientinfo_train, config,
     # Load variables from the config file
     config = config_io.load_config(config)
     label_type = config['Genetics']['label_names']
+    print label_type, type(label_type)
 
     # Load the feature files and match to label data
     label_data_train, image_features_train =\
@@ -175,16 +178,19 @@ def trainclassifier(feat_train, patientinfo_train, config,
                                          image_features_train,
                                          classifier, param_grid,
                                          use_fastr=config['Classification']['fastr'],
+                                         fastr_plugin=config['Classification']['fastr_plugin'],
                                          fixedsplits=fixedsplits,
                                          ensemble=config['Ensemble'],
-                                         outputfolder=outputfolder)
+                                         outputfolder=outputfolder,
+                                         tempsave=config['General']['tempsave'])
     else:
         trained_classifier = cv.nocrossval(config, label_data_train,
                                            label_data_test,
                                            image_features_train,
                                            image_features_test,
                                            classifier, param_grid,
-                                           config['Classification']['fastr'],
+                                           use_fastr=config['Classification']['fastr'],
+                                           fastr_plugin=config['Classification']['fastr_plugin'],
                                            ensemble=config['Ensemble'])
 
     if not os.path.exists(os.path.dirname(output_hdf)):

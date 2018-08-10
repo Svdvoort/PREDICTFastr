@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright 2011-2017 Biomedical Imaging Group Rotterdam, Departments of
+# Copyright 2017-2018 Biomedical Imaging Group Rotterdam, Departments of
 # Medical Informatics and Radiology, Erasmus MC, Rotterdam, The Netherlands
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,6 +21,7 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import numpy as np
 import os
 import configparser
+import PREDICT.addexceptions as ae
 
 
 def load_mutation_status(genetic_file, mutation_type):
@@ -42,27 +43,16 @@ def load_mutation_status(genetic_file, mutation_type):
         mutation_names, patient_IDs, mutation_status = load_genetic_XNAT(
             genetic_file)
     else:
-        raise IOError(extension + ' is not valid genetic file extension.')
+        raise ae.PREDICTIOError(extension + ' is not valid genetic file extension.')
 
     print("Label names to extract: " + str(mutation_type))
     mutation_label = list()
     for i_mutation in mutation_type:
-        if len(i_mutation) == 1:
-            mutation_index = np.where(mutation_names == i_mutation[0])[0]
-            if mutation_index.size == 0:
-                raise ValueError('Could not find mutation: ' + i_mutation[0])
-            else:
-                mutation_label.append(mutation_status[:, mutation_index])
+        mutation_index = np.where(mutation_names == i_mutation)[0]
+        if mutation_index.size == 0:
+            raise ae.PREDICTValueError('Could not find mutation: ' + i_mutation)
         else:
-            # This is a combined mutation
-            mutation_index = list()
-            for i_combined_mutation in i_mutation:
-                mutation_index.append(
-                    np.where(mutation_names == i_combined_mutation)[0])
-            mutation_index = np.asarray(mutation_index)
-
-            mutation_label.append(np.prod(mutation_status[:, mutation_index],
-                                          axis=1))
+            mutation_label.append(mutation_status[:, mutation_index])
 
     mutation_data = dict()
     mutation_data['patient_IDs'] = patient_IDs
@@ -91,7 +81,7 @@ def load_genetic_file(input_file):
     # Load and check the header
     header = data[0, :]
     if header[0] != 'Patient':
-        raise AssertionError('First column should be patient ID!')
+        raise ae.PREDICTAssertionError('First column should be patient ID!')
     else:
         # cut out the first header, only keep genetic header
         mutation_names = header[1::]

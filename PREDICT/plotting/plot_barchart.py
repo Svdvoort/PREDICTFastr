@@ -12,6 +12,37 @@ import argparse
 
 def plot_barchart(prediction, estimators=10, label_type=None, output_tex=None,
                   output_png=None):
+    '''
+    Make a barchart of the top X hyperparameters settings of the ranked
+    estimators in all cross validation iterations.
+
+    Parameters
+    ----------
+    prediction: filepath, mandatory
+        Path pointing to the .hdf5 file which was is the output of the
+        trainclassifier function.
+
+    estimators: integer, default 10
+        Number of hyperparameter settings/estimators used in each cross
+        validation. The settings are ranked, so when supplying e.g. 10,
+        the best 10 settings in each cross validation setting will be used.
+
+    label_type: string, default None
+        The name of the label predicted by the estimator. If None,
+        the first label from the prediction file will be used.
+
+    output_tex: filepath, optional
+        If given, the barchart will be written to this tex file.
+
+    output_png: filepath, optional
+        If given, the barchart will be written to this png file.
+
+    Returns
+    ----------
+    fig: matplotlib figure
+        The figure in which the barchart is plotted.
+
+    '''
     # Load input prediction
     prediction = pd.read_hdf(prediction)
 

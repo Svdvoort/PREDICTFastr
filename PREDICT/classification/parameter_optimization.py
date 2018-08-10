@@ -18,7 +18,6 @@
 import numpy as np
 from sklearn.utils import check_random_state
 from sklearn.model_selection import StratifiedShuffleSplit, ShuffleSplit
-import PREDICT.IOparser.config_general as config_io
 from PREDICT.processing.SearchCV import RandomizedSearchCVfastr, RandomizedSearchCVJoblib
 
 from sklearn.svm import SVR
@@ -29,7 +28,8 @@ from sklearn.linear_model import Lasso
 
 def random_search_parameters(features, labels, N_iter, test_size,
                              classifier, param_grid, scoring_method,
-                             n_jobspercore=200, use_fastr=False):
+                             n_jobspercore=200, use_fastr=False,
+                             n_cores=1, fastr_plugin=None):
     """
     Train a classifier and simultaneously optimizes hyperparameters using a
     randomized search.
@@ -50,6 +50,8 @@ def random_search_parameters(features, labels, N_iter, test_size,
                         single core when using the fastr randomized search.
         use_fastr: Boolean determining of either fastr or joblib should be used
                    for the opimization.
+        fastr_plugin: determines which plugin is used for fastr executions.
+                When None, uses the default plugin from the fastr config.
 
     Returns:
         random_search: sklearn randomsearch object containing the results.
@@ -67,9 +69,6 @@ def random_search_parameters(features, labels, N_iter, test_size,
         cv = StratifiedShuffleSplit(n_splits=5, test_size=test_size,
                                     random_state=random_state)
 
-    config = config_io.load_config()
-    n_cores = config['Joblib']['ncores']
-
     if use_fastr:
         random_search = RandomizedSearchCVfastr(classifier,
                                                 param_distributions=param_grid,
@@ -77,7 +76,8 @@ def random_search_parameters(features, labels, N_iter, test_size,
                                                 scoring=scoring_method,
                                                 n_jobs=n_cores,
                                                 n_jobspercore=n_jobspercore,
-                                                verbose=1, cv=cv)
+                                                verbose=1, cv=cv,
+                                                fastr_plugin=fastr_plugin)
     else:
         random_search = RandomizedSearchCVJoblib(classifier,
                                                  param_distributions=param_grid,
