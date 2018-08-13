@@ -139,6 +139,7 @@ def crossval(config, label_data, image_features,
 
         for i in range(0, N_iterations):
             print(('Cross validation iteration {} / {} .').format(str(i + 1), str(N_iterations)))
+            logging.debug('Cross validation iteration {} / {} .').format(str(i + 1), str(N_iterations))
             random_seed = np.random.randint(5000)
             random_state = check_random_state(random_seed)
 

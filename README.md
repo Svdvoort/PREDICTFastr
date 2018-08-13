@@ -21,7 +21,11 @@ The documentation can then be viewed in a browser by opening `PACKAGE_ROOT\build
 ### Installation
 
 PREDICT has currently only been tested on Unix with Python 2.7.
-The package can be installed through the setup file:
+The package can be installed through pip :
+
+    pip install PREDICT
+
+Alternatively, you can use the provided setup.py file:
 
     python setup.py install
 

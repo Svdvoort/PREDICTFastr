@@ -16,7 +16,9 @@
 # limitations under the License.
 
 
-class Imputer(object):
-        """Module for feature imputation."""
+# class Imputer(object):
+#         """Module for feature imputation."""
+#
+#         def __init__(self):
 
-        def __init__(self):
+# NOTE: WIP
