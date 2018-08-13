@@ -26,111 +26,11 @@ N_min_smooth = 10
 N_max_smooth = 40
 
 
-def get_shape_features_2D_old(mask, metadata=None):
-    N_mask_slices = mask.GetSize()[2]
-
-    # Pre-allocation
-    perimeter = np.zeros([N_mask_slices, 1])
-    convexity = np.zeros([N_mask_slices, 1])
-    area = np.zeros([N_mask_slices, 1])
-    rad_dist_avg = np.zeros([N_mask_slices, 1])
-    rad_dist_std = np.zeros([N_mask_slices, 1])
-    roughness_avg = np.zeros([N_mask_slices, 1])
-    roughness_std = np.zeros([N_mask_slices, 1])
-    cvar = np.zeros([N_mask_slices, 1])
-    prax = np.zeros([N_mask_slices, 1])
-    evar = np.zeros([N_mask_slices, 1])
-    solidity = np.zeros([N_mask_slices, 1])
-    compactness = np.zeros([N_mask_slices, 1])
-
-    rad_dist = list()
-    rad_dist_norm = list()
-    roughness = list()
-
-    # Now calculate some of the edge shape features
-    # TODO: Adapt to allow for multiple slices at once
-    for i_slice in range(0, N_mask_slices):
-        if np.sum(mask[:, :, i_slice]) != 0:
-            boundary_points = cf.get_smooth_contour(mask[:, :, i_slice],
-                                                    N_min_smooth,
-                                                    N_max_smooth)
-        else:
-            # No points in volume, therefore we ignore it.
-            continue
-        if boundary_points.shape[0] <= 3:
-            # Only 1 or 2 points in volume, which means it's not really a
-            # volume, therefore we ignore it.
-            continue
-
-        rad_dist_i, rad_dist_norm_i = compute_radial_distance(
-            boundary_points)
-        rad_dist.append(rad_dist_i)
-        rad_dist_norm.append(rad_dist_norm_i)
-        perimeter[i_slice] = compute_perimeter(boundary_points)
-
-        area[i_slice] = compute_area(boundary_points)
-        compactness[i_slice] = compute_compactness(boundary_points)
-        roughness_i, roughness_avg[i_slice] = compute_roughness(
-            boundary_points, rad_dist_i)
-        roughness.append(roughness_i)
-
-        cvar[i_slice] = compute_cvar(boundary_points)
-        prax[i_slice] = compute_prax(boundary_points)
-        evar[i_slice] = compute_evar(boundary_points)
-
-        # TODO: Move computing convexity into esf
-        convex_hull = cf.convex_hull(mask[:, :, i_slice])
-        convexity[i_slice] = compute_perimeter(convex_hull)\
-            / perimeter[i_slice]
-
-        solidity[i_slice] = compute_area(convex_hull)/area[i_slice]
-        rad_dist_avg[i_slice] = np.mean(np.asarray(rad_dist_i))
-        rad_dist_std[i_slice] = np.std(np.asarray(rad_dist_i))
-        roughness_std[i_slice] = np.std(np.asarray(roughness_i))
-
-    compactness_avg = np.mean(compactness)
-    compactness_std = np.std(compactness)
-    convexity_avg = np.mean(convexity)
-    convexity_std = np.std(convexity)
-    rad_dist_avg = np.mean(rad_dist_avg)
-    rad_dist_std = np.mean(rad_dist_std)
-    roughness_avg = np.mean(roughness_avg)
-    roughness_std = np.mean(roughness_std)
-    cvar_avg = np.mean(cvar)
-    cvar_std = np.std(cvar)
-    prax_avg = np.mean(prax)
-    prax_std = np.std(prax)
-    evar_avg = np.mean(evar)
-    evar_std = np.std(evar)
-    solidity_avg = np.mean(solidity)
-    solidity_std = np.std(solidity)
-
-    shape_labels = ['sf_compactness_avg', 'sf_compactness_std', 'sf_rad_dist_avg',
-                    'sf_rad_dist_std', 'sf_roughness_avg', 'sf_roughness_std',
-                    'sf_convexity_avg', 'sf_convexity_std', 'sf_cvar_avg', 'sf_cvar_std',
-                    'sf_prax_avg', 'sf_prax_std', 'sf_evar_avg', 'sf_evar_std',
-                    'sf_solidity_avg', 'sf_solidity_std']
-
-    shape_features = [compactness_avg, compactness_std, rad_dist_avg,
-                      rad_dist_std, roughness_avg, roughness_std,
-                      convexity_avg, convexity_std, cvar_avg, cvar_std,
-                      prax_avg, prax_std, evar_avg, evar_std, solidity_avg,
-                      solidity_std]
-
-    if metadata is not None:
-        # import dicom as pydicom
-        # metadata = pydicom.read_file(metadata)
-        pixel_spacing = metadata[0x28, 0x30].value
-        slice_thickness = int(metadata[0x18, 0x50].value)
-        voxel_volume = pixel_spacing[0] * pixel_spacing[1] * slice_thickness
-        volume = np.sum(mask) * voxel_volume
-        shape_labels.append('sf_volume')
-        shape_features.append(volume)
-
-    return shape_features, shape_labels
-
-
 def get_shape_features(mask, metadata=None, mode='2D'):
+    '''
+    Compute all shape features on a mask. Returns two lists: the feature values
+    and the feature labels.
+    '''
     if mode == '3D':
         features, labels = get_shape_features_3D(mask, metadata)
         labels = [l + '_3D' for l in labels]
@@ -243,14 +143,15 @@ def get_shape_features_3D(mask, metadata=None):
                       solidity_std]
 
     if metadata is not None:
-        # import dicom as pydicom
-        # metadata = pydicom.read_file(metadata)
-        pixel_spacing = metadata[0x28, 0x30].value
-        slice_thickness = int(metadata[0x18, 0x50].value)
-        voxel_volume = pixel_spacing[0] * pixel_spacing[1] * slice_thickness
-        volume = np.sum(mask) * voxel_volume
-        shape_labels.append('sf_volume')
-        shape_features.append(volume)
+        if (0x18, 0x50) in metadata.keys():
+            # import dicom as pydicom
+            # metadata = pydicom.read_file(metadata)
+            pixel_spacing = metadata[0x28, 0x30].value
+            slice_thickness = int(metadata[0x18, 0x50].value)
+            voxel_volume = pixel_spacing[0] * pixel_spacing[1] * slice_thickness
+            volume = np.sum(mask) * voxel_volume
+            shape_labels.append('sf_volume')
+            shape_features.append(volume)
 
     return shape_features, shape_labels
 
@@ -359,14 +260,15 @@ def get_shape_features_2D(mask, metadata=None):
                       solidity_std]
 
     if metadata is not None:
-        # import dicom as pydicom
-        # metadata = pydicom.read_file(metadata)
-        pixel_spacing = metadata[0x28, 0x30].value
-        slice_thickness = int(metadata[0x18, 0x50].value)
-        voxel_volume = pixel_spacing[0] * pixel_spacing[1] * slice_thickness
-        volume = np.sum(mask) * voxel_volume
-        shape_labels.append('sf_volume')
-        shape_features.append(volume)
+        if (0x18, 0x50) in metadata.keys():
+            # import dicom as pydicom
+            # metadata = pydicom.read_file(metadata)
+            pixel_spacing = metadata[0x28, 0x30].value
+            slice_thickness = int(metadata[0x18, 0x50].value)
+            voxel_volume = pixel_spacing[0] * pixel_spacing[1] * slice_thickness
+            volume = np.sum(mask) * voxel_volume
+            shape_labels.append('sf_volume')
+            shape_features.append(volume)
 
     return shape_features, shape_labels
 

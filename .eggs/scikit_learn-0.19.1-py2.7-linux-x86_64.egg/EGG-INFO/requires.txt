@@ -1,4 +1,0 @@
-
-[alldeps]
-numpy >= 1.8.2
-scipy >= 0.13.3

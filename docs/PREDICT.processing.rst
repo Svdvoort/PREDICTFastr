@@ -28,26 +28,10 @@ PREDICT.processing.SearchCV module
     :undoc-members:
     :show-inheritance:
 
-PREDICT.processing.SearchCVoldkslearn module
---------------------------------------------
-
-.. automodule:: PREDICT.processing.SearchCVoldkslearn
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 PREDICT.processing.fitandscore module
 -------------------------------------
 
 .. automodule:: PREDICT.processing.fitandscore
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-PREDICT.processing.readcrossvalfunc module
-------------------------------------------
-
-.. automodule:: PREDICT.processing.readcrossvalfunc
     :members:
     :undoc-members:
     :show-inheritance:

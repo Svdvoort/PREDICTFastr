@@ -27,7 +27,6 @@ from joblib import Parallel, delayed
 import itertools
 from skimage.feature import local_binary_pattern
 import scipy.stats
-import PREDICT.IOparser.config_general as config_io_gen
 import PREDICT.helpers.sitk_helper as sitkh
 import scipy
 
@@ -117,11 +116,10 @@ def save_gabor_features(image, mask, gabor_settings, output, n_jobs=None,
     is not possible, use backend="threading"
     """
 
-    config = config_io_gen.load_config()
     if n_jobs is None:
-        n_jobs = config['Joblib']['ncores']
+        n_jobs = 1
     if backend is None:
-        backend = config['Joblib']['backend']
+        backend = 'threading'
 
     # Create kernel from frequencies and angles
     kernels = list(itertools.product(gabor_settings['gabor_frequencies'],

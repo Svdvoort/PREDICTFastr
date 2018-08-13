@@ -25,13 +25,14 @@ from sklearn.utils import check_random_state
 import sklearn
 import xlrd
 import natsort
-import PREDICT.IOparser.config_general as config_io
 import PREDICT.classification.parameter_optimization as po
+import PREDICT.addexceptions as ae
 
 
 def crossval(config, label_data, image_features,
-             classifier, param_grid = {}, use_fastr=False, tempsave=False,
-             fixedsplits=None):
+             classifier, param_grid={}, use_fastr=False,
+             fastr_plugin=None, tempsave=False,
+             fixedsplits=None, ensemble={'Use': False}, outputfolder=None):
     """
     Constructs multiple individual classifiers based on the label settings
 
@@ -74,6 +75,10 @@ def crossval(config, label_data, image_features,
             separate jobs. Parameters for the splitting can be specified in the
             config file. Especially suited for clusters.
 
+    fastr_plugin: string, default None
+            Determines which plugin is used for fastr executions.
+            When None, uses the default plugin from the fastr config.
+
     tempsave: boolean, default False
             If True, create a .hdf5 file after each cross validation containing
             the classifier and results from that that split. This is written to
@@ -86,6 +91,9 @@ def crossval(config, label_data, image_features,
             evaluate the machine learning methods. Optionally, you can provide
             a .xlsx file containing fixed splits to be used. See the Github Wiki
             for the format.
+
+    ensemble: dictionary, optional
+            Contains the configuration for constructing an ensemble.
 
     Returns
     ----------
@@ -100,7 +108,11 @@ def crossval(config, label_data, image_features,
     label_value = label_data['mutation_label']
     label_name = label_data['mutation_name']
 
-    logfilename = os.path.join(os.getcwd(), 'classifier.log')
+    if outputfolder is None:
+        logfilename = os.path.join(os.getcwd(), 'classifier.log')
+    else:
+        logfilename = os.path.join(outputfolder, 'classifier.log')
+
     logging.basicConfig(filename=logfilename, level=logging.DEBUG)
     N_iterations = config['CrossValidation']['N_iterations']
     test_size = config['CrossValidation']['test_size']
@@ -126,6 +138,8 @@ def crossval(config, label_data, image_features,
         save_data = list()
 
         for i in range(0, N_iterations):
+            print(('Cross validation iteration {} / {} .').format(str(i + 1), str(N_iterations)))
+            logging.debug('Cross validation iteration {} / {} .').format(str(i + 1), str(N_iterations))
             random_seed = np.random.randint(5000)
             random_state = check_random_state(random_seed)
 
@@ -138,12 +152,35 @@ def crossval(config, label_data, image_features,
                 stratify = i_class
 
             if fixedsplits is None:
-                # Use Random Split
-                X_train, X_test, Y_train, Y_test,\
-                    patient_ID_train, patient_ID_test\
-                    = train_test_split(image_features, i_class, patient_IDs,
-                                       test_size=test_size, random_state=random_seed,
-                                       stratify=stratify)
+                # Use Random Split. Split per patient, not per sample
+                unique_patient_IDs, unique_indices =\
+                    np.unique(np.asarray(patient_IDs), return_index=True)
+                unique_stratify = [stratify[i] for i in unique_indices]
+                unique_PID_train, indices_PID_test\
+                    = train_test_split(unique_patient_IDs,
+                                       test_size=test_size,
+                                       random_state=random_seed,
+                                       stratify=unique_stratify)
+
+                # Check for all IDs if they are in test or training
+                indices_train = list()
+                indices_test = list()
+                patient_ID_train = list()
+                patient_ID_test = list()
+                for num, pid in enumerate(patient_IDs):
+                    if pid in unique_PID_train:
+                        indices_train.append(num)
+                        patient_ID_train.append(pid)
+                    else:
+                        indices_test.append(num)
+                        patient_ID_test.append(pid)
+
+                # Split features and labels accordingly
+                X_train = [image_features[i] for i in indices_train]
+                X_test = [image_features[i] for i in indices_test]
+                Y_train = i_class[indices_train]
+                Y_test = i_class[indices_test]
+
             else:
                 # Use pre defined splits
                 indices = wb.col_values(i)
@@ -161,7 +198,7 @@ def crossval(config, label_data, image_features,
                             success = True
                     if not success:
                         print natsort.natsorted(patient_IDs)
-                        raise IOError("Patient " + str(j).zfill(3) + " is not included!")
+                        raise ae.PREDICTIOError("Patient " + str(j).zfill(3) + " is not included!")
 
                 ind_test = list()
                 for j in test:
@@ -172,7 +209,7 @@ def crossval(config, label_data, image_features,
                             success = True
                     if not success:
                         print natsort.natsorted(patient_IDs)
-                        raise IOError("Patient " + str(j).zfill(3) + " is not included!")
+                        raise ae.PREDICTIOError("Patient " + str(j).zfill(3) + " is not included!")
 
                 X_train = np.asarray(image_features)[ind_train].tolist()
                 Y_train = np.asarray(i_class)[ind_train].tolist()
@@ -193,8 +230,7 @@ def crossval(config, label_data, image_features,
                         X_train_temp = np.column_stack((X_train_temp, xt))
 
                 X_train_temp = np.transpose(X_train_temp)
-                config_gen = config_io.load_config()
-                N_jobs = config_gen['Joblib']['ncores']
+                N_jobs = config['General']['Joblib_ncores']
                 sm = SMOTE(random_state=random_state,
                            ratio=config['SampleProcessing']['SMOTE_ratio'],
                            m_neighbors=config['SampleProcessing']['SMOTE_neighbors'],
@@ -212,11 +248,18 @@ def crossval(config, label_data, image_features,
 
             # Find best hyperparameters and construct classifier
             config['HyperOptimization']['use_fastr'] = use_fastr
+            config['HyperOptimization']['fastr_plugin'] = fastr_plugin
+            n_cores = config['General']['Joblib_ncores']
             trained_classifier = po.random_search_parameters(features=X_train,
                                                              labels=Y_train,
                                                              classifier=classifier,
                                                              param_grid=param_grid,
+                                                             n_cores=n_cores,
                                                              **config['HyperOptimization'])
+
+            # Create an ensemble if required
+            if ensemble['Use']:
+                trained_classifier.create_ensemble(X_train, Y_train)
 
             # We only want to save the feature values and one label array
             X_train = [x[0] for x in X_train]
@@ -277,22 +320,26 @@ def crossval(config, label_data, image_features,
 
 
 def nocrossval(config, label_data_train, label_data_test, image_features_train,
-               image_features_test, classifier, param_grid, use_fastr=False):
+               image_features_test, classifier, param_grid, use_fastr=False,
+               fastr_plugin=None, ensemble={'Use': False}):
     """
     Constructs multiple individual classifiers based on the label settings
 
     Arguments:
         config (Dict): Dictionary with config settings
         label_data (Dict): should contain:
-            patient_IDs (list): IDs of the patients, used to keep track of test and
-                     training sets, and genetic data
-            mutation_label (list): List of lists, where each list contains the
-                                   mutations status for that patient for each
-                                   mutations
-            mutation_name (list): Contains the different mutations that are stored
-                                  in the mutation_label
+        patient_IDs (list): IDs of the patients, used to keep track of test and
+                 training sets, and genetic data
+        mutation_label (list): List of lists, where each list contains the
+                               mutations status for that patient for each
+                               mutations
+        mutation_name (list): Contains the different mutations that are stored
+                              in the mutation_label
         image_features (numpy array): Consists of a tuple of two lists for each patient:
                                     (feature_values, feature_labels)
+
+        ensemble: dictionary, optional
+                Contains the configuration for constructing an ensemble.
 
 
     Returns:
@@ -332,25 +379,51 @@ def nocrossval(config, label_data_train, label_data_test, image_features_train,
         # label is maintained
         X_train = image_features_train
         X_test = image_features_test
-        Y_train = label_value_train
-        Y_test = label_value_test
+        Y_train = label_value_train.ravel()
+        Y_test = label_value_test.ravel()
 
         if config['SampleProcessing']['SMOTE']:
-            config_gen = config_io.load_config()
-            N_jobs = config_gen['Joblib']['ncores']
+            print("Sampling with SMOTE.")
+            for num, x in enumerate(X_train):
+                if num == 0:
+                    X_train_temp = np.zeros((len(x[0]), 1))
+                    X_train_temp[:, 0] = np.asarray(x[0])
+                else:
+                    xt = np.zeros((len(x[0]), 1))
+                    xt[:, 0] = np.asarray(x[0])
+                    X_train_temp = np.column_stack((X_train_temp, xt))
+
+            X_train_temp = np.transpose(X_train_temp)
+            N_jobs = config['General']['Joblib_ncores']
             sm = SMOTE(random_state=random_state,
                        ratio=config['SampleProcessing']['SMOTE_ratio'],
+                       m_neighbors=config['SampleProcessing']['SMOTE_neighbors'],
                        kind='borderline1',
                        n_jobs=N_jobs)
-            X_train, Y_train = sm.fit_sample(X_train, Y_train)
+
+            # First, replace the NaNs:
+            for pnum, (pid, X) in enumerate(zip(patient_IDs_train, X_train_temp)):
+                for fnum, (f, l) in enumerate(zip(X, feature_labels)):
+                    if np.isnan(f):
+                        print("[PREDICT WARNING] NaN found, patient {}, label {}. Replacing with zero.").format(pid, l)
+                        X_train_temp[pnum, fnum] = 0
+            X_train, Y_train = sm.fit_sample(X_train_temp, Y_train)
+            X_train = [(x.tolist(), feature_labels) for x in X_train]
 
         # Find best hyperparameters and construct classifier
         config['HyperOptimization']['use_fastr'] = use_fastr
+        config['HyperOptimization']['fastr_plugin'] = fastr_plugin
+        n_cores = config['General']['Joblib_ncores']
         trained_classifier = po.random_search_parameters(features=X_train,
                                                          labels=Y_train,
                                                          classifier=classifier,
                                                          param_grid=param_grid,
+                                                         n_cores=n_cores,
                                                          **config['HyperOptimization'])
+
+        # Create an ensemble if required
+        if ensemble['Use']:
+            trained_classifier.create_ensemble(X_train, Y_train)
 
         # Extract the feature values
         X_train = np.asarray([x[0] for x in X_train])

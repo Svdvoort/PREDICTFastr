@@ -4,8 +4,8 @@ PREDICT.genetics package
 Submodules
 ----------
 
-PREDICT.genetics.genetic_processing module
-------------------------------------------
+PREDICT.genetics.genetic\_processing module
+-------------------------------------------
 
 .. automodule:: PREDICT.genetics.genetic_processing
     :members:

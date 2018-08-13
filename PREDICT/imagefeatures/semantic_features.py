@@ -15,6 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import PREDICT.addexceptions as ae
+
 
 def get_semantic_features(data, patientID):
     patient_ID = data['Patient']
@@ -27,7 +29,7 @@ def get_semantic_features(data, patientID):
             index = i
 
     if index is None:
-        raise ValueError("No semantic features found for " + patientID)
+        raise ae.PREDICTValueError("No semantic features found for " + patientID)
 
     # Extract all labels
     semantics_labels = list()

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright 2011-2017 Biomedical Imaging Group Rotterdam, Departments of
+# Copyright 2017-2018 Biomedical Imaging Group Rotterdam, Departments of
 # Medical Informatics and Radiology, Erasmus MC, Rotterdam, The Netherlands
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,11 +19,14 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import MinMaxScaler
 from PREDICT.featureselection.SelectGroups import SelectGroups
 from sklearn.model_selection._validation import _fit_and_score
-from PREDICT.featureselection.selfeat import selfeat_variance
+from PREDICT.featureselection.VarianceThreshold import selfeat_variance
+from PREDICT.featureselection.StatisticalTestThreshold import StatisticalTestThreshold
 import numpy as np
 from sklearn.linear_model import Lasso
 from sklearn.feature_selection import SelectFromModel
 import scipy
+from sklearn.preprocessing import Imputer
+from sklearn.decomposition import PCA
 
 
 def fit_and_score(estimator, X, y, scorer,
@@ -37,9 +40,14 @@ def fit_and_score(estimator, X, y, scorer,
     Fit an estimator to a dataset and score the performance. The following
     methods can currently be applied as preprocessing before fitting in
     this order:
-    1. Apply feature selection based on type group.
-    2. Apply feature selection based on variance of feature among patients.
-    3. Scale features with e.g. z-scoring.
+    1. Select features based on type group.
+    2. Apply feature imputation.
+    3. Apply feature selection based on variance of feature among patients.
+    4. Scale features with e.g. z-scoring.
+    5. Select features based on a fit with a LASSO model.
+    6. Select features using PCA.
+
+    All of the steps are optional.
 
     Parameters
     ----------
@@ -47,7 +55,8 @@ def fit_and_score(estimator, X, y, scorer,
             Unfitted estimator which will be fit.
 
     X: array, mandatory
-            Array containing the feature values (columns) for each object (rows).
+            Array containingfor each object (rows) the feature values
+            (1st Column) and the associated feature label (2nd Column).
 
     y: list(?), mandatory
             List containing the labels of the objects.
@@ -94,6 +103,24 @@ def fit_and_score(estimator, X, y, scorer,
             If True, print intermediate progress to command line. Warnings are
             always printed.
 
+    Returns
+    ----------
+    ret
+
+    GroupSel
+
+    VarSel
+
+    SelectModel
+
+    feature_labels
+
+    scaler
+
+    imputer
+
+    pca
+
     '''
     # We copy the parameter object so we can alter it and keep the original
     para_estimator = para.copy()
@@ -102,7 +129,8 @@ def fit_and_score(estimator, X, y, scorer,
     feature_values = np.asarray([x[0] for x in X])
     feature_labels = np.asarray([x[1] for x in X])
 
-    # Perform feature selection if required
+    # ------------------------------------------------------------------------
+    # Groupwise feature selection
     if 'SelectGroups' in para_estimator:
         if verbose:
             print("Selecting groups of features.")
@@ -135,15 +163,161 @@ def fit_and_score(estimator, X, y, scorer,
     else:
         GroupSel = None
 
+    # Check whether there are any features left
+    if len(feature_values[0]) == 0:
+        # TODO: Make a specific PREDICT exception for this warning.
+        if verbose:
+            print('[WARNING]: No features are selected! Probably all feature groups were set to False. Parameters:')
+            print para
+
+        # Return a zero performance dummy
+        VarSel = None
+        scaler = None
+        SelectModel = None
+        pca = None
+        StatisticalSel = None
+        imputer = None
+
+        # Delete the non-used fields
+        para_estimator = delete_nonestimator_parameters(para_estimator)
+
+        ret = [0, 0, 0, 0, 0, para_estimator, para]
+        return ret, GroupSel, VarSel, SelectModel, feature_labels[0], scaler, imputer, pca, StatisticalSel
+
+    # ------------------------------------------------------------------------
+    # Feature imputation
+    if 'Imputation' in para_estimator.keys() and ['Imputation'] == 'True':
+        imp_type = para_estimator['ImputationMethod']
+        imp_nn = para_estimator['ImputationNeighbours']
+
+        imputer = Imputer(missing_values='NaN', strategy=imp_type,
+                          n_neighbors=imp_nn, axis=0)
+        imputer.fit(feature_values)
+        feature_values = imputer.transform(feature_values)
+    else:
+        imputer = None
+
+    if 'Imputation' in para_estimator.keys():
+        del para_estimator['Imputation']
+        del para_estimator['ImputationMethod']
+        del para_estimator['ImputationNeighbours']
+
+    # ------------------------------------------------------------------------
+    # FIXME: When only using LBP feature, X is 3 dimensional with 3rd dimension length 1
+    if len(feature_values.shape) == 3:
+        feature_values = np.reshape(feature_values, (feature_values.shape[0], feature_values.shape[1]))
+    if len(feature_labels.shape) == 3:
+        feature_labels = np.reshape(feature_labels, (feature_labels.shape[0], feature_labels.shape[1]))
+
+    # Remove any NaN feature values if these are still left after imputation
+    feature_values = replacenan(feature_values, verbose=verbose, feature_labels=feature_labels[0])
+
+    # --------------------------------------------------------------------
+    # Feature selection based on variance
+    if para_estimator['Featsel_Variance'] == 'True':
+        if verbose:
+            print("Selecting features based on variance.")
+        if verbose:
+            print("Original Length: " + str(len(feature_values[0])))
+        try:
+            feature_values, feature_labels, VarSel =\
+                selfeat_variance(feature_values, feature_labels)
+        except ValueError:
+            if verbose:
+                print('[WARNING]: No features meet the selected Variance threshold! Skipping selection.')
+            VarSel = None
+        if verbose:
+            print("New Length: " + str(len(feature_values[0])))
+    else:
+        VarSel = None
+    del para_estimator['Featsel_Variance']
+
+    # Check whether there are any features left
+    if len(feature_values[0]) == 0:
+        # TODO: Make a specific PREDICT exception for this warning.
+        if verbose:
+            print('[WARNING]: No features are selected! Probably you selected a feature group that is not in your feature file. Parameters:')
+            print para
+        para_estimator = delete_nonestimator_parameters(para_estimator)
+
+        # Return a zero performance dummy
+        scaler = None
+        SelectModel = None
+        pca = None
+        StatisticalSel = None
+        ret = [0, 0, 0, 0, 0, para_estimator, para]
+        return ret, GroupSel, VarSel, SelectModel, feature_labels[0], scaler, imputer, pca, StatisticalSel
+
+    # --------------------------------------------------------------------
+    # Feature selection based on a statistical test
+    if 'StatisticalTestUse' in para_estimator.keys():
+        if para_estimator['StatisticalTestUse'] == 'True':
+            metric = para_estimator['StatisticalTestMetric']
+            threshold = para_estimator['StatisticalTestThreshold']
+            if verbose:
+                print("Selecting features based on statistical test. Method {}, threshold {}.").format(metric, str(round(threshold, 2)))
+            if verbose:
+                print("Original Length: " + str(len(feature_values[0])))
+
+            StatisticalSel = StatisticalTestThreshold(metric=metric,
+                                                      threshold=threshold)
+
+            StatisticalSel.fit(feature_values, y)
+            feature_values = StatisticalSel.transform(feature_values)
+            feature_labels = StatisticalSel.transform(feature_labels)
+            if verbose:
+                print("New Length: " + str(len(feature_values[0])))
+        else:
+            StatisticalSel = None
+        del para_estimator['StatisticalTestUse']
+        del para_estimator['StatisticalTestMetric']
+        del para_estimator['StatisticalTestThreshold']
+    else:
+        StatisticalSel = None
+
+    # Check whether there are any features left
+    if len(feature_values[0]) == 0:
+        # TODO: Make a specific PREDICT exception for this warning.
+        if verbose:
+            print('[WARNING]: No features are selected! Probably you selected a feature group that is not in your feature file. Parameters:')
+            print para
+        para_estimator = delete_nonestimator_parameters(para_estimator)
+
+        # Return a zero performance dummy
+        scaler = None
+        SelectModel = None
+        pca = None
+        ret = [0, 0, 0, 0, 0, para_estimator, para]
+        return ret, GroupSel, VarSel, SelectModel, feature_labels[0], scaler, imputer, pca, StatisticalSel
+
+    # ------------------------------------------------------------------------
+    # Feature scaling
+    if 'FeatureScaling' in para_estimator:
+        if verbose:
+            print("Fitting scaler and transforming features.")
+
+        if para_estimator['FeatureScaling'] == 'z_score':
+            scaler = StandardScaler().fit(feature_values)
+        elif para_estimator['FeatureScaling'] == 'minmax':
+            scaler = MinMaxScaler().fit(feature_values)
+        else:
+            scaler = None
+
+        if scaler is not None:
+            feature_values = scaler.transform(feature_values)
+        del para_estimator['FeatureScaling']
+    else:
+        scaler = None
+
+    # ------------------------------------------------------------------------
     # Perform feature selection using a model
-    para_estimator['SelectFromModel'] = False
-    if para_estimator['SelectFromModel']:
+    if 'SelectFromModel' in para_estimator.keys() and para_estimator['SelectFromModel'] == 'True':
         if verbose:
             print("Selecting features using lasso model.")
         # Use lasso model for feature selection
 
         # First, draw a random value for alpha and the penalty ratio
-        alpha = scipy.stats.uniform(loc=1.0, scale=0.5).rvs()
+        alpha = scipy.stats.uniform(loc=0.0, scale=1.5).rvs()
         # l1_ratio = scipy.stats.uniform(loc=0.5, scale=0.4).rvs()
 
         # Create and fit lasso model
@@ -160,87 +334,116 @@ def fit_and_score(estimator, X, y, scorer,
         feature_labels = SelectModel.transform(feature_labels)
     else:
         SelectModel = None
-    del para_estimator['SelectFromModel']
+    if 'SelectFromModel' in para_estimator.keys():
+        del para_estimator['SelectFromModel']
 
-    if len(feature_values[0]) == 0:
-        # TODO: Make a specific PREDICT exception for this warning.
-        print('[WARNING]: No features are selected! Probably all feature groups were set to False. Parameters:')
-        print para
+    # ----------------------------------------------------------------
+    # PCA dimensionality reduction
+    # Principle Component Analysis
+    if 'UsePCA' in para_estimator.keys() and ['UsePCA'] == 'True':
+        print('Fitting PCA')
+        if para_estimator['PCAType'] == '95variance':
+            # Select first X components that describe 95 percent of the explained variance
+            pca = PCA(n_components=None)
+            pca.fit(feature_values)
+            evariance = pca.explained_variance_ratio
+            num = 0
+            sum = 0
+            while sum < 0.95:
+                sum += evariance[num]
+                num += 1
 
-        # Return a zero performance dummy
-        VarSel = None
-        scaler = None
+            # Make a PCA based on the determined amound of components
+            pca = PCA(n_components=num)
+            pca.fit(feature_values)
+            feature_values = pca.transform(feature_values)
+            feature_labels = pca.transform(feature_labels)
 
-        # Delete the non-used fields
-        if 'Featsel_Variance' in para_estimator.keys():
-            del para_estimator['Featsel_Variance']
-        if 'FeatureScaling' in para_estimator.keys():
-            del para_estimator['FeatureScaling']
-
-        ret = [0, 0, 0, 0, 0, para_estimator, para]
+        else:
+            # Assume a fixed number of components
+            n_components = int(para_estimator['PCAType'])
+            pca = PCA(n_components=n_components)
+            pca.fit(feature_values)
+            feature_values = pca.transform(feature_values)
+            feature_labels = pca.transform(feature_labels)
     else:
-        # FIXME: When only using LBP feature, X is 3 dimensional with 3rd dimension length 1
-        if len(feature_values.shape) == 3:
-            feature_values = np.reshape(feature_values, (feature_values.shape[0], feature_values.shape[1]))
-        if len(feature_labels.shape) == 3:
-            feature_labels = np.reshape(feature_labels, (feature_labels.shape[0], feature_labels.shape[1]))
+        pca = None
 
-        if para_estimator['Featsel_Variance'] == 'True':
-            if verbose:
-                print("Selecting features based on variance.")
-            if verbose:
-                print("Original Length: " + str(len(feature_values[0])))
-            try:
-                feature_values, feature_labels, VarSel =\
-                    selfeat_variance(feature_values, feature_labels)
-            except ValueError:
-                print('[WARNING]: No features meet the selected Variance threshold! Skipping selection.')
-                VarSel = None
-            if verbose:
-                print("New Length: " + str(len(feature_values[0])))
-        else:
-            VarSel = None
-        del para_estimator['Featsel_Variance']
+    if 'UsePCA' in para_estimator.keys():
+        del para_estimator['UsePCA']
+        del para_estimator['PCAType']
 
-        # Fit and score the classifier
-        if len(feature_values[0]) == 0:
-            # TODO: Make a specific PREDICT exception for this warning.
-            print('[WARNING]: No features are selected! Probably you selected a feature group that is not in your feature file. Parameters:')
-            print para
+    # ----------------------------------------------------------------
+    # Fitting and scoring
+    # Only when using fastr this is an entry
+    if 'Number' in para_estimator.keys():
+        del para_estimator['Number']
 
-            # Return a zero performance dummy
-            scaler = None
-            ret = [0, 0, 0, 0, 0, para_estimator, para]
-        else:
-            if 'FeatureScaling' in para_estimator:
+    # For certainty, we delete all parameters again
+    para_estimator = delete_nonestimator_parameters(para_estimator)
+
+    ret = _fit_and_score(estimator, feature_values, y,
+                         scorer, train,
+                         test, verbose,
+                         para_estimator, fit_params, return_train_score,
+                         return_parameters,
+                         return_n_test_samples,
+                         return_times, error_score)
+
+    # Paste original parameters in performance
+    ret.append(para)
+
+    return ret, GroupSel, VarSel, SelectModel, feature_labels[0], scaler, imputer, pca, StatisticalSel
+
+
+def delete_nonestimator_parameters(parameters):
+    '''
+    Delete all parameters in a parameter dictionary that are not used for the
+    actual estimator.
+    '''
+    if 'Number' in parameters.keys():
+        del parameters['Number']
+
+    if 'UsePCA' in parameters.keys():
+        del parameters['UsePCA']
+        del parameters['PCAType']
+
+    if 'Imputation' in parameters.keys():
+        del parameters['Imputation']
+        del parameters['ImputationMethod']
+        del parameters['ImputationNeighbours']
+
+    if 'SelectFromModel' in parameters.keys():
+        del parameters['SelectFromModel']
+
+    if 'Featsel_Variance' in parameters.keys():
+        del parameters['Featsel_Variance']
+
+    if 'FeatureScaling' in parameters.keys():
+        del parameters['FeatureScaling']
+
+    if 'StatisticalTestUse' in parameters.keys():
+        del parameters['StatisticalTestUse']
+        del parameters['StatisticalTestMetric']
+        del parameters['StatisticalTestThreshold']
+
+    return parameters
+
+
+def replacenan(image_features, verbose=True, feature_labels=None):
+    '''
+    Replace the NaNs in an image feature matrix.
+    '''
+    image_features_temp = image_features.copy()
+    for pnum, x in enumerate(image_features_temp):
+        for fnum, value in enumerate(x):
+            if np.isnan(value):
                 if verbose:
-                    print("Fitting scaler and transforming features.")
-                if para_estimator['FeatureScaling'] == 'z_score':
-                    scaler = StandardScaler().fit(feature_values)
-                elif para_estimator['FeatureScaling'] == 'minmax':
-                    scaler = MinMaxScaler().fit(feature_values)
-                else:
-                    scaler = None
+                    if feature_labels is not None:
+                        print("[PREDICT WARNING] NaN found, patient {}, label {}. Replacing with zero.").format(pnum, feature_labels[fnum])
+                    else:
+                        print("[PREDICT WARNING] NaN found, patient {}, label {}. Replacing with zero.").format(pnum, fnum)
+                # Note: X is a list of lists, hence we cannot index the element directly
+                image_features_temp[pnum, fnum] = 0
 
-                if scaler is not None:
-                    feature_values = scaler.transform(feature_values)
-                del para_estimator['FeatureScaling']
-            else:
-                scaler = None
-
-            # Only when using fastr this is an entry
-            if 'Number' in para_estimator.keys():
-                del para_estimator['Number']
-
-            ret = _fit_and_score(estimator, feature_values, y,
-                                 scorer, train,
-                                 test, verbose,
-                                 para_estimator, fit_params, return_train_score,
-                                 return_parameters,
-                                 return_n_test_samples,
-                                 return_times, error_score)
-
-            # Paste original parameters in performance
-            ret.append(para)
-
-    return ret, GroupSel, VarSel, SelectModel, feature_labels[0], scaler
+    return image_features_temp

@@ -15,15 +15,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+import PREDICT.addexceptions as ae
 import imagefeatures.get_features as gf
 import IOparser.config_io_CalcFeatures as config_io
 import IOparser.file_io as IO
 import pandas as pd
 import SimpleITK as sitk
 import numpy as np
-from skimage import morphology
-import scipy.ndimage as nd
 import os
 import dicom as pydicom
 
@@ -36,13 +34,17 @@ sitk.ProcessObject.SetGlobalDefaultCoordinateTolerance(5e-5)
 def CalcFeatures(image, segmentation, parameters, output,
                  metadata_file=None, semantics_file=None, verbose=True):
     '''
-    Calculate features from a ROI of an image.
+    Calculate features from a ROI of an image. This function serves as a wrapper
+    around the get_features function from the imagefeatures folder. It
+    reads all inputs, processes it through the get_features function per image
+    and ROI and writes the output to HDF5 files.
 
     Parameters
     ----------
     image: string, mandatory
             path referring to image file. Should be a format compatible
-            with ITK, e.g. .nii, .nii.gz, .mhd, .raw, .tiff, .nrrd.
+            with ITK, e.g. .nii, .nii.gz, .mhd, .raw, .tiff, .nrrd or
+            a DICOM folder.
 
     segmentation: string, mandatory
             path referring to segmentation file. Should be a format compatible
@@ -78,38 +80,46 @@ def CalcFeatures(image, segmentation, parameters, output,
     panda_labels = ['image_type', 'parameters', 'feature_values',
                     'feature_labels']
 
-    print('Calculating image features!')
+    print('Loading inputs.')
+    # Read the image data, metadata and semantics
     image_data = load_images(image, image_type, metadata_file, semantics_file)
 
-    # contours = selectsegmentation(segmentation, config["ImageFeatures"])
+    # Read the contour
+    print('Load segmentation.')
     if type(segmentation) is list:
         segmentation = ''.join(segmentation)
-    contours = [sitk.ReadImage(segmentation)]
 
-    # FIXME: Bug in some of our own segmentations
-    szi = image_data['images'][0].GetSize()
-    szs = contours[0].GetSize()
+    contour = sitk.ReadImage(segmentation)
+
+    # FIXME: Bug in some of our own segmentations. Shouldnt occur in normal usage
+    szi = image_data['images'].GetSize()
+    szs = contour.GetSize()
     if szi != szs:
         message = ('Shapes of image({}) and mask ({}) do not match!').format(str(szi), str(szs))
-        print message
-        # FIXME: Now excluding last slice
-        c = contours[0]
-        c = sitk.GetArrayFromImage(c)
-        c = c[0:-1, :, :]
-        contours = [sitk.GetImageFromArray(c)]
+        print(message)
+        # FIXME: Now excluding last slice, not an elegant solution
+        contour = sitk.GetArrayFromImage(contour)
+        contour = contour[0:-1, :, :]
+        contour = sitk.GetImageFromArray(contour)
 
-        szs = contours[0].GetSize()
+        # Check if excluding last slice fixed the problem
+        szs = contour.GetSize()
         if szi != szs:
             message = ('Shapes of image({}) and mask ({}) do not match!').format(str(szi), str(szs))
-            raise IndexError(message)
+            raise ae.PREDICTIndexError(message)
         else:
             print("['FIXED'] Excluded last slice.")
 
+    # Extract the actual features
+    print('Calculating image features.')
     feature_values, feature_labels =\
-        gf.get_image_features(image_data, contours,
-                              parameters, 0, False,
-                              config["ImageFeatures"], output)
+        gf.get_image_features(image_data, contour,
+                              parameters,
+                              config["ImageFeatures"],
+                              config["General"],
+                              output)
 
+    # Convert to pandas Series and save as hdf5
     panda_data = pd.Series([image_type, parameters, feature_values,
                             feature_labels],
                            index=panda_labels,
@@ -119,49 +129,40 @@ def CalcFeatures(image, segmentation, parameters, output,
     print('Saving image features')
     panda_data.to_hdf(output, 'image_features')
 
+    # If required, print output feature values
     if verbose:
+        print('Feature Values:')
         for v, k in zip(feature_values, feature_labels):
             print k, v
 
 
-def selectsegmentation(segmentation, config):
-        contours = list()
-        if type(segmentation) is list:
-            segmentation = ''.join(segmentation)
+def load_images(image_file, image_type, metadata_file=None,
+                semantics_file=None):
+    '''
+    Load ITK images, the corresponding DICOM file for the metadata, a file
+    containing the semantics and converts them to Python objects.
 
-        # Convert to binary image and clean up small errors/areas
-        # TODO: More robust is to do this with labeling and select largest blob
-        contour = sitk.ReadImage(segmentation)
-        contour = sitk.GetArrayFromImage(contour)
-        contour = nd.binary_fill_holes(contour)
-        contour = contour.astype(bool)
-        contour = morphology.remove_small_objects(contour, min_size=2, connectivity=2, in_place=False)
+    Parameters
+    ----------
+    image_file: string, mandatory
+            path referring to image file. Should be a format compatible
+            with ITK, e.g. .nii, .nii.gz, .mhd, .raw, .tiff, .nrrd. or a
+            DICOM folder.
 
-        # Expand contour depending on settings
-        if config['segmentation']['type'] == 'Ring':
-            radius = int(config['segmentation']['radius'])
-            disk = morphology.disk(radius)
+    image_type: string, mandatory
+            defines the modality of the scan used. Different loading functions
+            are used for different modalities.
 
-            # Dilation with radius
-            for ind in range(contour.shape[2]):
-                contour_d = morphology.binary_dilation(contour[:, :, ind], disk)
-                contour_e = morphology.binary_erosion(contour[:, :, ind], disk)
-                contour[:, :, ind] = np.subtract(contour_d, contour_e)
+    metadata_file: string, optional
+            path referring to a DICOM file. Used to extract metadata features.
 
-        contour = contour.astype(np.uint8)
-        contour = sitk.GetImageFromArray(contour)
-        contours.append(contour)
+    semantics_file: string, optional
+            path referring to a CSV file. Used to extract semantic features.
 
-        return contours
-
-
-def load_images(image_folder, image_type, metadata_file, semantics_file):
-    # TODO: DTI metadata extraction, now only simple metadata
-    images = list()
-    metadata = list()
-    semantics = list()
-    if type(image_folder) is list:
-        image_folder = ''.join(image_folder)
+    '''
+    # Convert the input arguments to strings if given as lists
+    if type(image_file) is list:
+        image_file = ''.join(image_file)
 
     if type(metadata_file) is list:
         metadata_file = ''.join(metadata_file)
@@ -169,63 +170,71 @@ def load_images(image_folder, image_type, metadata_file, semantics_file):
     if type(semantics_file) is list:
         semantics_file = ''.join(semantics_file)
 
-    if image_folder[-6::] == 'nii.gz':
-        metadata_temp = None
-        image_temp = sitk.ReadImage(image_folder)
-
+    # Read the input image based on the filetype provided
+    print('Load image and metadata file.')
+    extension = os.path.splitext(image_file)
+    if extension == '.dcm':
+        # Single DICOM, so convert back to a list to use load_dicom
+        image_file = [image_file]
         if 'MR' in image_type:
-            # Normalize image
-            image_temp = sitk.Normalize(image_temp)
+            image, metadata = IO.load_dicom(image_file)
+        elif 'DTI' in image_type:
+            image, metadata = IO.load_DTI(image_file)
+        elif 'CT' in image_type:
+            image, metadata = IO.load_dicom(image_file)
 
-        if metadata_file is not None:
-            metadata_temp = pydicom.read_file(metadata_file)
-            metadata_temp.pixel_array = None  # save memory
+            # Convert intensity to Hounsfield units
+            image = image*metadata.RescaleSlope +\
+                metadata.RescaleIntercept
+
+    elif not os.path.isfile(image_file):
+        # Assume input is a DICOM folder
+        if 'MR' in image_type:
+            image, metadata = IO.load_dicom(image_file)
+        elif 'DTI' in image_type:
+            image, metadata = IO.load_DTI(image_file)
+        elif 'CT' in image_type:
+            image, metadata = IO.load_dicom(image_file)
 
     else:
-        # Assume DICOM
-        if 'MR' in image_type:
-            image_temp, metadata_temp = IO.load_dicom(image_folder)
-            # Normalize image
-            image_temp = sitk.Normalize(image_temp)
-        elif 'DTI' in image_type:
-            image_temp, metadata_temp = IO.load_DTI(image_folder)
-        elif 'CT' in image_type:
-            image_temp, metadata_temp = IO.load_dicom(image_folder)
-            # Convert intensity to Hounsfield units
-            image_temp = image_temp*metadata_temp.RescaleSlope + metadata_temp.RescaleIntercept
+        # Since input is only an image file, temporary set metadata to None
+        metadata = None
+        image = sitk.ReadImage(image_file)
 
+        if metadata_file is not None:
+            metadata = pydicom.read_file(metadata_file)
+            metadata.pixel_array = None  # save memory
+
+    # Read the semantics CSV and match values to the image file
+    print('Load semantics file.')
     if semantics_file is not None:
         _, file_extension = os.path.splitext(semantics_file)
         if file_extension == '.txt':
             # TODO: fix that this readout converges to list types per sem
-            semantics_temp = np.loadtxt(semantics_file, np.str)
+            semantics = np.loadtxt(semantics_file, np.str)
         elif file_extension == '.csv':
             import csv
-            semantics_temp = dict()
+            semantics = dict()
             with open(semantics_file, 'rb') as f:
                 reader = csv.reader(f)
                 for num, row in enumerate(reader):
                     if num == 0:
                         header = row
                         if header[0] != 'Patient':
-                            raise AssertionError('First column should be patient ID!')
+                            raise ae.PREDICTAssertionError('First column of the semantics file should be patient ID!')
 
                         keys = list()
                         for key in header:
-                            semantics_temp[key] = list()
+                            semantics[key] = list()
                             keys.append(key)
                     else:
                         for column in range(len(row)):
                             if column > 0:
-                                semantics_temp[keys[column]].append(float(row[column]))
+                                semantics[keys[column]].append(float(row[column]))
                             else:
-                                semantics_temp[keys[column]].append(row[column])
+                                semantics[keys[column]].append(row[column])
     else:
-        semantics_temp = None
+        semantics = None
 
-    images.append(image_temp)
-    metadata.append(metadata_temp)
-    semantics.append(semantics_temp)
-
-    image_data = {'images': images, 'metadata': metadata, 'semantics': semantics, 'image_type': image_type}
+    image_data = {'images': image, 'metadata': metadata, 'semantics': semantics, 'image_type': image_type}
     return image_data

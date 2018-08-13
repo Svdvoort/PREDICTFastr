@@ -69,12 +69,12 @@ def main():
                              error_score=data['error_score'])
       for parameters in para.values())
 
-    (ret, GroupSel, VarSel, SelectModel, feature_labels, scaler) = zip(*out)
+    (ret, GroupSel, VarSel, SelectModel, feature_labels, scaler, imputer, pca, StatisticalSel) = zip(*out)
 
-    source_labels = ['RET', 'feature_labels', 'scaler', 'VarSelection', 'GroupSelection', 'SelectModel']
+    source_labels = ['RET', 'feature_labels', 'scaler', 'VarSelection', 'GroupSelection', 'SelectModel', 'Imputer', 'PCA', 'StatisticalSel']
 
     source_data =\
-        pd.Series([ret, feature_labels, scaler, VarSel, GroupSel, SelectModel],
+        pd.Series([ret, feature_labels, scaler, VarSel, GroupSel, SelectModel, imputer, pca, StatisticalSel],
                   index=source_labels,
                   name='Fit and Score Output')
     source_data.to_hdf(args.out, 'RET')

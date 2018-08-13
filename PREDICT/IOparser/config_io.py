@@ -132,5 +132,4 @@ def load_config(config_file_path):
     settings_dict['HyperOptimization']['score_threshold'] =\
         settings['HyperOptimization'].getfloat('score_threshold')
 
-
     return settings_dict

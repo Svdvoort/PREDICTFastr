@@ -23,7 +23,7 @@ from setuptools import setup, find_packages
 with open('requirements.txt', 'r') as fh:
     _requires = fh.read().splitlines()
 
-with open('README.md', 'r') as fh:
+with open('README.rst', 'r') as fh:
     _description = fh.read()
 
 with open('version', 'r') as fh:
@@ -112,7 +112,7 @@ class MyInstall(install):
 
             # Install pyradiomics
             commands = 'git clone https://github.com/Radiomics/pyradiomics; cd pyradiomics; pip install -r requirements.txt; python setup.py -q install; cd ..; rm -r pyradiomics;'
-            print commands
+            print(commands)
             proc = subprocess.Popen(commands,
                                     shell=True,
                                     stdin=subprocess.PIPE,
@@ -122,7 +122,7 @@ class MyInstall(install):
             stdout_value, stderr_value = proc.communicate('through stdin to stdout\n')
 
         except Exception as e:
-            print e
+            print(e)
             exit(1)
         else:
             install.run(self)
@@ -130,7 +130,7 @@ class MyInstall(install):
 
 setup(
     name='PREDICT',
-    version='0.1.0',
+    version='2.1.0',
     description='Predict: a Radiomics Extensive D.... Interchangable Classification Toolkit.',
     long_description=_description,
     url='https://github.com/Svdvoort/PREDICTFastr',
@@ -146,7 +146,7 @@ setup(
         'Intended Audience :: Education',
         'License :: OSI Approved :: Apache Software License',
         'Natural Language :: English',
-        'Operating Scd /hoystem :: OS Independent',
+        'Operating System :: OS Independent',
         'Programming Language :: Python :: 2.7',
         'Topic :: Scientific/Engineering :: Information Analysis',
         'Topic :: System :: Distributed Computing',

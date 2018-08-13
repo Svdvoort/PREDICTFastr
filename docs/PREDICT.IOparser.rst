@@ -4,40 +4,32 @@ PREDICT.IOparser package
 Submodules
 ----------
 
-PREDICT.IOparser.config_general module
---------------------------------------
-
-.. automodule:: PREDICT.IOparser.config_general
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-PREDICT.IOparser.config_io module
----------------------------------
+PREDICT.IOparser.config\_io module
+----------------------------------
 
 .. automodule:: PREDICT.IOparser.config_io
     :members:
     :undoc-members:
     :show-inheritance:
 
-PREDICT.IOparser.config_io_CalcFeatures module
-----------------------------------------------
+PREDICT.IOparser.config\_io\_CalcFeatures module
+------------------------------------------------
 
 .. automodule:: PREDICT.IOparser.config_io_CalcFeatures
     :members:
     :undoc-members:
     :show-inheritance:
 
-PREDICT.IOparser.config_io_classifier module
---------------------------------------------
+PREDICT.IOparser.config\_io\_classifier module
+----------------------------------------------
 
 .. automodule:: PREDICT.IOparser.config_io_classifier
     :members:
     :undoc-members:
     :show-inheritance:
 
-PREDICT.IOparser.file_io module
--------------------------------
+PREDICT.IOparser.file\_io module
+--------------------------------
 
 .. automodule:: PREDICT.IOparser.file_io
     :members:
