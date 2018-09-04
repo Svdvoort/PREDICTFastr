@@ -55,7 +55,7 @@ def main():
         para = json.load(fp)
 
     n_cores = 1
-    out = Parallel(
+    ret = Parallel(
         n_jobs=n_cores, verbose=data['verbose'],
         pre_dispatch=2*n_cores
     )(delayed(fit_and_score)(estimator=data['base_estimator'], X=data['X'], y=data['y'],
@@ -66,15 +66,14 @@ def main():
                              return_parameters=data['return_parameters'],
                              return_n_test_samples=data['return_n_test_samples'],
                              return_times=data['return_times'],
-                             error_score=data['error_score'])
+                             error_score=data['error_score'],
+                             return_all=False)
       for parameters in para.values())
 
-    (ret, GroupSel, VarSel, SelectModel, feature_labels, scaler, imputer, pca, StatisticalSel) = zip(*out)
-
-    source_labels = ['RET', 'feature_labels', 'scaler', 'VarSelection', 'GroupSelection', 'SelectModel', 'Imputer', 'PCA', 'StatisticalSel']
+    source_labels = ['RET']
 
     source_data =\
-        pd.Series([ret, feature_labels, scaler, VarSel, GroupSel, SelectModel, imputer, pca, StatisticalSel],
+        pd.Series([ret],
                   index=source_labels,
                   name='Fit and Score Output')
     source_data.to_hdf(args.out, 'RET')

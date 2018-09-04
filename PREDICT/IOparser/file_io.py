@@ -26,6 +26,7 @@ import os
 import SimpleITK as sitk
 import PREDICT.helpers.sitk_helper as sitkh
 import PREDICT.genetics.genetic_processing as gp
+import PREDICT.addexceptions as PREDICTexceptions
 
 
 def load_data(featurefiles, patientinfo=None, label_names=None, modnames=[]):
@@ -70,11 +71,17 @@ def load_data(featurefiles, patientinfo=None, label_names=None, modnames=[]):
     if patientinfo is not None:
         # We use the feature files of the first modality to match to patient name
         pfiles = featurefiles[0]
-        mutation_data, image_features =\
-            gp.findmutationdata(patientinfo,
-                                label_names,
-                                pfiles,
-                                image_features)
+        try:
+            mutation_data, image_features =\
+                gp.findmutationdata(patientinfo,
+                                    label_names,
+                                    pfiles,
+                                    image_features)
+        except ValueError as e:
+            message = e + '. Please take a look at your labels' +\
+                ' file and make sure it is formatted correctly. ' +\
+                'See also https://github.com/MStarmans91/WORC/wiki/The-WORC-configuration#genetics.'
+            raise PREDICTexceptions.ValueError(message)
 
         print("Mutation Labels:")
         print(mutation_data['mutation_label'])

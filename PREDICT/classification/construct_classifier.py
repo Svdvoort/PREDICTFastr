@@ -24,6 +24,7 @@ from sklearn.linear_model import Lasso
 import scipy
 import numpy as np
 import PREDICT.addexceptions as ae
+from PREDICT.classification.estimators import RankedSVM
 
 
 def construct_classifier(config, image_features):
@@ -41,7 +42,7 @@ def construct_classifier(config, image_features):
         Constructed classifier
     """
 
-    if config['Classification']['classifier'] == 'SVM':
+    if 'SVM' in config['Classification']['classifier']:
         # Support Vector Machine
         classifier, param_grid = construct_SVM(config, image_features)
 
@@ -136,5 +137,14 @@ def construct_SVM(config, image_features, regression=False):
                       'gamma':  scipy.stats.uniform(loc=0, scale=1e-3)}
     else:
         raise ae.PREDICTKeyError("{} is not a valid SVM kernel type!").format(config['Classification']['Kernel'])
+
+    # Check if we need to use a ranked SVM
+    if config['Classification']['classifier'] == 'RankedSVM':
+        clf = RankedSVM()
+        param_grid = {'svm': ['Poly'],
+                      'degree': [2, 3, 4, 5],
+                      'gamma':  scipy.stats.uniform(loc=0, scale=1e-3),
+                      'coefficient': scipy.stats.uniform(loc=0, scale=1e-2),
+                      }
 
     return clf, param_grid

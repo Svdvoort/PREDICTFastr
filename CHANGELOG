@@ -6,6 +6,39 @@ All notable changes to this project will be documented in this file.
 The format is based on `Keep a Changelog <http://keepachangelog.com/>`_
 and this project adheres to `Semantic Versioning <http://semver.org/>`_
 
+Unreleased
+------------------
+
+Added
+~~~~~~~
+- Relief feature selection.
+- RankedSVM for multilabel classification.
+- Multilabel workflow. All binary classifiers can now also be used
+  for multilabel classification true a sklearn OneVsRestClassifier
+  object.
+- Multilabel performance metrics. Automatically used in plot_SVM
+  when using multilabel workflow.
+- Full oversampling of underrepresented classes.
+
+
+Changed
+~~~~~~~
+- Reduced memory usage by not passing fitted objects, but just the
+ (hyper)parameters.
+- All metrics used in evaluation are now combined in a metrics
+  script in the classification folder.
+- Cleaned crossval function for readability.
+
+Fixed
+~~~~~
+- Catch error when validation set is too small.
+- Logging of cross validation now works properly by removing previous
+  log filehandles.
+- Ordering of methods in the SearchCV preprocess function now
+  corresponds with fitandscore.
+- Bug
+
+
 2.1.0 - 2018-08-09
 ------------------
 

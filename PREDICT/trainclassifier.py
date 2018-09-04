@@ -91,15 +91,23 @@ def trainclassifier(feat_train, patientinfo_train, config,
     if type(patientinfo_train) is list:
         patientinfo_train = ''.join(patientinfo_train)
 
+    if type(patientinfo_test) is list:
+        patientinfo_test = ''.join(patientinfo_test)
+
     if type(config) is list:
-        config = ''.join(config[0])
+        if len(config) == 1:
+            config = ''.join(config)
+        else:
+            # FIXME
+            print('[PREDICT Warning] You provided multiple configuration files: only the first one will be used!')
+            config = config[0]
 
     if type(output_hdf) is list:
         if len(output_hdf) == 1:
             output_hdf = ''.join(output_hdf)
         else:
             # FIXME
-            print('[PREDICT Warning] You provided multiple configuration files: only the first one will be used!')
+            print('[PREDICT Warning] You provided multiple output hdf files: only the first one will be used!')
             output_hdf = output_hdf[0]
 
     if type(output_json) is list:
@@ -107,13 +115,13 @@ def trainclassifier(feat_train, patientinfo_train, config,
             output_json = ''.join(output_json)
         else:
             # FIXME
-            print('[PREDICT Warning] You provided multiple configuration files: only the first one will be used!')
+            print('[PREDICT Warning] You provided multiple output json files: only the first one will be used!')
             output_json = output_json[0]
 
     # Load variables from the config file
     config = config_io.load_config(config)
     label_type = config['Genetics']['label_names']
-    print label_type, type(label_type)
+    modus = config['Genetics']['modus']
 
     # Load the feature files and match to label data
     label_data_train, image_features_train =\
@@ -171,12 +179,32 @@ def trainclassifier(feat_train, patientinfo_train, config,
         uniform(loc=config['Featsel']['StatisticalTestThreshold'][0],
                 scale=config['Featsel']['StatisticalTestThreshold'][1])
 
+    param_grid['ReliefUse'] =\
+        config['Featsel']['ReliefUse']
+
+    param_grid['ReliefNN'] =\
+        range(config['Featsel']['ReliefNN'][0],
+              config['Featsel']['ReliefNN'][1] + 1)
+
+    param_grid['ReliefSampleSize'] =\
+        range(config['Featsel']['ReliefSampleSize'][0],
+              config['Featsel']['ReliefSampleSize'][1] + 1)
+
+    param_grid['ReliefDistanceP'] =\
+        range(config['Featsel']['ReliefDistanceP'][0],
+              config['Featsel']['ReliefDistanceP'][1] + 1)
+
+    param_grid['ReliefNumFeatures'] =\
+        range(config['Featsel']['ReliefNumFeatures'][0],
+              config['Featsel']['ReliefNumFeatures'][1] + 1)
+
     # For N_iter, perform k-fold crossvalidation
     outputfolder = os.path.dirname(output_hdf)
     if feat_test is None:
         trained_classifier = cv.crossval(config, label_data_train,
                                          image_features_train,
                                          classifier, param_grid,
+                                         modus=modus,
                                          use_fastr=config['Classification']['fastr'],
                                          fastr_plugin=config['Classification']['fastr_plugin'],
                                          fixedsplits=fixedsplits,
@@ -189,6 +217,7 @@ def trainclassifier(feat_train, patientinfo_train, config,
                                            image_features_train,
                                            image_features_test,
                                            classifier, param_grid,
+                                           modus=modus,
                                            use_fastr=config['Classification']['fastr'],
                                            fastr_plugin=config['Classification']['fastr_plugin'],
                                            ensemble=config['Ensemble'])
@@ -205,7 +234,7 @@ def trainclassifier(feat_train, patientinfo_train, config,
                                          label_type)
         else:
             statistics = plot_SVM(trained_classifier, label_data_train,
-                                  label_type)
+                                  label_type, modus=modus)
     else:
         if patientinfo_test is not None:
             if type(classifier) == sklearn.svm.SVR:
@@ -215,7 +244,8 @@ def trainclassifier(feat_train, patientinfo_train, config,
             else:
                 statistics = plot_SVM(trained_classifier,
                                       label_data_test,
-                                      label_type)
+                                      label_type,
+                                      modus=modus)
         else:
             statistics = None
 

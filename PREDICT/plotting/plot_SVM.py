@@ -17,20 +17,19 @@
 
 
 import numpy as np
-from sklearn.metrics import accuracy_score
-from sklearn.metrics import roc_auc_score
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import f1_score
 import sys
 import compute_CI
 import pandas as pd
 import os
 import PREDICT.genetics.genetic_processing as gp
+from PREDICT.classification import metrics
+import PREDICT.addexceptions as ae
 
 
 def plot_SVM(prediction, label_data, label_type, show_plots=False,
              alpha=0.95, ensemble=False, verbose=True,
-             ensemble_scoring=None, output='stats'):
+             ensemble_scoring=None, output='stats',
+             modus='singlelabel'):
     '''
     Plot the output of a single binary estimator, e.g. a SVM.
 
@@ -200,7 +199,6 @@ def plot_SVM(prediction, label_data, label_type, show_plots=False,
                 patient_classification_list[i_test_ID]['N_wrong'] += 1
 
         y_score = SVMs[i].decision_function(X_test_temp)
-        print('AUC: ' + str(roc_auc_score(y_truth, y_score)))
 
         if output == 'decision':
             # Output the posteriors
@@ -219,29 +217,35 @@ def plot_SVM(prediction, label_data, label_type, show_plots=False,
         elif output == 'stats':
             # Compute statistics
             # Compute confusion matrix and use for sensitivity/specificity
-            c_mat = confusion_matrix(y_truth, y_prediction)
-            TN = c_mat[0, 0]
-            FN = c_mat[1, 0]
-            TP = c_mat[1, 1]
-            FP = c_mat[0, 1]
+            if modus == 'singlelabel':
+                # Compute singlelabel performance metrics
+                accuracy_temp, sensitivity_temp, specificity_temp,\
+                    precision_temp, f1_score_temp, auc_temp =\
+                    metrics.performance_singlelabel(y_truth,
+                                                    y_prediction,
+                                                    y_score)
 
-            if FN == 0 and TP == 0:
-                sensitivity.append(0)
-            else:
-                sensitivity.append(float(TP)/(TP+FN))
-            if FP == 0 and TN == 0:
-                specificity.append(0)
-            else:
-                specificity.append(float(TN)/(FP+TN))
-            if TP == 0 and FP == 0:
-                precision.append(0)
-            else:
-                precision.append(float(TP)/(TP+FP))
+            elif modus == 'multilabel':
+                # Compute multilabel performance metrics
+                accuracy_temp, sensitivity_temp, specificity_temp,\
+                    precision_temp, f1_score_temp, auc_temp =\
+                    metrics.performance_multilabel(y_truth,
+                                                   y_prediction,
+                                                   y_score)
 
-            # Additionally, compute accuracy, AUC and f1-score
-            accuracy.append(accuracy_score(y_truth, y_prediction))
-            auc.append(roc_auc_score(y_truth, y_score))
-            f1_score_list.append(f1_score(y_truth, y_prediction, average='weighted'))
+            else:
+                raise ae.PREDICTKeyError('{} is not a valid modus!').format(modus)
+
+            # Print AUC to keep you up to date
+            print('AUC: ' + auc_temp)
+
+            # Append performance to lists for all cross validations
+            accuracy.append(accuracy_temp)
+            sensitivity.append(sensitivity_temp)
+            specificity.append(specificity_temp)
+            auc.append(auc_temp)
+            f1_score_list.append(f1_score_temp)
+            precision.append(precision_temp)
 
     if output in ['scores', 'decision']:
         # Return the scores and true values of all patients
