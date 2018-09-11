@@ -28,6 +28,7 @@ Changed
 - All metrics used in evaluation are now combined in a metrics
   script in the classification folder.
 - Cleaned crossval function for readability.
+- SVM hyperparameters are adjusted.
 
 Fixed
 ~~~~~
@@ -36,7 +37,7 @@ Fixed
   log filehandles.
 - Ordering of methods in the SearchCV preprocess function now
   corresponds with fitandscore.
-- Bug
+- Bugs for multiclass predict in SearchCV and in plot_SVM
 
 
 2.1.0 - 2018-08-09

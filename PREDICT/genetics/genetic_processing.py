@@ -50,7 +50,7 @@ def load_mutation_status(genetic_file, mutation_type):
     for i_mutation in mutation_type:
         mutation_index = np.where(mutation_names == i_mutation)[0]
         if mutation_index.size == 0:
-            raise ae.PREDICTValueError('Could not find mutation: ' + i_mutation)
+            raise ae.PREDICTValueError('Could not find mutation: ' + str(i_mutation))
         else:
             mutation_label.append(mutation_status[:, mutation_index])
 

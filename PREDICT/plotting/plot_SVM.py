@@ -100,6 +100,8 @@ def plot_SVM(prediction, label_data, label_type, show_plots=False,
     if type(prediction) is not pd.core.frame.DataFrame:
         if os.path.isfile(prediction):
             prediction = pd.read_hdf(prediction)
+        else:
+            raise ae.PREDICTIOError(('{} is not an existing file!').format(str(prediction)))
 
     # Select the estimator from the pandas dataframe to use
     keys = prediction.keys()
@@ -107,10 +109,21 @@ def plot_SVM(prediction, label_data, label_type, show_plots=False,
     if label_type is None:
         label_type = keys[0]
 
+    # Load the label data
+    if type(label_data) is not dict:
+        if os.path.isfile(label_data):
+            if type(label_type) is not list:
+                # Singlelabel: convert to list
+                label_type = [[label_type]]
+            label_data = gp.load_mutation_status(label_data, label_type)
+
+    patient_IDs = label_data['patient_IDs']
+    mutation_label = label_data['mutation_label']
+
     if type(label_type) is list:
         # FIXME: Support for multiple label types not supported yet.
         print('[PREDICT Warning] Support for multiple label types not supported yet. Taking first label for plot_SVM.')
-        label_type = label_type[0]
+        label_type = keys[0]
 
     # Extract the estimators, features and labels
     SVMs = prediction[label_type]['classifiers']
@@ -119,11 +132,6 @@ def plot_SVM(prediction, label_data, label_type, show_plots=False,
     X_train = prediction[label_type]['X_train']
     Y_train = prediction[label_type]['Y_train']
     feature_labels = prediction[label_type]['feature_labels']
-
-    # Load the label data
-    if type(label_data) is not dict:
-        if os.path.isfile(label_data):
-            label_data = gp.load_mutation_status(label_data, [[label_type]])
 
     patient_IDs = label_data['patient_IDs']
     mutation_label = label_data['mutation_label']
@@ -193,7 +201,12 @@ def plot_SVM(prediction, label_data, label_type, show_plots=False,
 
         # Add if patient was classified correctly or not to counting
         for i_truth, i_predict, i_test_ID in zip(y_truth, y_prediction, test_patient_IDs):
-            if i_truth == i_predict:
+            if modus == 'multilabel':
+                success = (i_truth == i_predict).all()
+            else:
+                success = i_truth == i_predict
+
+            if success:
                 patient_classification_list[i_test_ID]['N_correct'] += 1
             else:
                 patient_classification_list[i_test_ID]['N_wrong'] += 1
@@ -226,6 +239,21 @@ def plot_SVM(prediction, label_data, label_type, show_plots=False,
                                                     y_score)
 
             elif modus == 'multilabel':
+                # Convert class objects to single label per patient
+                y_truth_temp = list()
+                y_prediction_temp = list()
+                for yt, yp in zip(y_truth, y_prediction):
+                    label = np.where(yt == 1)
+                    if len(label) > 1:
+                        raise ae.PREDICTNotImplementedError('Multiclass classification evaluation is not supported in PREDICT.')
+
+                    y_truth_temp.append(label[0][0])
+                    label = np.where(yp == 1)
+                    y_prediction_temp.append(label[0][0])
+
+                y_truth = y_truth_temp
+                y_prediction = y_prediction_temp
+
                 # Compute multilabel performance metrics
                 accuracy_temp, sensitivity_temp, specificity_temp,\
                     precision_temp, f1_score_temp, auc_temp =\
@@ -237,7 +265,7 @@ def plot_SVM(prediction, label_data, label_type, show_plots=False,
                 raise ae.PREDICTKeyError('{} is not a valid modus!').format(modus)
 
             # Print AUC to keep you up to date
-            print('AUC: ' + auc_temp)
+            print('AUC: ' + str(auc_temp))
 
             # Append performance to lists for all cross validations
             accuracy.append(accuracy_temp)

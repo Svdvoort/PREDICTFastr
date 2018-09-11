@@ -113,15 +113,34 @@ class Ensemble(six.with_metaclass(ABCMeta, BaseEstimator,
         """
         self.estimators[0]._check_is_fitted('predict')
 
-        outcome = np.zeros((self.n_estimators, len(X)))
-        for num, est in enumerate(self.estimators):
-            outcome[num, :] = est.predict(X)
+        # NOTE: Check if we are dealing with multilabel
+        if type(self.estimators[0].best_estimator_) == OneVsRestClassifier:
+            # Multilabel
+            nlabels = self.estimators[0].predict(X).shape[1]
+            outcome = np.zeros((self.n_estimators, len(X), nlabels))
+            for num, est in enumerate(self.estimators):
+                outcome[num, :, :] = est.predict(X)
 
-        outcome = np.squeeze(np.mean(outcome, axis=0))
+            outcome = np.squeeze(np.mean(outcome, axis=0))
 
-        # Binarize
-        outcome[outcome >= 0.5] = 1
-        outcome[outcome < 0.5] = 0
+            # NOTE: Binarize specifically for multiclass
+            for i in range(0, outcome.shape[0]):
+                label = np.argmax(outcome[i, :])
+                outcome[i, :] = np.zeros(outcome.shape[1])
+                outcome[i, label] = 1
+
+        else:
+            # Singlelabel
+            outcome = np.zeros((self.n_estimators, len(X)))
+            for num, est in enumerate(self.estimators):
+                outcome[num, :] = est.predict(X)
+
+            outcome = np.squeeze(np.mean(outcome, axis=0))
+
+            # Binarize
+            outcome[outcome >= 0.5] = 1
+            outcome[outcome < 0.5] = 0
+
         return outcome
 
     def predict_proba(self, X):
@@ -189,11 +208,24 @@ class Ensemble(six.with_metaclass(ABCMeta, BaseEstimator,
         """
         self.estimators[0]._check_is_fitted('decision_function')
 
-        outcome = np.zeros((self.n_estimators, len(X)))
-        for num, est in enumerate(self.estimators):
-            outcome[num, :] = est.decision_function(X)
+        # NOTE: Check if we are dealing with multilabel
+        if type(self.estimators[0].best_estimator_) == OneVsRestClassifier:
+            # Multilabel
+            nlabels = self.estimators[0].decision_function(X).shape[1]
+            outcome = np.zeros((self.n_estimators, len(X), nlabels))
+            for num, est in enumerate(self.estimators):
+                outcome[num, :, :] = est.decision_function(X)
 
-        outcome = np.squeeze(np.mean(outcome, axis=0))
+            outcome = np.squeeze(np.mean(outcome, axis=0))
+
+        else:
+            # Singlelabel
+            outcome = np.zeros((self.n_estimators, len(X)))
+            for num, est in enumerate(self.estimators):
+                outcome[num, :] = est.decision_function(X)
+
+            outcome = np.squeeze(np.mean(outcome, axis=0))
+
         return outcome
 
     def transform(self, X):
@@ -1111,10 +1143,10 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
             print("Refitting estimator {} / {}.").format(str(enum+1), str(nest))
             base_estimator = clone(base_estimator)
 
-            # Check if we need to create a multiclass estimator
-            if Y_train.shape[1] > 1 and type(base_estimator) != RankedSVM:
-                # Multiclass, hence employ a multiclass classifier for SVM
-                base_estimator = OneVsRestClassifier(base_estimator)
+            # # Check if we need to create a multiclass estimator
+            # if Y_train.shape[1] > 1 and type(base_estimator) != RankedSVM:
+            #     # Multiclass, hence employ a multiclass classifier for SVM
+            #     base_estimator = OneVsRestClassifier(base_estimator)
 
             base_estimator.refit_and_score(X_train, Y_train, p_all,
                                            p_est, train, train,

@@ -345,7 +345,11 @@ def crossval(config, label_data, image_features,
                       index=panda_labels,
                       name='Constructed crossvalidation')
 
-        i_name = ''.join(i_name)
+        if modus == 'singlelabel':
+            i_name = ''.join(i_name)
+        elif modus == 'multilabel':
+            i_name = ','.join(i_name)
+
         classifier_labelss[i_name] = panda_data_temp
 
     panda_data = pd.DataFrame(classifier_labelss)

@@ -91,10 +91,12 @@ def performance_multilabel(y_truth, y_prediction, y_score=None, beta=1):
 
     # Calculation of precision
     Precision = TP/(TP+FP)
+    Precision = np.nan_to_num(Precision)
     Precision = np.mean(Precision)
 
     # Calculation  of F1_Score
     F1_score = ((1+(beta**2))*(Sensitivity*Precision))/((beta**2)*(Precision + Sensitivity))
+    F1_score = np.nan_to_num(F1_score)
     F1_score = np.mean(F1_score)
 
     # Calculation of Multi Class AUC according to classpy: https://bitbucket.org/bigr_erasmusmc/classpy/src/master/classpy/multi_class_auc.py
