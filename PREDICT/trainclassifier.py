@@ -148,7 +148,7 @@ def trainclassifier(feat_train, patientinfo_train, config,
 
     # Append the feature groups to the parameter grid
     if config['General']['FeatureCalculator'] == 'CalcFeatures':
-        param_grid['SelectGroups'] = 'True'
+        param_grid['SelectGroups'] = ['True']
         for group in config['SelectFeatGroup'].keys():
             param_grid[group] = config['SelectFeatGroup'][group]
 
@@ -162,7 +162,7 @@ def trainclassifier(feat_train, patientinfo_train, config,
     # Extract hyperparameter grid settings for SearchCV from config
     param_grid['Featsel_Variance'] = config['Featsel']['Variance']
 
-    param_grid['Imputation'] = config['Imputation']['Use']
+    param_grid['Imputation'] = config['Imputation']['use']
     param_grid['ImputationMethod'] = config['Imputation']['strategy']
     param_grid['ImputationNeighbours'] = config['Imputation']['n_neighbors']
 

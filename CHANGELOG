@@ -29,6 +29,7 @@ Changed
   script in the classification folder.
 - Cleaned crossval function for readability.
 - SVM hyperparameters are adjusted.
+- GroupSel now has a separate Hyperparameter for all texture groups.
 
 Fixed
 ~~~~~
@@ -38,6 +39,8 @@ Fixed
 - Ordering of methods in the SearchCV preprocess function now
   corresponds with fitandscore.
 - Bugs for multiclass predict in SearchCV and in plot_SVM
+- Backend used in matplotlib is now agg, hence usage on platforms
+  not supporting tkinter is now supported.
 
 
 2.1.0 - 2018-08-09

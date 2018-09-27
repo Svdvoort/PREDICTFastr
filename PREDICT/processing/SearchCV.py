@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright 2011-2017 Biomedical Imaging Group Rotterdam, Departments of
+# Copyright 2017-2018 Biomedical Imaging Group Rotterdam, Departments of
 # Medical Informatics and Radiology, Erasmus MC, Rotterdam, The Netherlands
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,7 +36,6 @@ import numpy as np
 from functools import partial
 import warnings
 
-import math
 import os
 import random
 import string
@@ -713,9 +712,18 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
         best_estimator = clone(base_estimator).set_params(
             **parameters_est)
 
-        # Check if we need to create a multiclass estimator
-        if y.shape[1] > 1 and type(best_estimator) != RankedSVM:
-            # Multiclass, hence employ a multiclass classifier for SVM
+        # NOTE: This just has to go to the construct classifier function,
+        # although it is more convenient here due to the hyperparameter search
+        if type(y) is list:
+            labellength = 1
+        else:
+            try:
+                labellength = y.shape[1]
+            except IndexError:
+                labellength = 1
+
+        if labellength > 1 and type(best_estimator) != RankedSVM:
+            # Multiclass, hence employ a multiclass classifier for e.g. SVM, RF
             best_estimator = OneVsRestClassifier(best_estimator)
 
         if y is not None:
@@ -1592,7 +1600,6 @@ class BaseSearchCVJoblib(BaseSearchCV):
                                      n_candidates * n_splits))
 
         pre_dispatch = self.pre_dispatch
-        print y
         cv_iter = list(cv.split(X, y, groups))
 
         out = Parallel(

@@ -16,7 +16,6 @@
 # limitations under the License.
 
 import configparser
-import re
 
 
 def load_config(config_file_path):
@@ -100,7 +99,7 @@ def load_config(config_file_path):
         [int(str(item).strip()) for item in
          settings['Featsel']['ReliefNumFeatures'].split(',')]
 
-    for label in ['Use', 'strategy', 'n_neighbors']:
+    for label in ['use', 'strategy', 'n_neighbors']:
         settings_dict['Imputation'][label] =\
             [str(item).strip() for item in
              settings['Imputation'][label].split(',')]

@@ -114,3 +114,10 @@ class PREDICTAssertionError(PREDICTError, AssertionError):
     AssertionError in the PREDICT system
     """
     pass
+
+
+class PREDICTIndexError(PREDICTError, IndexError):
+    """
+    IndexError in the PREDICT system
+    """
+    pass

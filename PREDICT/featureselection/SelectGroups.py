@@ -41,7 +41,13 @@ class SelectGroups(BaseEstimator, SelectorMixin):
                 - phase_features
                 - vessel_features
                 - log_features
-                - texture_features
+                - texture_Gabor_features
+                - texture_GLCM_features
+                - texture_GLCMMS_features
+                - texture_GLRLM_features
+                - texture_GLSZM_features
+                - texture_NGTDM_features
+                - texture_LBP_features
 
         '''
         params = list()
@@ -63,13 +69,29 @@ class SelectGroups(BaseEstimator, SelectorMixin):
             params.append('vf_')
         if parameters['log_features'] == 'True':
             params.append('logf_')
+        if parameters['texture_Gabor_features'] == 'True':
+            params.append('tf_Gabor')
+        if parameters['texture_GLCM_features'] == 'True':
+            params.append('tf_GLCM_')
+        if parameters['texture_GLCMMS_features'] == 'True':
+            params.append('tf_GLCMMS')
+        if parameters['texture_GLRLM_features'] == 'True':
+            params.append('tf_GLRLM')
+        if parameters['texture_GLSZM_features'] == 'True':
+            params.append('tf_GLSZM')
+        if parameters['texture_NGTDM_features'] == 'True':
+            params.append('tf_NGTDM')
+        if parameters['texture_LBP_features'] == 'True':
+            params.append('tf_LBP')
+
+        # Backwards compatability
         if parameters['texture_features'] == 'True':
             params.append('tf_')
         elif parameters['texture_features'] == 'False':
             pass
         else:
             params.append('tf_' + parameters['texture_features'])
-
+            
         self.parameters = params
 
     def fit(self, feature_labels):

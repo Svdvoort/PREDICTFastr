@@ -1,7 +1,6 @@
-try:
-    import matplotlib.pyplot as plt
-except ImportError:
-    print("[PREDICT Warning] Cannot use plot_ROC function, as _tkinter is not installed")
+import matplotlib
+matplotlib.use('agg')
+import matplotlib.pyplot as plt
 
 from matplotlib2tikz import save as tikz_save
 import numpy as np

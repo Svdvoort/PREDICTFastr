@@ -168,14 +168,23 @@ def fit_and_score(estimator, X, y, scorer,
         # TODO: more elegant way to solve this
         feature_groups = ["histogram_features", "orientation_features",
                           "patient_features", "semantic_features",
-                          "shape_features", "texture_features",
+                          "shape_features",
                           "coliage_features", 'vessel_features',
-                          "phase_features", "log_features"]
+                          "phase_features", "log_features",
+                          "texture_Gabor_features", "texture_GLCM_features",
+                          "texture_GLCMMS_features", "texture_GLRLM_features",
+                          "texture_GLSZM_features", "texture_NGTDM_features",
+                          "texture_LBP_features"]
+
+        # Backwards compatability
+        feature_groups.append('texture_features')
+
+        # Check per feature group if the parameter is present
         parameters_featsel = dict()
         for group in feature_groups:
             if group not in para_estimator:
                 # Default: do use the group
-                value = True
+                value = False
             else:
                 value = para_estimator[group]
                 del para_estimator[group]

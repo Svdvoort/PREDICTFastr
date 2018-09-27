@@ -13,10 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-try:
-    import matplotlib.pyplot as plt
-except ImportError:
-    print("[PREDICT Warning] Cannot use boxplot function, as _tkinter is not installed")
+import matplotlib
+matplotlib.use('agg')
+import matplotlib.pyplot as plt
 
 import pandas as pd
 import argparse
