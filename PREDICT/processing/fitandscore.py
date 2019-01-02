@@ -171,20 +171,24 @@ def fit_and_score(estimator, X, y, scorer,
                           "shape_features",
                           "coliage_features", 'vessel_features',
                           "phase_features", "log_features",
-                          "texture_Gabor_features", "texture_GLCM_features",
-                          "texture_GLCMMS_features", "texture_GLRLM_features",
-                          "texture_GLSZM_features", "texture_NGTDM_features",
-                          "texture_LBP_features"]
+                          "texture_gabor_features", "texture_glcm_features",
+                          "texture_glcmms_features", "texture_glrlm_features",
+                          "texture_glszm_features", "texture_ngtdm_features",
+                          "texture_lbp_features"]
 
         # Backwards compatability
-        feature_groups.append('texture_features')
+        if 'texture_features' in para_estimator.keys():
+            feature_groups.append('texture_features')
 
         # Check per feature group if the parameter is present
         parameters_featsel = dict()
         for group in feature_groups:
             if group not in para_estimator:
-                # Default: do use the group
-                value = False
+                # Default: do use the group, except for texture features
+                if group == 'texture_features':
+                    value = 'False'
+                else:
+                    value = 'True'
             else:
                 value = para_estimator[group]
                 del para_estimator[group]
@@ -520,6 +524,8 @@ def fit_and_score(estimator, X, y, scorer,
         estimator = OneVsRestClassifier(estimator)
         para_estimator = {}
 
+    if verbose:
+        print("Fitting ML.")
     ret = _fit_and_score(estimator, feature_values, y,
                          scorer, train,
                          test, verbose,

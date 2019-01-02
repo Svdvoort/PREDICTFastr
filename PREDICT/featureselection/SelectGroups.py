@@ -69,29 +69,32 @@ class SelectGroups(BaseEstimator, SelectorMixin):
             params.append('vf_')
         if parameters['log_features'] == 'True':
             params.append('logf_')
-        if parameters['texture_Gabor_features'] == 'True':
-            params.append('tf_Gabor')
-        if parameters['texture_GLCM_features'] == 'True':
-            params.append('tf_GLCM_')
-        if parameters['texture_GLCMMS_features'] == 'True':
-            params.append('tf_GLCMMS')
-        if parameters['texture_GLRLM_features'] == 'True':
-            params.append('tf_GLRLM')
-        if parameters['texture_GLSZM_features'] == 'True':
-            params.append('tf_GLSZM')
-        if parameters['texture_NGTDM_features'] == 'True':
-            params.append('tf_NGTDM')
-        if parameters['texture_LBP_features'] == 'True':
-            params.append('tf_LBP')
 
-        # Backwards compatability
-        if parameters['texture_features'] == 'True':
-            params.append('tf_')
-        elif parameters['texture_features'] == 'False':
-            pass
+        if 'texture_features' in parameters.keys():
+            # Backwards compatability
+            if parameters['texture_features'] == 'True':
+                params.append('tf_')
+            elif parameters['texture_features'] == 'False':
+                pass
+            else:
+                params.append('tf_' + parameters['texture_features'])
         else:
-            params.append('tf_' + parameters['texture_features'])
-            
+            # Hyperparameter per feature group
+            if parameters['texture_gabor_features'] == 'True':
+                params.append('tf_Gabor')
+            if parameters['texture_glcm_features'] == 'True':
+                params.append('tf_GLCM_')
+            if parameters['texture_glcmms_features'] == 'True':
+                params.append('tf_GLCMMS')
+            if parameters['texture_glrlm_features'] == 'True':
+                params.append('tf_GLRLM')
+            if parameters['texture_glszm_features'] == 'True':
+                params.append('tf_GLSZM')
+            if parameters['texture_ngtdm_features'] == 'True':
+                params.append('tf_NGTDM')
+            if parameters['texture_lbp_features'] == 'True':
+                params.append('tf_LBP')
+
         self.parameters = params
 
     def fit(self, feature_labels):

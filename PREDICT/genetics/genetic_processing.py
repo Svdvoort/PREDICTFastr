@@ -184,14 +184,26 @@ def findmutationdata(patientinfo, mutation_type, filenames,
         mutation_label.append(list())
 
     image_features = list()
-    for i_num, i_patient in enumerate(mutation_data_temp['patient_IDs']):
-        for i_feat, feat in enumerate(filenames):
+    for i_feat, feat in enumerate(filenames):
+        ifound = 0
+        matches = list()
+        for i_num, i_patient in enumerate(mutation_data_temp['patient_IDs']):
             if i_patient in str(feat):
                 patient_IDs.append(i_patient)
+                matches.append(i_patient)
                 if image_features_temp is not None:
                     image_features.append(image_features_temp[i_feat])
                 for i_len in range(len(mutation_data_temp['mutation_label'])):
                     mutation_label[i_len].append(mutation_data_temp['mutation_label'][i_len][i_num])
+                ifound += 1
+
+        if ifound > 1:
+            message = ('Multiple matches ({}) found in labeling for feature file {}.').format(str(matches), str(feat))
+            raise ae.PREDICTIOError(message)
+
+        elif ifound == 0:
+            message = ('No found in labeling for feature file {}.').format(str(feat))
+            raise ae.PREDICTIOError(message)
 
     # if image_features_temp is not None:
     #     image_features = np.asarray(image_features)

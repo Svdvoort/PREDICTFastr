@@ -118,7 +118,11 @@ class Ensemble(six.with_metaclass(ABCMeta, BaseEstimator,
             nlabels = self.estimators[0].predict(X).shape[1]
             outcome = np.zeros((self.n_estimators, len(X), nlabels))
             for num, est in enumerate(self.estimators):
-                outcome[num, :, :] = est.predict(X)
+                if hasattr(est, 'predict_proba'):
+                    est.best_estimator_.kernel = str(est.best_estimator_.kernel)
+                    outcome[num, :, :] = est.predict_proba(X)[:, 1]
+                else:
+                    outcome[num, :, :] = est.predict(X)
 
             outcome = np.squeeze(np.mean(outcome, axis=0))
 
@@ -132,7 +136,11 @@ class Ensemble(six.with_metaclass(ABCMeta, BaseEstimator,
             # Singlelabel
             outcome = np.zeros((self.n_estimators, len(X)))
             for num, est in enumerate(self.estimators):
-                outcome[num, :] = est.predict(X)
+                if hasattr(est, 'predict_proba'):
+                    est.best_estimator_.kernel = str(est.best_estimator_.kernel)
+                    outcome[num, :] = est.predict_proba(X)[:, 1]
+                else:
+                    outcome[num, :] = est.predict(X)
 
             outcome = np.squeeze(np.mean(outcome, axis=0))
 
@@ -384,6 +392,8 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
         """
         self._check_is_fitted('predict_proba')
 
+        # BUG: kernel sometimes saved as unicode
+        self.best_estimator_.kernel = str(self.best_estimator_.kernel)
         if self.ensemble:
             return self.ensemble.predict_proba(X)
         else:
@@ -406,6 +416,8 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
         """
         self._check_is_fitted('predict_log_proba')
 
+        # BUG: kernel sometimes saved as unicode
+        self.best_estimator_.kernel = str(self.best_estimator_.kernel)
         if self.ensemble:
             return self.ensemble.predict_log_proba(X)
         else:
@@ -1312,10 +1324,10 @@ class BaseSearchCVfastr(BaseSearchCV):
                   zip(*save_data)
         except ValueError as e:
             print e
-            message = ('Fitting classifiers has failed. The temporary' +
+            message = ('Fitting classifiers has failed. The temporary ' +
                        'results where not deleted and can be found in {}. ' +
                        'Probably your fitting and scoring failed: check out ' +
-                       'the tmp/fitandscore folder within the tempfolder for' +
+                       'the tmp/fitandscore folder within the tempfolder for ' +
                        'the fastr job temporary results.').format(tempfolder)
             raise PREDICTexceptions.PREDICTValueError(message)
 

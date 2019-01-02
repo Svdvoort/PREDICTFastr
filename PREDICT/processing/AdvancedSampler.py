@@ -19,8 +19,38 @@ from sklearn.utils import check_random_state
 import numpy as np
 from sklearn.externals import six
 from ghalton import Halton
-from sobol_seq import i4_sobol_generate as Sobol
+# from sobol_seq import i4_sobol_generate as Sobol
 import scipy
+from scipy.stats import uniform
+import math
+
+
+class log_uniform():
+    def __init__(self, loc=-1, scale=0, base=10):
+        self.loc = loc
+        self.scale = scale
+        self.base = base
+
+    def rvs(self, size=None, random_state=None):
+        uniform_dist = uniform(loc=self.loc, scale=self.scale)
+        if size is None:
+            return np.power(self.base, uniform_dist.rvs(random_state=random_state))
+        else:
+            return np.power(self.base, uniform_dist.rvs(size=size, random_state=random_state))
+
+
+class exp_uniform():
+    def __init__(self, loc=-1, scale=0, base=math.e):
+        self.loc = loc
+        self.scale = scale
+        self.base = base
+
+    def rvs(self, size=None, random_state=None):
+        uniform_dist = uniform(loc=self.loc, scale=self.scale)
+        if size is None:
+            return np.power(self.base, uniform_dist .rvs(random_state=random_state))
+        else:
+            return np.power(self.base, uniform_dist .rvs(size=size, random_state=random_state))
 
 
 class AdvancedSampler(object):
@@ -129,23 +159,24 @@ class AdvancedSampler(object):
         return self.n_iter
 
 
-random_seed = np.random.randint(1, 5000)
-random_state = check_random_state(random_seed)
+if __name__ == '__main__':
+    random_seed = np.random.randint(1, 5000)
+    random_state = check_random_state(random_seed)
 
-param_distributions = {'kernel': ['poly', 'RGB'],
-                       'C': scipy.stats.uniform(loc=0, scale=1E6),
-                       'degree': scipy.stats.uniform(loc=1, scale=6),
-                       'coef0': scipy.stats.uniform(loc=0, scale=1),
-                       'gamma': scipy.stats.uniform(loc=1E-5, scale=1),
-                       'histogram_features': ['True', 'False']}
+    param_distributions = {'kernel': ['poly', 'RGB'],
+                           'C': scipy.stats.uniform(loc=0, scale=1E6),
+                           'degree': scipy.stats.uniform(loc=1, scale=6),
+                           'coef0': scipy.stats.uniform(loc=0, scale=1),
+                           'gamma': scipy.stats.uniform(loc=1E-5, scale=1),
+                           'histogram_features': ['True', 'False']}
 
-n_iter = 6
+    n_iter = 6
 
-method = 'Sobol'
-sampled_params = AdvancedSampler(param_distributions,
-                                 n_iter,
-                                 random_state)
+    method = 'Sobol'
+    sampled_params = AdvancedSampler(param_distributions,
+                                     n_iter,
+                                     random_state)
 
 
-for s in sampled_params:
-    print s
+    for s in sampled_params:
+        print s

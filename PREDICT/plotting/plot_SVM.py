@@ -211,7 +211,7 @@ def plot_SVM(prediction, label_data, label_type, show_plots=False,
             else:
                 patient_classification_list[i_test_ID]['N_wrong'] += 1
 
-        y_score = SVMs[i].decision_function(X_test_temp)
+        y_score = SVMs[i].predict_proba(X_test_temp)[:, 1]
 
         if output == 'decision':
             # Output the posteriors
@@ -222,7 +222,7 @@ def plot_SVM(prediction, label_data, label_type, show_plots=False,
 
         elif output == 'scores':
             # Output the posteriors
-            y_scores.append(SVMs[i].predict_proba(X_test_temp)[1])
+            y_scores.append(y_score)
             y_truths.append(y_truth)
             y_predictions.append(y_prediction)
             PIDs.append(test_patient_IDs)

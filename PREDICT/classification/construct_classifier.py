@@ -25,6 +25,7 @@ import scipy
 import numpy as np
 import PREDICT.addexceptions as ae
 from PREDICT.classification.estimators import RankedSVM
+from PREDICT.processing.AdvancedSampler import log_uniform
 
 
 def construct_classifier(config, image_features):
@@ -116,26 +117,32 @@ def construct_SVM(config, image_features, regression=False):
 
     # TODO: move the max_iter parameter to main config
     if not regression:
-        clf = SVC(class_weight='balanced', probability=True, max_iter=1E7)
+        clf = SVC(class_weight='balanced', probability=True, max_iter=1E5)
     else:
-        clf = SVMR(max_iter=1E7)
+        clf = SVMR(max_iter=1E5)
 
+    # if config['Classification']['Kernel'] == "polynomial" or config['Classification']['Kernel'] == "poly":
+    #     param_grid = {'kernel': ['poly'],
+    #                   'C': scipy.stats.uniform(loc=0, scale=1E6),
+    #                   'degree': scipy.stats.uniform(loc=1, scale=6),
+    #                   'coef0': scipy.stats.uniform(loc=0, scale=1),
+    #                   'gamma': scipy.stats.uniform(loc=1E-5, scale=1)}
     if config['Classification']['Kernel'] == "polynomial" or config['Classification']['Kernel'] == "poly":
         param_grid = {'kernel': ['poly'],
-                      'C': scipy.stats.uniform(loc=0, scale=1E6),
+                      'C': log_uniform(loc=0, scale=6),
                       'degree': scipy.stats.uniform(loc=1, scale=6),
                       'coef0': scipy.stats.uniform(loc=0, scale=1),
-                      'gamma': scipy.stats.uniform(loc=1E-5, scale=1)}
+                      'gamma': log_uniform(loc=-5, scale=0)}
 
     elif config['Classification']['Kernel'] == "linear":
         param_grid = {'kernel': ['linear'],
-                      'C': scipy.stats.uniform(loc=0, scale=1E6),
+                      'C': log_uniform(loc=0, scale=6),
                       'coef0': scipy.stats.uniform(loc=0, scale=1)}
 
     elif config['Classification']['Kernel'] == "rbf":
         param_grid = {'kernel': ['rbf'],
-                      'C': scipy.stats.uniform(loc=0, scale=1E6),
-                      'gamma': scipy.stats.uniform(loc=1E-5, scale=1)}
+                      'C': log_uniform(loc=0, scale=6),
+                      'gamma': log_uniform(loc=-5, scale=0)}
     else:
         raise ae.PREDICTKeyError("{} is not a valid SVM kernel type!").format(config['Classification']['Kernel'])
 

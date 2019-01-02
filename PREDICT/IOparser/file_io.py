@@ -78,10 +78,10 @@ def load_data(featurefiles, patientinfo=None, label_names=None, modnames=[]):
                                     pfiles,
                                     image_features)
         except ValueError as e:
-            message = e + '. Please take a look at your labels' +\
+            message = e.message + '. Please take a look at your labels' +\
                 ' file and make sure it is formatted correctly. ' +\
                 'See also https://github.com/MStarmans91/WORC/wiki/The-WORC-configuration#genetics.'
-            raise PREDICTexceptions.ValueError(message)
+            raise PREDICTexceptions.PREDICTValueError(message)
 
         print("Mutation Labels:")
         print(mutation_data['mutation_label'])

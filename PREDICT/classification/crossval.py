@@ -519,7 +519,9 @@ def singleiteration(X_train, Y_train, PID_train, feature_labels,
         random_state = check_random_state(random_seed)
 
     if use_SMOTE:
-        print("Sampling with SMOTE.")
+        pos_initial = int(np.sum(Y_train))
+        neg_initial = int(len(Y_train) - pos_initial)
+        len_in = len(Y_train)
         for num, x in enumerate(X_train):
             if num == 0:
                 X_train_temp = np.zeros((len(x[0]), 1))
@@ -545,6 +547,15 @@ def singleiteration(X_train, Y_train, PID_train, feature_labels,
 
         X_train, Y_train = sm.fit_sample(X_train_temp, Y_train)
         X_train = [(x.tolist(), feature_labels) for x in X_train]
+        pos = int(np.sum(Y_train))
+        neg = int(len(Y_train) - pos)
+        message = ("Sampling with SMOTE from {} ({} pos, {} neg) to {} ({} pos, {} neg) patients.").format(str(len_in),
+                                                                                                           str(pos_initial),
+                                                                                                           str(neg_initial),
+                                                                                                           str(len(Y_train)),
+                                                                                                           str(pos),
+                                                                                                           str(neg))
+        print(message)
 
     if use_oversampling:
         print('Oversample underrepresented classes in training.')

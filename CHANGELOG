@@ -19,6 +19,7 @@ Added
 - Multilabel performance metrics. Automatically used in plot_SVM
   when using multilabel workflow.
 - Full oversampling of underrepresented classes.
+- log_uniform and exp_uniform distributions
 
 
 Changed
@@ -41,6 +42,10 @@ Fixed
 - Bugs for multiclass predict in SearchCV and in plot_SVM
 - Backend used in matplotlib is now agg, hence usage on platforms
   not supporting tkinter is now supported.
+- Raise an error when multiple label matches for a single feature file are found.
+- Plot_SVM: Y_score needs to be computed with predict_proba, not the decision_function.
+- SearchCV, Ensemble, Predict: Average was taken over binary scores. The
+  average is now taken over the posteriors.
 
 
 2.1.0 - 2018-08-09
