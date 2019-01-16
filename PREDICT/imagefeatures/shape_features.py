@@ -41,8 +41,8 @@ def get_shape_features(mask, metadata=None, mode='2D'):
     return features, labels
 
 
-def get_shape_features_3D(mask, metadata=None):
-    mask = sitk.GetArrayFromImage(mask)
+def get_shape_features_3D(mask_ITKim, metadata=None):
+    mask = sitk.GetArrayFromImage(mask_ITKim)
 
     # Pre-allocation
     perimeter = list()
@@ -152,11 +152,19 @@ def get_shape_features_3D(mask, metadata=None):
             volume = np.sum(mask) * voxel_volume
             shape_labels.append('sf_volume')
             shape_features.append(volume)
+    else:
+        # Check if we can use the pixel information from the Nifti
+        if hasattr(mask_ITKim, 'GetSpacing'):
+            spacing = mask_ITKim.GetSpacing()
+            voxel_volume = spacing[0] * spacing[1] * spacing[2]
+            volume = np.sum(mask) * voxel_volume
+            shape_labels.append('sf_volume')
+            shape_features.append(volume)
 
     return shape_features, shape_labels
 
 
-def get_shape_features_2D(mask, metadata=None):
+def get_shape_features_2D(mask_ITKim, metadata=None):
     # Pre-allocation
     perimeter = list()
     convexity = list()
@@ -176,7 +184,7 @@ def get_shape_features_2D(mask, metadata=None):
 
     # Now calculate some of the edge shape features
     # NOTE: Due to conversion to array, first and third axis are switched
-    mask = sitkh.GetArrayFromImage(mask)
+    mask = sitkh.GetArrayFromImage(mask_ITKim)
     N_mask_slices = mask.shape[2]
     mask = label(mask, connectivity=3)
     for i_slice in range(0, N_mask_slices):
@@ -266,6 +274,14 @@ def get_shape_features_2D(mask, metadata=None):
             pixel_spacing = metadata[0x28, 0x30].value
             slice_thickness = int(metadata[0x18, 0x50].value)
             voxel_volume = pixel_spacing[0] * pixel_spacing[1] * slice_thickness
+            volume = np.sum(mask) * voxel_volume
+            shape_labels.append('sf_volume')
+            shape_features.append(volume)
+    else:
+        # Check if we can use the pixel information from the Nifti
+        if hasattr(mask_ITKim, 'GetSpacing'):
+            spacing = mask_ITKim.GetSpacing()
+            voxel_volume = spacing[0] * spacing[1] * spacing[2]
             volume = np.sum(mask) * voxel_volume
             shape_labels.append('sf_volume')
             shape_features.append(volume)

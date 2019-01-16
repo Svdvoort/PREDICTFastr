@@ -19,6 +19,7 @@ from sklearn.base import BaseEstimator
 from sklearn.feature_selection.base import SelectorMixin
 import numpy as np
 import sklearn.neighbors as nn
+# from skrebate import ReliefF
 
 
 class SelectMulticlassRelief(BaseEstimator, SelectorMixin):
@@ -64,11 +65,18 @@ class SelectMulticlassRelief(BaseEstimator, SelectorMixin):
                 list will be used in the transform funtion to select features.
         '''
         # Multiclass relief function
-        indices, _ = self.multi_class_relief(X, y,
-                                             nb=self.no_neighbours,
-                                             sample_size=self.sample_size,
-                                             distance_p=self.distance_p,
-                                             numf=self.numf)
+        if len(y.shape) > 1:
+            indices, _ = self.multi_class_relief(X, y,
+                                                 nb=self.no_neighbours,
+                                                 sample_size=self.sample_size,
+                                                 distance_p=self.distance_p,
+                                                 numf=self.numf)
+        else:
+            indices, _ = self.single_class_relief(X, y,
+                                                 nb=self.no_neighbours,
+                                                 sample_size=self.sample_size,
+                                                 distance_p=self.distance_p,
+                                                 numf=self.numf)
 
         self.selectrows = indices
 
@@ -84,6 +92,7 @@ class SelectMulticlassRelief(BaseEstimator, SelectorMixin):
                 item in this list does not matter, e.g. floats, strings etc.
         '''
         return np.asarray([np.asarray(x)[self.selectrows].tolist() for x in inputarray])
+        # return self.ReliefF.transform(inputarray)
 
     def _get_support_mask(self):
         # NOTE: Method is required for the Selector class, but can be empty
@@ -150,7 +159,61 @@ class SelectMulticlassRelief(BaseEstimator, SelectorMixin):
         sorted_index = np.array(sorted_index)
         feature_score = feature_score[sorted_index]
 
-        #return sorted_index, feature_score
+        if numf is None:
+            numf = len(sorted_index)
+
+        # Make sure we select at maximum all features
+        numf = min(numf, len(sorted_index))
+        sorted_index = sorted_index[0:numf]
+
+        return sorted_index, feature_score
+
+    def single_class_relief(self, feature_set, label_set, nb=3, sample_size=1,
+                           distance_p=2, numf=None):
+
+        nrow, ncol = feature_set.shape
+        sample_list = np.random.choice(range(nrow), int(nrow * sample_size), replace=False)
+
+        feature_score = np.zeros((1, ncol))
+
+        n_sample = dict()
+
+        # find positive and negative samples for each label
+        n_sample[0] = []
+        n_sample[1] = []
+        for row in sample_list:
+            if label_set[row] == 0:
+                n_sample[0].append(row)
+            else:
+                n_sample[1].append(row)
+
+        if n_sample[0].__len__() >= nb and n_sample[1].__len__() >= nb:
+            # find near miss for label1
+            n_neighbor_finder = nn.NearestNeighbors(n_neighbors=nb, p=distance_p)
+            n_neighbor_finder.fit(np.asarray(feature_set[n_sample[0], :]))
+            near_miss = n_neighbor_finder.kneighbors(np.asarray(feature_set[n_sample[0], :]), return_distance=False)
+
+            # find near hit for label1
+            p_neighbor_finder = nn.NearestNeighbors(n_neighbors=nb, p=distance_p)
+            p_neighbor_finder.fit(np.asarray(feature_set[n_sample[1], :]))
+            near_hit = p_neighbor_finder.kneighbors(np.asarray(feature_set[n_sample[1], :]), return_distance=False)
+
+            for r in range(near_miss.__len__()):
+                for c in range(nb):
+                    if label_set[near_miss[r, c]] == 1:
+                        feature_score += 1.0 * np.abs(feature_set[n_sample[0][r], :] -
+                                                             feature_set[near_miss[r, c], :]) / nb
+            for r in range(n_sample[1].__len__()):
+                for c in range(nb):
+                    if label_set[near_hit[r, c]] == 1:
+                        feature_score -= 1.0 * np.abs(feature_set[n_sample[1][r], :] -
+                                                             feature_set[near_hit[r, c], :]) / nb
+
+        feature_score = feature_score[0]
+        sorted_index = feature_score.argsort().tolist()
+        sorted_index.reverse()
+        sorted_index = np.array(sorted_index)
+        feature_score = feature_score[sorted_index]
 
         if numf is None:
             numf = len(sorted_index)
@@ -160,3 +223,10 @@ class SelectMulticlassRelief(BaseEstimator, SelectorMixin):
         sorted_index = sorted_index[0:numf]
 
         return sorted_index, feature_score
+
+
+    # def single_class_relief_skrebate(self, feature_set, label_set, nb=3, sample_size=1,
+    #                        distance_p=2, numf=None):
+    #     self.ReliefF = ReliefF(n_features_to_select=numf, n_neighbors=nb, n_jobs=1)
+    #     self.ReliefF.fit(feature_set, label_set)
+    #     return None, None
