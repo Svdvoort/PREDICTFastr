@@ -229,18 +229,10 @@ def load_images(image_file, image_type, metadata_file=None,
                             keys.append(key)
                     else:
                         for column in range(len(row)):
-                            try:
-                                if column > 0:
-                                    semantics[keys[column]].append(float(row[column]))
-                                else:
-                                    semantics[keys[column]].append(row[column])
-                            except ValueError as e:
-                                message = 'Error when reading semantics ' +\
-                                          ('file {}.').format(semantics_file) +\
-                                          'Please ensure there is an entry ' +\
-                                          'for each patient.'
-                                raise ae.PREDICTValueError(message)
-
+                            if column > 0:
+                                semantics[keys[column]].append(float(row[column]))
+                            else:
+                                semantics[keys[column]].append(row[column])
     else:
         semantics = None
 

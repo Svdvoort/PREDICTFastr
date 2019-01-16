@@ -147,7 +147,7 @@ def plot_ranked_percentages(estimator, pinfo, label_type=None,
 
 def plot_ranked_images(pinfo, label_type, images, segmentations, ranked_truths,
                        ranked_scores, ranked_PIDs, output_zip=None,
-                       output_itk=None, zoomfactor=4, scores='percentages'):
+                       output_itk=None, zoomfactor=4):
     # Match the images to the label data
     print('Matching image and segmentation data to labels.')
     print images
@@ -202,15 +202,7 @@ def plot_ranked_images(pinfo, label_type, images, segmentations, ranked_truths,
         im = sitk.ReadImage(images[idx])
         seg = sitk.ReadImage(segmentations[idx])
         pid = PIDs_images[idx]
-        if scores == 'posteriors':
-            printnum = str(ranked_scores[idx])
-            printnum = printnum[0:min(4, len(printnum))]
-        elif scores == 'percentages':
-            printnum = str(int(ranked_scores[idx]))
-        else:
-            raise PREDICTKeyError('Key {} is not recognized for plotting ranked images. Should be posteriors or percentages.').format(scores)
-
-        fname = str(idx).zfill(3) + '_' + printnum + '_' + pid + '_TrueLabel_' + str(ranked_truths[idx]) + '_slice.png'
+        fname = str(int(ranked_scores[idx])) + '_' + pid + '_TrueLabel_' + str(ranked_truths[idx]) + '_slice.png'
 
         if output_zip is not None:
             output_name = os.path.join(os.path.dirname(output_zip), fname)
@@ -404,8 +396,7 @@ def plot_ranked_scores(estimator, pinfo, label_type, scores='percentages',
                            ranked_scores=ranked_scores,
                            ranked_PIDs=ranked_PIDs,
                            output_zip=output_zip,
-                           output_itk=output_itk,
-                           scores=scores)
+                           output_itk=output_itk)
 
 
 def example():
@@ -505,8 +496,7 @@ def example():
                            ranked_truths=ranked_truths,
                            ranked_scores=ranked_scores,
                            ranked_PIDs=ranked_PIDs,
-                           output_zip=output_zip,
-                           scores=scores)
+                           output_zip=output_zip)
 
 
 if __name__ == '__main__':

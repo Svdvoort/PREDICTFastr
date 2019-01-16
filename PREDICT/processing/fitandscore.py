@@ -574,13 +574,6 @@ def delete_nonestimator_parameters(parameters):
         del parameters['StatisticalTestMetric']
         del parameters['StatisticalTestThreshold']
 
-    if 'ReliefUse' in parameters.keys():
-        del parameters['ReliefUse']
-        del parameters['ReliefNN']
-        del parameters['ReliefSampleSize']
-        del parameters['ReliefDistanceP']
-        del parameters['ReliefNumFeatures']
-
     return parameters
 
 
