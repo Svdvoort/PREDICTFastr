@@ -122,20 +122,11 @@ def construct_SVM(config, image_features, regression=False):
         clf = SVMR(max_iter=1E5)
 
     if config['Classification']['Kernel'] == "polynomial" or config['Classification']['Kernel'] == "poly":
-        # param_grid = {'kernel': ['poly'],
-        #               'C': scipy.stats.uniform(loc=0, scale=1E6),
-        #               'degree': scipy.stats.uniform(loc=1, scale=6),
-        #               'coef0': scipy.stats.uniform(loc=0, scale=1),
-        #               'gamma': scipy.stats.uniform(loc=1E-5, scale=1)}
-
         param_grid = {'kernel': ['poly'],
                       'C': log_uniform(loc=0, scale=6),
                       'degree': scipy.stats.uniform(loc=1, scale=6),
                       'coef0': scipy.stats.uniform(loc=0, scale=1),
                       'gamma': log_uniform(loc=-5, scale=5)}
-
-        # 180716
-        # param_grid = {'kernel': ['poly'], 'C': scipy.stats.uniform(loc=0, scale=np.sqrt(len(image_features))), 'degree': scipy.stats.uniform(loc=2, scale=3), 'coef0': scipy.stats.uniform(loc=0, scale=1)}
 
     elif config['Classification']['Kernel'] == "linear":
         param_grid = {'kernel': ['linear'],
@@ -145,7 +136,7 @@ def construct_SVM(config, image_features, regression=False):
     elif config['Classification']['Kernel'] == "rbf":
         param_grid = {'kernel': ['rbf'],
                       'C': log_uniform(loc=0, scale=6),
-                      'gamma': log_uniform(loc=-5, scale=0)}
+                      'gamma': log_uniform(loc=-5, scale=5)}
     else:
         raise ae.PREDICTKeyError("{} is not a valid SVM kernel type!").format(config['Classification']['Kernel'])
 

@@ -462,13 +462,15 @@ def fit_and_score(estimator, X, y, scorer,
     # ----------------------------------------------------------------
     # PCA dimensionality reduction
     # Principle Component Analysis
-    if 'UsePCA' in para_estimator.keys() and ['UsePCA'] == 'True':
-        print('Fitting PCA')
+    if 'UsePCA' in para_estimator.keys() and para_estimator['UsePCA'] == 'True':
+        if verbose:
+            print('Fitting PCA')
+            print("Original Length: " + str(len(feature_values[0])))
         if para_estimator['PCAType'] == '95variance':
             # Select first X components that describe 95 percent of the explained variance
             pca = PCA(n_components=None)
             pca.fit(feature_values)
-            evariance = pca.explained_variance_ratio
+            evariance = pca.explained_variance_ratio_
             num = 0
             sum = 0
             while sum < 0.95:
@@ -479,7 +481,6 @@ def fit_and_score(estimator, X, y, scorer,
             pca = PCA(n_components=num)
             pca.fit(feature_values)
             feature_values = pca.transform(feature_values)
-            feature_labels = pca.transform(feature_labels)
 
         else:
             # Assume a fixed number of components
@@ -487,7 +488,9 @@ def fit_and_score(estimator, X, y, scorer,
             pca = PCA(n_components=n_components)
             pca.fit(feature_values)
             feature_values = pca.transform(feature_values)
-            feature_labels = pca.transform(feature_labels)
+
+        if verbose:
+            print("New Length: " + str(len(feature_values[0])))
     else:
         pca = None
 

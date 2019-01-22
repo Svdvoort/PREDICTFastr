@@ -90,7 +90,17 @@ def plot_bars(params, normalization_factor=None, figwidth=20, fontsize=20):
     np.random.seed(19680801)
 
     # Count how often feature groups are used
-    groups_temp = ['histogram', 'shape', 'orientation', 'semantic', 'patient', 'log', 'vessel', 'phase', 'coliage']
+    if 'texture_features' in params.keys():
+        # Old approach: one hyperparameter for all texture featues
+        groups_temp = ['histogram', 'shape', 'orientation', 'semantic',
+                       'patient', 'log', 'vessel', 'phase', 'coliage']
+    else:
+        groups_temp = ['histogram', 'shape', 'orientation', 'semantic',
+                       'patient', 'log', 'vessel', 'phase', 'coliage',
+                       "texture_gabor", "texture_glcm",
+                       "texture_glcmms", "texture_glrlm",
+                       "texture_glszm", "texture_ngtdm",
+                       "texture_lbp"]
     ntimes_groups = list()
     groups = list()
     for key in groups_temp:
@@ -102,25 +112,27 @@ def plot_bars(params, normalization_factor=None, figwidth=20, fontsize=20):
                 groups.append(key)
 
     # Count how often feature variance tresholding was used
+    if 'texture_features' in params.keys():
+        # Old approach: one hyperparameter for all texture featues
+        # For the texture features, we have more options than simply True and False
+        texture_temp = ['True', 'LBP', 'GLCM', 'GLRLM', 'GLSZM', 'Gabor', 'NGTDM']
+        texture = list()
+        ntimes_texture = list()
+        for key in texture_temp:
+            if key in params['texture_features'].keys():
+                texture.append(key)
+                ntimes_texture.append(params['texture_features'][key])
 
-    # For the texture features, we have more options than simply True and False
-    texture_temp = ['True', 'LBP', 'GLCM', 'GLRLM', 'GLSZM', 'Gabor', 'NGTDM']
-    texture = list()
-    ntimes_texture = list()
-    for key in texture_temp:
-        if key in params['texture_features'].keys():
-            texture.append(key)
-            ntimes_texture.append(params['texture_features'][key])
-
-    # BUG: We did not put a all in the keys but a True, so replace
-    texture[texture.index('True')] = 'All'
+        # BUG: We did not put a all in the keys but a True, so replace
+        texture[texture.index('True')] = 'All'
 
     # # Normalize the values in order to not make figure to large
     if normalization_factor is None:
         normalization_factor = max(ntimes_groups + ntimes_texture)
     normalization_factor = float(normalization_factor)  # Needed for percentages
     ntimes_groups = [x / normalization_factor for x in ntimes_groups]
-    ntimes_texture = [x / normalization_factor for x in ntimes_texture]
+    if 'texture_features' in params.keys():
+        ntimes_texture = [x / normalization_factor for x in ntimes_texture]
 
     # Create the figure for the barchart
     plt.rcdefaults()
@@ -138,27 +150,32 @@ def plot_bars(params, normalization_factor=None, figwidth=20, fontsize=20):
     ax.barh(y_pos, ntimes_groups, align='center',
             color=colors[0], ecolor='black')
     ax.set_yticks(y_postick)
-    ax.set_yticklabels(groups + ['Texture'])
+    if 'texture_features' in params.keys():
+        ax.set_yticklabels(groups + ['Texture'])
+    else:
+        ax.set_yticklabels(groups)
+
     ax.tick_params(axis='both', labelsize=fontsize)
     ax.invert_yaxis()  # labels read top-to-bottom
     ax.set_xlabel('Percentage', fontsize=fontsize)
 
-    # Texture features
-    left = 0
-    y_pos = np.max(y_pos) + 1
+    if 'texture_features' in params.keys():
+        # Texture features
+        left = 0
+        y_pos = np.max(y_pos) + 1
 
-    j = 0
-    for i in np.arange(len(texture)):
-        color = colors[j]
-        if j == 0:
-            j = 1
-        else:
-            j = 0
-        ax.barh(y_pos, ntimes_texture[i], align='center',
-                color=color, ecolor='black', left=left)
-        ax.text(left + ntimes_texture[i]/2, y_pos,
-                texture[i], ha='center', va='center', fontsize=fontsize - 2)
-        left += ntimes_texture[i]
+        j = 0
+        for i in np.arange(len(texture)):
+            color = colors[j]
+            if j == 0:
+                j = 1
+            else:
+                j = 0
+            ax.barh(y_pos, ntimes_texture[i], align='center',
+                    color=color, ecolor='black', left=left)
+            ax.text(left + ntimes_texture[i]/2, y_pos,
+                    texture[i], ha='center', va='center', fontsize=fontsize - 2)
+            left += ntimes_texture[i]
 
     return fig
 

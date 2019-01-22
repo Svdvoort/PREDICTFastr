@@ -222,9 +222,23 @@ def crossval(config, label_data, image_features,
                 for num, pid in enumerate(patient_IDs):
                     if pid in unique_PID_train:
                         indices_train.append(num)
+
+                        # Make sure we get a unique ID
+                        if pid in patient_ID_train:
+                            n = 1
+                            while str(pid + '_' + str(n)) in patient_ID_train:
+                                n += 1
+                            pid = str(pid + '_' + str(n))
                         patient_ID_train.append(pid)
                     else:
                         indices_test.append(num)
+
+                        # Make sure we get a unique ID
+                        if pid in patient_ID_test:
+                            n = 1
+                            while str(pid + '_' + str(n)) in patient_ID_test:
+                                n += 1
+                            pid = str(pid + '_' + str(n))
                         patient_ID_test.append(pid)
 
                 # Split features and labels accordingly

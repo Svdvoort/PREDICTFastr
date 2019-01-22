@@ -33,6 +33,7 @@ Changed
 - Cleaned crossval function for readability.
 - SVM hyperparameters are adjusted.
 - GroupSel now has a separate Hyperparameter for all texture groups.
+- Plot_barchart also compatible with above hyperparameter change.
 - Ranked images are now named with their rank, making it easier to read the
   output.
 
@@ -52,6 +53,8 @@ Fixed
   average is now taken over the posteriors.
 - Plotting posteriors in ranked_images now correctly prints the posterior. Was
   previously converted to integer.
+- Samples get a unique ID in the crossvalidation, so we always now which sample was used.
+- Bug in usage of PCA that caused it to never be used, plus a attribute name error.
 
 
 2.1.0 - 2018-08-09
