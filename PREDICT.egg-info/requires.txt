@@ -5,6 +5,7 @@ decorator>=4.0.10
 fastr>=1.1.2
 funcsigs>=1.0.2
 future>=0.16.0
+ghalton>=0.6.1
 html5lib>=0.999999999
 hyperopt>=0.1
 imbalanced-learn==0.2.1

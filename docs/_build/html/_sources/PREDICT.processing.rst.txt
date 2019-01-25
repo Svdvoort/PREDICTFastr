@@ -4,6 +4,14 @@ PREDICT.processing package
 Submodules
 ----------
 
+PREDICT.processing.AdvancedSampler module
+-----------------------------------------
+
+.. automodule:: PREDICT.processing.AdvancedSampler
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 PREDICT.processing.ICC module
 -----------------------------
 

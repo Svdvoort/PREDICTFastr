@@ -15,8 +15,6 @@
 
 import os
 import sys
-import subprocess
-from setuptools.command.install import install
 from setuptools.command.test import test as TestCommand
 from setuptools import setup, find_packages
 
@@ -89,56 +87,18 @@ class NoseTestCommand(TestCommand):
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-# Numpy and scipy give an error: workaround is installing them first
-
-
-class MyInstall(install):
-    def run(self):
-        try:
-            # note cwd - this makes the current directory
-            # the one with the Makefile.
-            # subprocess.call(['pip install -r requirements-setup.txt'])
-            # for i in setup_requirements:
-            # regcommand = ('pip install ' + i)
-            # regcommand = 'pip install -r requirements.txt'
-            # print regcommand
-            # proc = subprocess.Popen(regcommand,
-            #                         shell=True,
-            #                         stdin=subprocess.PIPE,
-            #                         stdout=subprocess.PIPE,
-            #                         stderr=subprocess.STDOUT,
-            #                         )
-            # stdout_value, stderr_value = proc.communicate('through stdin to stdout\n')
-
-            # Install pyradiomics
-            commands = 'git clone https://github.com/Radiomics/pyradiomics; cd pyradiomics; pip install -r requirements.txt; python setup.py -q install; cd ..; rm -r pyradiomics;'
-            print(commands)
-            proc = subprocess.Popen(commands,
-                                    shell=True,
-                                    stdin=subprocess.PIPE,
-                                    stdout=subprocess.PIPE,
-                                    stderr=subprocess.STDOUT,
-                                    )
-            stdout_value, stderr_value = proc.communicate('through stdin to stdout\n')
-
-        except Exception as e:
-            print(e)
-            exit(1)
-        else:
-            install.run(self)
-
 
 setup(
     name='PREDICT',
-    version='2.1.0',
-    description='Predict: a Radiomics Extensive D.... Interchangable Classification Toolkit.',
+    version='2.1.1',
+    description='Predict: a Radiomics Extensive Digital Interchangable Classification Toolkit.',
     long_description=_description,
     url='https://github.com/Svdvoort/PREDICTFastr',
-    author='S. van der Voort, M. Starmans',
-    author_email='s.vandervoort@erasmusmc.nl, m.starmans@erasmusmc.nl',
+    author='M. Starmans, S. van der Voort',
+    author_email='m.starmans@erasmusmc.nl, s.vandervoort@erasmusmc.nl',
     license='Apache License, Version 2.0',
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
         'Intended Audience :: Healthcare Industry',
@@ -160,7 +120,7 @@ setup(
     install_requires=_requires,
     tests_require=_tests_require,
     test_suite='nose.collector',
-    cmdclass={'test': NoseTestCommand, 'install': MyInstall},
+    cmdclass={'test': NoseTestCommand},
     entry_points=entry_points,
     data_files=[(config_d, ['PREDICT/fastrconfig/PREDICT_config.py'])]
     # setup_requires=_requires

@@ -91,6 +91,7 @@ PREDICT/plotting/Deprecated/showallscores.py
 PREDICT/plotting/Deprecated/showprobs.py
 PREDICT/plotting/Deprecated/showscores.py
 PREDICT/plotting/Deprecated/showsensspec.py
+PREDICT/processing/AdvancedSampler.py
 PREDICT/processing/ICC.py
 PREDICT/processing/Imputer.py
 PREDICT/processing/SearchCV.py

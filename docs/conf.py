@@ -20,13 +20,13 @@
 # -- Project information -----------------------------------------------------
 
 project = 'PREDICT'
-copyright = '2018, Sebastian van der Voort & Martijn Starmans'
-author = 'Sebastian van der Voort & Martijn Starmans'
+copyright = '2019, Martijn Starmans & Sebastian van der Voort'
+author = 'Martijn Starmans & Sebastian van der Voort'
 
 # The short X.Y version
 version = ''
 # The full version, including alpha/beta/rc tags
-release = 'rc2.1.1'
+release = '2.1.1'
 
 
 # -- General configuration ---------------------------------------------------
@@ -130,7 +130,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'PREDICT.tex', 'PREDICT Documentation',
-     'Sebastian van der Voort \\& Martijn Starmans', 'manual'),
+     'Martijn Starmans \\& Sebastian van der Voort', 'manual'),
 ]
 
 
