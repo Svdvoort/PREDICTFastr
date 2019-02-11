@@ -38,7 +38,7 @@ python-dateutil>=2.5.3
 pytz>=2016.7
 rdflib>=4.2.1
 scikit-image>=0.12.3
-scikit-learn>=0.18.2
+scikit-learn==0.20.2
 scipy>=0.18.1
 SimpleITK>=0.9.1
 simplejson>=3.10.0
