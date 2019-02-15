@@ -17,20 +17,20 @@
 
 
 import numpy as np
-from sklearn.metrics import accuracy_score
-from sklearn.metrics import roc_auc_score
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import f1_score
 import sys
 import compute_CI
 import pandas as pd
 import os
 import PREDICT.genetics.genetic_processing as gp
+from PREDICT.classification import metrics
+import PREDICT.addexceptions as ae
+from sklearn import svm
 
 
 def plot_SVM(prediction, label_data, label_type, show_plots=False,
              alpha=0.95, ensemble=False, verbose=True,
-             ensemble_scoring=None, output='stats'):
+             ensemble_scoring=None, output='stats',
+             modus='singlelabel'):
     '''
     Plot the output of a single binary estimator, e.g. a SVM.
 
@@ -101,6 +101,8 @@ def plot_SVM(prediction, label_data, label_type, show_plots=False,
     if type(prediction) is not pd.core.frame.DataFrame:
         if os.path.isfile(prediction):
             prediction = pd.read_hdf(prediction)
+        else:
+            raise ae.PREDICTIOError(('{} is not an existing file!').format(str(prediction)))
 
     # Select the estimator from the pandas dataframe to use
     keys = prediction.keys()
@@ -108,23 +110,30 @@ def plot_SVM(prediction, label_data, label_type, show_plots=False,
     if label_type is None:
         label_type = keys[0]
 
+    # Load the label data
+    if type(label_data) is not dict:
+        if os.path.isfile(label_data):
+            if type(label_type) is not list:
+                # Singlelabel: convert to list
+                label_type = [[label_type]]
+            label_data = gp.load_mutation_status(label_data, label_type)
+
+    patient_IDs = label_data['patient_IDs']
+    mutation_label = label_data['mutation_label']
+
     if type(label_type) is list:
         # FIXME: Support for multiple label types not supported yet.
         print('[PREDICT Warning] Support for multiple label types not supported yet. Taking first label for plot_SVM.')
-        label_type = label_type[0]
+        label_type = keys[0]
 
     # Extract the estimators, features and labels
     SVMs = prediction[label_type]['classifiers']
+    regression = type(SVMs[0].best_estimator_) == svm.classes.SVR
     Y_test = prediction[label_type]['Y_test']
     X_test = prediction[label_type]['X_test']
     X_train = prediction[label_type]['X_train']
     Y_train = prediction[label_type]['Y_train']
     feature_labels = prediction[label_type]['feature_labels']
-
-    # Load the label data
-    if type(label_data) is not dict:
-        if os.path.isfile(label_data):
-            label_data = gp.load_mutation_status(label_data, [[label_type]])
 
     patient_IDs = label_data['patient_IDs']
     mutation_label = label_data['mutation_label']
@@ -187,20 +196,27 @@ def plot_SVM(prediction, label_data, label_type, show_plots=False,
                                     scoring=ensemble_scoring)
 
         # Create prediction
-        y_prediction = SVMs[i].predict(X_test_temp)
+        if regression:
+            y_score = y_prediction
+        else:
+            y_score = SVMs[i].predict_proba(X_test_temp)[:, 1]
 
         print("Truth: " + str(y_truth))
         print("Prediction: " + str(y_prediction))
 
         # Add if patient was classified correctly or not to counting
         for i_truth, i_predict, i_test_ID in zip(y_truth, y_prediction, test_patient_IDs):
-            if i_truth == i_predict:
+            if modus == 'multilabel':
+                success = (i_truth == i_predict).all()
+            else:
+                success = i_truth == i_predict
+
+            if success:
                 patient_classification_list[i_test_ID]['N_correct'] += 1
             else:
                 patient_classification_list[i_test_ID]['N_wrong'] += 1
 
-        y_score = SVMs[i].decision_function(X_test_temp)
-        print('AUC: ' + str(roc_auc_score(y_truth, y_score)))
+        y_score = SVMs[i].predict_proba(X_test_temp)[:, 1]
 
         if output == 'decision':
             # Output the posteriors
@@ -211,7 +227,7 @@ def plot_SVM(prediction, label_data, label_type, show_plots=False,
 
         elif output == 'scores':
             # Output the posteriors
-            y_scores.append(SVMs[i].predict_proba(X_test_temp)[1])
+            y_scores.append(y_score)
             y_truths.append(y_truth)
             y_predictions.append(y_prediction)
             PIDs.append(test_patient_IDs)
@@ -219,29 +235,59 @@ def plot_SVM(prediction, label_data, label_type, show_plots=False,
         elif output == 'stats':
             # Compute statistics
             # Compute confusion matrix and use for sensitivity/specificity
-            c_mat = confusion_matrix(y_truth, y_prediction)
-            TN = c_mat[0, 0]
-            FN = c_mat[1, 0]
-            TP = c_mat[1, 1]
-            FP = c_mat[0, 1]
+            if modus == 'singlelabel':
+                # Compute singlelabel performance metrics
+                if regression:
+                    accuracy_temp, sensitivity_temp, specificity_temp,\
+                        precision_temp, f1_score_temp, auc_temp =\
+                        metrics.performance_singlelabel(y_truth,
+                                                        y_prediction,
+                                                        y_score,
+                                                        regression)
+                else:
+                    r2score, MSE, coefICC, PearsonC, PearsonP, SpearmanC,\
+                        SpearmanP =\
+                        metrics.performance_singlelabel(y_truth,
+                                                        y_prediction,
+                                                        y_score,
+                                                        regression)
 
-            if FN == 0 and TP == 0:
-                sensitivity.append(0)
-            else:
-                sensitivity.append(float(TP)/(TP+FN))
-            if FP == 0 and TN == 0:
-                specificity.append(0)
-            else:
-                specificity.append(float(TN)/(FP+TN))
-            if TP == 0 and FP == 0:
-                precision.append(0)
-            else:
-                precision.append(float(TP)/(TP+FP))
+            elif modus == 'multilabel':
+                # Convert class objects to single label per patient
+                y_truth_temp = list()
+                y_prediction_temp = list()
+                for yt, yp in zip(y_truth, y_prediction):
+                    label = np.where(yt == 1)
+                    if len(label) > 1:
+                        raise ae.PREDICTNotImplementedError('Multiclass classification evaluation is not supported in PREDICT.')
 
-            # Additionally, compute accuracy, AUC and f1-score
-            accuracy.append(accuracy_score(y_truth, y_prediction))
-            auc.append(roc_auc_score(y_truth, y_score))
-            f1_score_list.append(f1_score(y_truth, y_prediction, average='weighted'))
+                    y_truth_temp.append(label[0][0])
+                    label = np.where(yp == 1)
+                    y_prediction_temp.append(label[0][0])
+
+                y_truth = y_truth_temp
+                y_prediction = y_prediction_temp
+
+                # Compute multilabel performance metrics
+                accuracy_temp, sensitivity_temp, specificity_temp,\
+                    precision_temp, f1_score_temp, auc_temp =\
+                    metrics.performance_multilabel(y_truth,
+                                                   y_prediction,
+                                                   y_score)
+
+            else:
+                raise ae.PREDICTKeyError('{} is not a valid modus!').format(modus)
+
+            # Print AUC to keep you up to date
+            print('AUC: ' + str(auc_temp))
+
+            # Append performance to lists for all cross validations
+            accuracy.append(accuracy_temp)
+            sensitivity.append(sensitivity_temp)
+            specificity.append(specificity_temp)
+            auc.append(auc_temp)
+            f1_score_list.append(f1_score_temp)
+            precision.append(precision_temp)
 
     if output in ['scores', 'decision']:
         # Return the scores and true values of all patients
@@ -285,7 +331,12 @@ def plot_SVM(prediction, label_data, label_type, show_plots=False,
         for i_ID in patient_classification_list:
             percentage_right = patient_classification_list[i_ID]['N_correct'] / float(patient_classification_list[i_ID]['N_test'])
 
-            label = mutation_label[0][np.where(i_ID == patient_IDs)]
+            if i_ID in patient_IDs:
+                label = mutation_label[0][np.where(i_ID == patient_IDs)]
+            else:
+                # Multiple instance of one patient
+                label = mutation_label[0][np.where(i_ID.split('_')[0] == patient_IDs)]
+
             label = label[0][0]
             percentages[i_ID] = str(label) + ': ' + str(round(percentage_right, 2) * 100) + '%'
             if percentage_right == 1.0:

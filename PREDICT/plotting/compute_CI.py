@@ -40,7 +40,8 @@ def compute_confidence(metric, N_train, N_test, alpha=0.95):
     if N_iterations == 1.0:
         print('[PREDICT Warning] Cannot compute a confidence interval for a single iteration.')
         print('[PREDICT Warning] CI will be set to value of single iteration.')
-        CI = (metric, metric)
+        metric_average = np.mean(metric)
+        CI = (metric_average, metric_average)
     else:
         metric_average = np.mean(metric)
         S_uj = 1.0 / (N_iterations - 1) * np.sum((metric_average - metric)**2.0)

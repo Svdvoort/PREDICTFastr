@@ -13,10 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-try:
-    import matplotlib.pyplot as plt
-except ImportError:
-    print("[PREDICT Warning] Cannot use plot_ROC function, as _tkinter is not installed")
+import matplotlib
+matplotlib.use('agg')
+import matplotlib.pyplot as plt
 
 import numpy as np
 from matplotlib.ticker import NullLocator

@@ -24,6 +24,8 @@ from sklearn.linear_model import Lasso
 import scipy
 import numpy as np
 import PREDICT.addexceptions as ae
+from PREDICT.classification.estimators import RankedSVM
+from PREDICT.processing.AdvancedSampler import log_uniform
 
 
 def construct_classifier(config, image_features):
@@ -41,7 +43,7 @@ def construct_classifier(config, image_features):
         Constructed classifier
     """
 
-    if config['Classification']['classifier'] == 'SVM':
+    if 'SVM' in config['Classification']['classifier']:
         # Support Vector Machine
         classifier, param_grid = construct_SVM(config, image_features)
 
@@ -115,26 +117,36 @@ def construct_SVM(config, image_features, regression=False):
 
     # TODO: move the max_iter parameter to main config
     if not regression:
-        clf = SVC(class_weight='balanced', probability=True, max_iter=100000)
+        clf = SVC(class_weight='balanced', probability=True, max_iter=1E5)
     else:
-        clf = SVMR(max_iter=100000)
+        clf = SVMR(max_iter=1E5)
 
     if config['Classification']['Kernel'] == "polynomial" or config['Classification']['Kernel'] == "poly":
         param_grid = {'kernel': ['poly'],
-                      'C': scipy.stats.uniform(loc=0, scale=np.sqrt(len(image_features))),
-                      'degree': scipy.stats.uniform(loc=1, scale=4),
-                      'coef0': scipy.stats.uniform(loc=0, scale=1)}
+                      'C': log_uniform(loc=0, scale=6),
+                      'degree': scipy.stats.uniform(loc=1, scale=6),
+                      'coef0': scipy.stats.uniform(loc=0, scale=1),
+                      'gamma': log_uniform(loc=-5, scale=5)}
 
     elif config['Classification']['Kernel'] == "linear":
         param_grid = {'kernel': ['linear'],
-                      'C': scipy.stats.uniform(loc=0, scale=np.sqrt(len(image_features))),
+                      'C': log_uniform(loc=0, scale=6),
                       'coef0': scipy.stats.uniform(loc=0, scale=1)}
 
     elif config['Classification']['Kernel'] == "rbf":
         param_grid = {'kernel': ['rbf'],
-                      'C': scipy.stats.uniform(loc=0, scale=np.sqrt(len(image_features))),
-                      'gamma':  scipy.stats.uniform(loc=0, scale=1e-3)}
+                      'C': log_uniform(loc=0, scale=6),
+                      'gamma': log_uniform(loc=-5, scale=5)}
     else:
         raise ae.PREDICTKeyError("{} is not a valid SVM kernel type!").format(config['Classification']['Kernel'])
+
+    # Check if we need to use a ranked SVM
+    if config['Classification']['classifier'] == 'RankedSVM':
+        clf = RankedSVM()
+        param_grid = {'svm': ['Poly'],
+                      'degree': [2, 3, 4, 5],
+                      'gamma':  scipy.stats.uniform(loc=0, scale=1e-3),
+                      'coefficient': scipy.stats.uniform(loc=0, scale=1e-2),
+                      }
 
     return clf, param_grid

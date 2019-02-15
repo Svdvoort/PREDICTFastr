@@ -13,10 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-try:
-    import matplotlib.pyplot as plt
-except ImportError:
-    print("[PREDICT Warning] Cannot use plot_ROC function, as _tkinter is not installed")
+import matplotlib
+matplotlib.use('agg')
+import matplotlib.pyplot as plt
 
 from matplotlib2tikz import save as tikz_save
 import pandas as pd
@@ -314,7 +313,7 @@ def main():
              output_csv=args.output_csv)
 
 
-def plot_ROC(prediction, pinfo, ensemble=50, label_type=None,
+def plot_ROC(prediction, pinfo, ensemble=1, label_type=None,
              output_png=None, output_tex=None, output_csv=None):
     # Convert the inputs to the correct format
     if type(prediction) is list:

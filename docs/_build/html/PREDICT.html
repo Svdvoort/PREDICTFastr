@@ -1,0 +1,439 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>PREDICT package &#8212; PREDICT 2.1.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="predict-package">
+<h1>PREDICT package<a class="headerlink" href="#predict-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="PREDICT.IOparser.html">PREDICT.IOparser package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.IOparser.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.IOparser.html#module-PREDICT.IOparser.config_io">PREDICT.IOparser.config_io module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.IOparser.html#module-PREDICT.IOparser.config_io_CalcFeatures">PREDICT.IOparser.config_io_CalcFeatures module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.IOparser.html#module-PREDICT.IOparser.config_io_classifier">PREDICT.IOparser.config_io_classifier module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.IOparser.html#module-PREDICT.IOparser.file_io">PREDICT.IOparser.file_io module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.IOparser.html#module-PREDICT.IOparser">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PREDICT.classification.html">PREDICT.classification package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.classification.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.classification.html#module-PREDICT.classification.RankedSVM">PREDICT.classification.RankedSVM module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.classification.html#module-PREDICT.classification.construct_classifier">PREDICT.classification.construct_classifier module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.classification.html#module-PREDICT.classification.crossval">PREDICT.classification.crossval module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.classification.html#module-PREDICT.classification.estimators">PREDICT.classification.estimators module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.classification.html#module-PREDICT.classification.metrics">PREDICT.classification.metrics module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.classification.html#module-PREDICT.classification.parameter_optimization">PREDICT.classification.parameter_optimization module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.classification.html#module-PREDICT.classification">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PREDICT.featureselection.html">PREDICT.featureselection package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.featureselection.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.featureselection.html#module-PREDICT.featureselection.Relief">PREDICT.featureselection.Relief module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.featureselection.html#module-PREDICT.featureselection.SelectGroups">PREDICT.featureselection.SelectGroups module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.featureselection.html#module-PREDICT.featureselection.SelectIndividuals">PREDICT.featureselection.SelectIndividuals module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.featureselection.html#module-PREDICT.featureselection.StatisticalTestThreshold">PREDICT.featureselection.StatisticalTestThreshold module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.featureselection.html#module-PREDICT.featureselection.VarianceThreshold">PREDICT.featureselection.VarianceThreshold module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.featureselection.html#module-PREDICT.featureselection">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PREDICT.genetics.html">PREDICT.genetics package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.genetics.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.genetics.html#module-PREDICT.genetics.genetic_processing">PREDICT.genetics.genetic_processing module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.genetics.html#module-PREDICT.genetics">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PREDICT.helpers.html">PREDICT.helpers package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.helpers.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.helpers.html#module-PREDICT.helpers.contour_functions">PREDICT.helpers.contour_functions module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.helpers.html#module-PREDICT.helpers.contour_functions_3d">PREDICT.helpers.contour_functions_3d module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.helpers.html#module-PREDICT.helpers.image_helper">PREDICT.helpers.image_helper module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.helpers.html#module-PREDICT.helpers.orientation_functions">PREDICT.helpers.orientation_functions module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.helpers.html#module-PREDICT.helpers.sitk_helper">PREDICT.helpers.sitk_helper module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.helpers.html#module-PREDICT.helpers">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PREDICT.imagefeatures.html">PREDICT.imagefeatures package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.imagefeatures.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.imagefeatures.html#module-PREDICT.imagefeatures.coliage_features">PREDICT.imagefeatures.coliage_features module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.imagefeatures.html#module-PREDICT.imagefeatures.contour_functions">PREDICT.imagefeatures.contour_functions module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.imagefeatures.html#module-PREDICT.imagefeatures.dti_features">PREDICT.imagefeatures.dti_features module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.imagefeatures.html#module-PREDICT.imagefeatures.get_features">PREDICT.imagefeatures.get_features module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.imagefeatures.html#module-PREDICT.imagefeatures.histogram_features">PREDICT.imagefeatures.histogram_features module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.imagefeatures.html#module-PREDICT.imagefeatures.image_helper">PREDICT.imagefeatures.image_helper module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.imagefeatures.html#module-PREDICT.imagefeatures.log_features">PREDICT.imagefeatures.log_features module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.imagefeatures.html#module-PREDICT.imagefeatures.orientation_features">PREDICT.imagefeatures.orientation_features module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.imagefeatures.html#module-PREDICT.imagefeatures.patient_features">PREDICT.imagefeatures.patient_features module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.imagefeatures.html#module-PREDICT.imagefeatures.phase_features">PREDICT.imagefeatures.phase_features module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.imagefeatures.html#module-PREDICT.imagefeatures.semantic_features">PREDICT.imagefeatures.semantic_features module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.imagefeatures.html#module-PREDICT.imagefeatures.shape_features">PREDICT.imagefeatures.shape_features module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.imagefeatures.html#module-PREDICT.imagefeatures.sitk_helper">PREDICT.imagefeatures.sitk_helper module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.imagefeatures.html#module-PREDICT.imagefeatures.texture_features">PREDICT.imagefeatures.texture_features module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.imagefeatures.html#module-PREDICT.imagefeatures.vessel_features">PREDICT.imagefeatures.vessel_features module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.imagefeatures.html#module-PREDICT.imagefeatures">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PREDICT.plotting.html">PREDICT.plotting package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.plotting.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.plotting.html#module-PREDICT.plotting.compute_CI">PREDICT.plotting.compute_CI module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.plotting.html#module-PREDICT.plotting.getfeatureimages">PREDICT.plotting.getfeatureimages module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.plotting.html#module-PREDICT.plotting.linstretch">PREDICT.plotting.linstretch module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.plotting.html#module-PREDICT.plotting.plot_ROC">PREDICT.plotting.plot_ROC module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.plotting.html#module-PREDICT.plotting.plot_SVM">PREDICT.plotting.plot_SVM module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.plotting.html#module-PREDICT.plotting.plot_SVR">PREDICT.plotting.plot_SVR module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.plotting.html#module-PREDICT.plotting.plot_barchart">PREDICT.plotting.plot_barchart module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.plotting.html#module-PREDICT.plotting.plot_boxplot">PREDICT.plotting.plot_boxplot module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.plotting.html#module-PREDICT.plotting.plot_images">PREDICT.plotting.plot_images module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.plotting.html#module-PREDICT.plotting.plot_ranked_scores">PREDICT.plotting.plot_ranked_scores module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.plotting.html#module-PREDICT.plotting.plotminmaxresponse">PREDICT.plotting.plotminmaxresponse module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.plotting.html#module-PREDICT.plotting.scatterplot">PREDICT.plotting.scatterplot module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.plotting.html#module-PREDICT.plotting">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PREDICT.processing.html">PREDICT.processing package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.processing.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.processing.html#module-PREDICT.processing.AdvancedSampler">PREDICT.processing.AdvancedSampler module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.processing.html#module-PREDICT.processing.ICC">PREDICT.processing.ICC module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.processing.html#module-PREDICT.processing.Imputer">PREDICT.processing.Imputer module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.processing.html#module-PREDICT.processing.SearchCV">PREDICT.processing.SearchCV module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.processing.html#module-PREDICT.processing.fitandscore">PREDICT.processing.fitandscore module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PREDICT.processing.html#module-PREDICT.processing">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-PREDICT.CalcFeatures">
+<span id="predict-calcfeatures-module"></span><h2>PREDICT.CalcFeatures module<a class="headerlink" href="#module-PREDICT.CalcFeatures" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="PREDICT.CalcFeatures.CalcFeatures">
+<code class="descclassname">PREDICT.CalcFeatures.</code><code class="descname">CalcFeatures</code><span class="sig-paren">(</span><em>image</em>, <em>segmentation</em>, <em>parameters</em>, <em>output</em>, <em>metadata_file=None</em>, <em>semantics_file=None</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.CalcFeatures.CalcFeatures" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate features from a ROI of an image. This function serves as a wrapper
+around the get_features function from the imagefeatures folder. It
+reads all inputs, processes it through the get_features function per image
+and ROI and writes the output to HDF5 files.</p>
+<dl class="docutils">
+<dt>image: string, mandatory</dt>
+<dd>path referring to image file. Should be a format compatible
+with ITK, e.g. .nii, .nii.gz, .mhd, .raw, .tiff, .nrrd or
+a DICOM folder.</dd>
+<dt>segmentation: string, mandatory</dt>
+<dd>path referring to segmentation file. Should be a format compatible
+with ITK, e.g. .nii, .nii.gz, .mhd, .raw, .tiff, .nrrd.</dd>
+<dt>parameters: string, mandatory,</dt>
+<dd>path referring to a .ini file containing the parameters
+used for feature extraction. See the Github Wiki for the possible
+fields and their description.</dd>
+<dt>output: string, mandatory</dt>
+<dd>path referring to the .hdf5 file to which the output should be written.</dd>
+<dt>metadata_file: string, optional</dt>
+<dd>path referring to a .dcm file from which the patient features will
+be extracted.</dd>
+<dt>semantics_file: string, optional</dt>
+<dd>path referring to a .csv file from which the semantic features will
+be extracted. See the Github Wiki for the correct format.</dd>
+<dt>verbose: boolean, default True</dt>
+<dd>print final feature values and labels to command line or not.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="PREDICT.CalcFeatures.load_images">
+<code class="descclassname">PREDICT.CalcFeatures.</code><code class="descname">load_images</code><span class="sig-paren">(</span><em>image_file</em>, <em>image_type</em>, <em>metadata_file=None</em>, <em>semantics_file=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.CalcFeatures.load_images" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load ITK images, the corresponding DICOM file for the metadata, a file
+containing the semantics and converts them to Python objects.</p>
+<dl class="docutils">
+<dt>image_file: string, mandatory</dt>
+<dd>path referring to image file. Should be a format compatible
+with ITK, e.g. .nii, .nii.gz, .mhd, .raw, .tiff, .nrrd. or a
+DICOM folder.</dd>
+<dt>image_type: string, mandatory</dt>
+<dd>defines the modality of the scan used. Different loading functions
+are used for different modalities.</dd>
+<dt>metadata_file: string, optional</dt>
+<dd>path referring to a DICOM file. Used to extract metadata features.</dd>
+<dt>semantics_file: string, optional</dt>
+<dd>path referring to a CSV file. Used to extract semantic features.</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-PREDICT.StatisticalTestFeatures">
+<span id="predict-statisticaltestfeatures-module"></span><h2>PREDICT.StatisticalTestFeatures module<a class="headerlink" href="#module-PREDICT.StatisticalTestFeatures" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="PREDICT.StatisticalTestFeatures.StatisticalTestFeatures">
+<code class="descclassname">PREDICT.StatisticalTestFeatures.</code><code class="descname">StatisticalTestFeatures</code><span class="sig-paren">(</span><em>features</em>, <em>patientinfo</em>, <em>config</em>, <em>output=None</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.StatisticalTestFeatures.StatisticalTestFeatures" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform several statistical tests on features, such as a student t-test.
+Useage is similar to trainclassifier.</p>
+<dl class="docutils">
+<dt>features: string, mandatory</dt>
+<dd>contains the paths to all .hdf5 feature files used.
+modalityname1=file1,file2,file3,... modalityname2=file1,...
+Thus, modalities names are always between a space and a equal
+sign, files are split by commas. We assume that the lists of
+files for each modality has the same length. Files on the
+same position on each list should belong to the same patient.</dd>
+<dt>patientinfo: string, mandatory</dt>
+<dd>Contains the path referring to a .txt file containing the
+patient label(s) and value(s) to be used for learning. See
+the Github Wiki for the format.</dd>
+<dt>config: string, mandatory</dt>
+<dd>path referring to a .ini file containing the parameters
+used for feature extraction. See the Github Wiki for the possible
+fields and their description.</dd>
+</dl>
+<p># TODO: outputs</p>
+<dl class="docutils">
+<dt>verbose: boolean, default True</dt>
+<dd>print final feature values and labels to command line or not.</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-PREDICT.addexceptions">
+<span id="predict-addexceptions-module"></span><h2>PREDICT.addexceptions module<a class="headerlink" href="#module-PREDICT.addexceptions" title="Permalink to this headline">¶</a></h2>
+<p>This module contains all PREDICT-related Exceptions</p>
+<dl class="exception">
+<dt id="PREDICT.addexceptions.PREDICTAssertionError">
+<em class="property">exception </em><code class="descclassname">PREDICT.addexceptions.</code><code class="descname">PREDICTAssertionError</code><a class="headerlink" href="#PREDICT.addexceptions.PREDICTAssertionError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PREDICT.addexceptions.PREDICTError" title="PREDICT.addexceptions.PREDICTError"><code class="xref py py-class docutils literal"><span class="pre">PREDICT.addexceptions.PREDICTError</span></code></a>, <code class="xref py py-class docutils literal"><span class="pre">exceptions.AssertionError</span></code></p>
+<p>AssertionError in the PREDICT system</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="PREDICT.addexceptions.PREDICTError">
+<em class="property">exception </em><code class="descclassname">PREDICT.addexceptions.</code><code class="descname">PREDICTError</code><a class="headerlink" href="#PREDICT.addexceptions.PREDICTError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></code></p>
+<p>This is the base class for all PREDICT related exceptions. Catching this
+class of exceptions should ensure a proper execution of PREDICT.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="PREDICT.addexceptions.PREDICTIOError">
+<em class="property">exception </em><code class="descclassname">PREDICT.addexceptions.</code><code class="descname">PREDICTIOError</code><a class="headerlink" href="#PREDICT.addexceptions.PREDICTIOError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PREDICT.addexceptions.PREDICTError" title="PREDICT.addexceptions.PREDICTError"><code class="xref py py-class docutils literal"><span class="pre">PREDICT.addexceptions.PREDICTError</span></code></a>, <code class="xref py py-class docutils literal"><span class="pre">exceptions.IOError</span></code></p>
+<p>IOError in PREDICT</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="PREDICT.addexceptions.PREDICTIndexError">
+<em class="property">exception </em><code class="descclassname">PREDICT.addexceptions.</code><code class="descname">PREDICTIndexError</code><a class="headerlink" href="#PREDICT.addexceptions.PREDICTIndexError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PREDICT.addexceptions.PREDICTError" title="PREDICT.addexceptions.PREDICTError"><code class="xref py py-class docutils literal"><span class="pre">PREDICT.addexceptions.PREDICTError</span></code></a>, <code class="xref py py-class docutils literal"><span class="pre">exceptions.IndexError</span></code></p>
+<p>IndexError in the PREDICT system</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="PREDICT.addexceptions.PREDICTKeyError">
+<em class="property">exception </em><code class="descclassname">PREDICT.addexceptions.</code><code class="descname">PREDICTKeyError</code><a class="headerlink" href="#PREDICT.addexceptions.PREDICTKeyError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PREDICT.addexceptions.PREDICTError" title="PREDICT.addexceptions.PREDICTError"><code class="xref py py-class docutils literal"><span class="pre">PREDICT.addexceptions.PREDICTError</span></code></a>, <code class="xref py py-class docutils literal"><span class="pre">exceptions.KeyError</span></code></p>
+<p>KeyError in the PREDICT system</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="PREDICT.addexceptions.PREDICTNotImplementedError">
+<em class="property">exception </em><code class="descclassname">PREDICT.addexceptions.</code><code class="descname">PREDICTNotImplementedError</code><a class="headerlink" href="#PREDICT.addexceptions.PREDICTNotImplementedError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PREDICT.addexceptions.PREDICTError" title="PREDICT.addexceptions.PREDICTError"><code class="xref py py-class docutils literal"><span class="pre">PREDICT.addexceptions.PREDICTError</span></code></a>, <code class="xref py py-class docutils literal"><span class="pre">exceptions.NotImplementedError</span></code></p>
+<p>This function/method has not been implemented on purpose (e.g. should be
+overwritten in a sub-class)</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="PREDICT.addexceptions.PREDICTTypeError">
+<em class="property">exception </em><code class="descclassname">PREDICT.addexceptions.</code><code class="descname">PREDICTTypeError</code><a class="headerlink" href="#PREDICT.addexceptions.PREDICTTypeError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PREDICT.addexceptions.PREDICTError" title="PREDICT.addexceptions.PREDICTError"><code class="xref py py-class docutils literal"><span class="pre">PREDICT.addexceptions.PREDICTError</span></code></a>, <code class="xref py py-class docutils literal"><span class="pre">exceptions.TypeError</span></code></p>
+<p>TypeError in the PREDICT system</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="PREDICT.addexceptions.PREDICTValueError">
+<em class="property">exception </em><code class="descclassname">PREDICT.addexceptions.</code><code class="descname">PREDICTValueError</code><a class="headerlink" href="#PREDICT.addexceptions.PREDICTValueError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PREDICT.addexceptions.PREDICTError" title="PREDICT.addexceptions.PREDICTError"><code class="xref py py-class docutils literal"><span class="pre">PREDICT.addexceptions.PREDICTError</span></code></a>, <code class="xref py py-class docutils literal"><span class="pre">exceptions.ValueError</span></code></p>
+<p>TypeError in the PREDICT system</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-PREDICT.trainclassifier">
+<span id="predict-trainclassifier-module"></span><h2>PREDICT.trainclassifier module<a class="headerlink" href="#module-PREDICT.trainclassifier" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="PREDICT.trainclassifier.load_features">
+<code class="descclassname">PREDICT.trainclassifier.</code><code class="descname">load_features</code><span class="sig-paren">(</span><em>feat</em>, <em>patientinfo</em>, <em>label_type</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.trainclassifier.load_features" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read feature files and stack the features per patient in an array.
+Additionally, if a patient label file is supplied, the features from
+a patient will be matched to the labels.</p>
+<dl class="docutils">
+<dt>featurefiles: list, mandatory</dt>
+<dd><p class="first">List containing all paths to the .hdf5 feature files to be loaded.
+The argument should contain a list per modelity, e.g.
+[[features_mod1_patient1, features_mod1_patient2, ...],</p>
+<blockquote class="last">
+<div>[features_mod2_patient1, features_mod2_patient2, ...]].</div></blockquote>
+</dd>
+<dt>patientinfo: string, optional</dt>
+<dd>Path referring to the .txt file to be used to read patient
+labels from. See the Github Wiki for the format.</dd>
+<dt>label_names: list, optional</dt>
+<dd>List containing all the labels that should be extracted from
+the patientinfo file.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="PREDICT.trainclassifier.trainclassifier">
+<code class="descclassname">PREDICT.trainclassifier.</code><code class="descname">trainclassifier</code><span class="sig-paren">(</span><em>feat_train</em>, <em>patientinfo_train</em>, <em>config</em>, <em>output_hdf</em>, <em>output_json</em>, <em>feat_test=None</em>, <em>patientinfo_test=None</em>, <em>fixedsplits=None</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.trainclassifier.trainclassifier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Train a classifier using machine learning from features. By default, if no
+split in training and test is supplied, a cross validation
+will be performed.</p>
+<dl class="docutils">
+<dt>feat_train: string, mandatory</dt>
+<dd>contains the paths to all .hdf5 feature files used.
+modalityname1=file1,file2,file3,... modalityname2=file1,...
+Thus, modalities names are always between a space and a equal
+sign, files are split by commas. We assume that the lists of
+files for each modality has the same length. Files on the
+same position on each list should belong to the same patient.</dd>
+<dt>patientinfo: string, mandatory</dt>
+<dd>Contains the path referring to a .txt file containing the
+patient label(s) and value(s) to be used for learning. See
+the Github Wiki for the format.</dd>
+<dt>config: string, mandatory</dt>
+<dd>path referring to a .ini file containing the parameters
+used for feature extraction. See the Github Wiki for the possible
+fields and their description.</dd>
+<dt>output_hdf: string, mandatory</dt>
+<dd>path refering to a .hdf5 file to which the final classifier and
+it&#8217;s properties will be written to.</dd>
+<dt>output_json: string, mandatory</dt>
+<dd>path refering to a .json file to which the performance of the final
+classifier will be written to. This file is generated through one of
+the PREDICT plotting functions.</dd>
+<dt>feat_test: string, optional</dt>
+<dd>When this argument is supplied, the machine learning will not be
+trained using a cross validation, but rather using a fixed training
+and text split. This field should contain paths of the test set
+feature files, similar to the feat_train argument.</dd>
+<dt>patientinfo_test: string, optional</dt>
+<dd>When feat_test is supplied, you can supply optionally a patient label
+file through which the performance will be evaluated.</dd>
+<dt>fixedsplits: string, optional</dt>
+<dd>By default, random split cross validation is used to train and
+evaluate the machine learning methods. Optionally, you can provide
+a .xlsx file containing fixed splits to be used. See the Github Wiki
+for the format.</dd>
+<dt>verbose: boolean, default True</dt>
+<dd>print final feature values and labels to command line or not.</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-PREDICT">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-PREDICT" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">PREDICT package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-PREDICT.CalcFeatures">PREDICT.CalcFeatures module</a></li>
+<li><a class="reference internal" href="#module-PREDICT.StatisticalTestFeatures">PREDICT.StatisticalTestFeatures module</a></li>
+<li><a class="reference internal" href="#module-PREDICT.addexceptions">PREDICT.addexceptions module</a></li>
+<li><a class="reference internal" href="#module-PREDICT.trainclassifier">PREDICT.trainclassifier module</a></li>
+<li><a class="reference internal" href="#module-PREDICT">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/PREDICT.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Martijn Starmans & Sebastian van der Voort.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/PREDICT.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

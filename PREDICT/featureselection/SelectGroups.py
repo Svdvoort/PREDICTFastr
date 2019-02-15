@@ -41,7 +41,13 @@ class SelectGroups(BaseEstimator, SelectorMixin):
                 - phase_features
                 - vessel_features
                 - log_features
-                - texture_features
+                - texture_Gabor_features
+                - texture_GLCM_features
+                - texture_GLCMMS_features
+                - texture_GLRLM_features
+                - texture_GLSZM_features
+                - texture_NGTDM_features
+                - texture_LBP_features
 
         '''
         params = list()
@@ -63,12 +69,31 @@ class SelectGroups(BaseEstimator, SelectorMixin):
             params.append('vf_')
         if parameters['log_features'] == 'True':
             params.append('logf_')
-        if parameters['texture_features'] == 'True':
-            params.append('tf_')
-        elif parameters['texture_features'] == 'False':
-            pass
+
+        if 'texture_features' in parameters.keys():
+            # Backwards compatability
+            if parameters['texture_features'] == 'True':
+                params.append('tf_')
+            elif parameters['texture_features'] == 'False':
+                pass
+            else:
+                params.append('tf_' + parameters['texture_features'])
         else:
-            params.append('tf_' + parameters['texture_features'])
+            # Hyperparameter per feature group
+            if parameters['texture_gabor_features'] == 'True':
+                params.append('tf_Gabor')
+            if parameters['texture_glcm_features'] == 'True':
+                params.append('tf_GLCM_')
+            if parameters['texture_glcmms_features'] == 'True':
+                params.append('tf_GLCMMS')
+            if parameters['texture_glrlm_features'] == 'True':
+                params.append('tf_GLRLM')
+            if parameters['texture_glszm_features'] == 'True':
+                params.append('tf_GLSZM')
+            if parameters['texture_ngtdm_features'] == 'True':
+                params.append('tf_NGTDM')
+            if parameters['texture_lbp_features'] == 'True':
+                params.append('tf_LBP')
 
         self.parameters = params
 

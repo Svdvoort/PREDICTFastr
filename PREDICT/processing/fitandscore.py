@@ -27,6 +27,9 @@ from sklearn.feature_selection import SelectFromModel
 import scipy
 from sklearn.preprocessing import Imputer
 from sklearn.decomposition import PCA
+from PREDICT.featureselection.Relief import SelectMulticlassRelief
+from sklearn.multiclass import OneVsRestClassifier
+from PREDICT.classification.estimators import RankedSVM
 
 
 def fit_and_score(estimator, X, y, scorer,
@@ -35,17 +38,22 @@ def fit_and_score(estimator, X, y, scorer,
                   return_train_score=True,
                   return_n_test_samples=True,
                   return_times=True, return_parameters=True,
-                  error_score='raise', verbose=True):
+                  error_score='raise', verbose=True,
+                  return_all=True):
     '''
     Fit an estimator to a dataset and score the performance. The following
-    methods can currently be applied as preprocessing before fitting in
+    methods can currently be applied as preprocessing before fitting, in
     this order:
-    1. Select features based on type group.
-    2. Apply feature imputation.
+    1. Select features based on feature type group (e.g. shape, histogram).
+    2. Apply feature imputation (WIP).
     3. Apply feature selection based on variance of feature among patients.
-    4. Scale features with e.g. z-scoring.
-    5. Select features based on a fit with a LASSO model.
-    6. Select features using PCA.
+    4. Univariate statistical testing (e.g. t-test, Wilcoxon).
+    5. Scale features with e.g. z-scoring.
+    6. Use Relief feature selection.
+    7. Select features based on a fit with a LASSO model.
+    8. Select features using PCA.
+    9. If a SingleLabel classifier is used for a MultiLabel problem,
+        a OneVsRestClassifier is employed around it.
 
     All of the steps are optional.
 
@@ -103,23 +111,45 @@ def fit_and_score(estimator, X, y, scorer,
             If True, print intermediate progress to command line. Warnings are
             always printed.
 
+    return_all: boolean, default=True
+            If False, only the ret object containing the performance will be
+            returned. If True, the ret object plus all fitted objects will be
+            returned.
+
     Returns
     ----------
-    ret
+    Depending on the return_all input parameter, either only ret or all objects
+    below are returned.
 
-    GroupSel
+    ret: list
+        Contains optionally the train_scores and the test_scores,
+        test_sample_counts, fit_time, score_time, parameters_est
+        and parameters_all.
 
-    VarSel
+    GroupSel: PREDICT GroupSel Object
+        Either None if the GroupSelFitted GroupSel Object.
 
-    SelectModel
+    VarSel: PREDICT GroupSel Object
+        Either None if the GroupSelFitted GroupSel Object.
+
+    SelectModel: PREDICT GroupSel Object
+        Either None if the GroupSelFitted GroupSel Object.
 
     feature_labels
 
     scaler
 
-    imputer
+    imputer: PREDICT GroupSel Object
+        Either None if the GroupSelFitted GroupSel Object.
 
-    pca
+    pca: PREDICT GroupSel Object
+        Either None if the GroupSelFitted GroupSel Object.
+
+    StatisticalSel: PREDICT GroupSel Object
+        Either None if the GroupSelFitted GroupSel Object.
+
+    ReliefSel: PREDICT GroupSel Object
+        Either None if the GroupSelFitted GroupSel Object.
 
     '''
     # We copy the parameter object so we can alter it and keep the original
@@ -138,14 +168,27 @@ def fit_and_score(estimator, X, y, scorer,
         # TODO: more elegant way to solve this
         feature_groups = ["histogram_features", "orientation_features",
                           "patient_features", "semantic_features",
-                          "shape_features", "texture_features",
+                          "shape_features",
                           "coliage_features", 'vessel_features',
-                          "phase_features", "log_features"]
+                          "phase_features", "log_features",
+                          "texture_gabor_features", "texture_glcm_features",
+                          "texture_glcmms_features", "texture_glrlm_features",
+                          "texture_glszm_features", "texture_ngtdm_features",
+                          "texture_lbp_features"]
+
+        # Backwards compatability
+        if 'texture_features' in para_estimator.keys():
+            feature_groups.append('texture_features')
+
+        # Check per feature group if the parameter is present
         parameters_featsel = dict()
         for group in feature_groups:
             if group not in para_estimator:
-                # Default: do use the group
-                value = True
+                # Default: do use the group, except for texture features
+                if group == 'texture_features':
+                    value = 'False'
+                else:
+                    value = 'True'
             else:
                 value = para_estimator[group]
                 del para_estimator[group]
@@ -163,6 +206,10 @@ def fit_and_score(estimator, X, y, scorer,
     else:
         GroupSel = None
 
+    # Delete the object if we do not need to return it
+    if not return_all:
+        del GroupSel
+
     # Check whether there are any features left
     if len(feature_values[0]) == 0:
         # TODO: Make a specific PREDICT exception for this warning.
@@ -177,23 +224,30 @@ def fit_and_score(estimator, X, y, scorer,
         pca = None
         StatisticalSel = None
         imputer = None
+        ReliefSel = None
 
         # Delete the non-used fields
         para_estimator = delete_nonestimator_parameters(para_estimator)
 
         ret = [0, 0, 0, 0, 0, para_estimator, para]
-        return ret, GroupSel, VarSel, SelectModel, feature_labels[0], scaler, imputer, pca, StatisticalSel
+        if return_all:
+            return ret, GroupSel, VarSel, SelectModel, feature_labels[0], scaler, imputer, pca, StatisticalSel, ReliefSel
+        else:
+            return ret
 
     # ------------------------------------------------------------------------
     # Feature imputation
-    if 'Imputation' in para_estimator.keys() and ['Imputation'] == 'True':
-        imp_type = para_estimator['ImputationMethod']
-        imp_nn = para_estimator['ImputationNeighbours']
+    if 'Imputation' in para_estimator.keys():
+        if para_estimator['Imputation'] == 'True':
+            imp_type = para_estimator['ImputationMethod']
+            imp_nn = para_estimator['ImputationNeighbours']
 
-        imputer = Imputer(missing_values='NaN', strategy=imp_type,
-                          n_neighbors=imp_nn, axis=0)
-        imputer.fit(feature_values)
-        feature_values = imputer.transform(feature_values)
+            imputer = Imputer(missing_values='NaN', strategy=imp_type,
+                              n_neighbors=imp_nn, axis=0)
+            imputer.fit(feature_values)
+            feature_values = imputer.transform(feature_values)
+        else:
+            imputer = None
     else:
         imputer = None
 
@@ -201,6 +255,10 @@ def fit_and_score(estimator, X, y, scorer,
         del para_estimator['Imputation']
         del para_estimator['ImputationMethod']
         del para_estimator['ImputationNeighbours']
+
+    # Delete the object if we do not need to return it
+    if not return_all:
+        del imputer
 
     # ------------------------------------------------------------------------
     # FIXME: When only using LBP feature, X is 3 dimensional with 3rd dimension length 1
@@ -232,6 +290,10 @@ def fit_and_score(estimator, X, y, scorer,
         VarSel = None
     del para_estimator['Featsel_Variance']
 
+    # Delete the object if we do not need to return it
+    if not return_all:
+        del VarSel
+
     # Check whether there are any features left
     if len(feature_values[0]) == 0:
         # TODO: Make a specific PREDICT exception for this warning.
@@ -246,7 +308,10 @@ def fit_and_score(estimator, X, y, scorer,
         pca = None
         StatisticalSel = None
         ret = [0, 0, 0, 0, 0, para_estimator, para]
-        return ret, GroupSel, VarSel, SelectModel, feature_labels[0], scaler, imputer, pca, StatisticalSel
+        if return_all:
+            return ret, GroupSel, VarSel, SelectModel, feature_labels[0], scaler, imputer, pca, StatisticalSel, ReliefSel
+        else:
+            return ret
 
     # --------------------------------------------------------------------
     # Feature selection based on a statistical test
@@ -275,6 +340,10 @@ def fit_and_score(estimator, X, y, scorer,
     else:
         StatisticalSel = None
 
+    # Delete the object if we do not need to return it
+    if not return_all:
+        del StatisticalSel
+
     # Check whether there are any features left
     if len(feature_values[0]) == 0:
         # TODO: Make a specific PREDICT exception for this warning.
@@ -288,7 +357,10 @@ def fit_and_score(estimator, X, y, scorer,
         SelectModel = None
         pca = None
         ret = [0, 0, 0, 0, 0, para_estimator, para]
-        return ret, GroupSel, VarSel, SelectModel, feature_labels[0], scaler, imputer, pca, StatisticalSel
+        if return_all:
+            return ret, GroupSel, VarSel, SelectModel, feature_labels[0], scaler, imputer, pca, StatisticalSel, ReliefSel
+        else:
+            return ret
 
     # ------------------------------------------------------------------------
     # Feature scaling
@@ -308,6 +380,52 @@ def fit_and_score(estimator, X, y, scorer,
         del para_estimator['FeatureScaling']
     else:
         scaler = None
+
+    # Delete the object if we do not need to return it
+    if not return_all:
+        del scaler
+
+    # --------------------------------------------------------------------
+    # Relief feature selection, possibly multi classself.
+    # Needs to be done after scaling!
+    # para_estimator['ReliefUse'] = 'True'
+    if 'ReliefUse' in para_estimator.keys():
+        if para_estimator['ReliefUse'] == 'True':
+            if verbose:
+                print("Selecting features using relief.")
+
+            # Get parameters from para_estimator
+            n_neighbours = para_estimator['ReliefNN']
+            sample_size = para_estimator['ReliefSampleSize']
+            distance_p = para_estimator['ReliefDistanceP']
+            numf = para_estimator['ReliefNumFeatures']
+
+            ReliefSel = SelectMulticlassRelief(n_neighbours=n_neighbours,
+                                               sample_size=sample_size,
+                                               distance_p=distance_p,
+                                               numf=numf)
+            ReliefSel.fit(feature_values, y)
+            if verbose:
+                print("Original Length: " + str(len(feature_values[0])))
+            feature_values = ReliefSel.transform(feature_values)
+            if verbose:
+                print("New Length: " + str(len(feature_values[0])))
+            feature_labels = ReliefSel.transform(feature_labels)
+        else:
+            ReliefSel = None
+    else:
+        ReliefSel = None
+
+    # Delete the object if we do not need to return it
+    if not return_all:
+        del ReliefSel
+
+    if 'ReliefUse' in para_estimator.keys():
+        del para_estimator['ReliefUse']
+        del para_estimator['ReliefNN']
+        del para_estimator['ReliefSampleSize']
+        del para_estimator['ReliefDistanceP']
+        del para_estimator['ReliefNumFeatures']
 
     # ------------------------------------------------------------------------
     # Perform feature selection using a model
@@ -337,16 +455,22 @@ def fit_and_score(estimator, X, y, scorer,
     if 'SelectFromModel' in para_estimator.keys():
         del para_estimator['SelectFromModel']
 
+    # Delete the object if we do not need to return it
+    if not return_all:
+        del SelectModel
+
     # ----------------------------------------------------------------
     # PCA dimensionality reduction
     # Principle Component Analysis
-    if 'UsePCA' in para_estimator.keys() and ['UsePCA'] == 'True':
-        print('Fitting PCA')
+    if 'UsePCA' in para_estimator.keys() and para_estimator['UsePCA'] == 'True':
+        if verbose:
+            print('Fitting PCA')
+            print("Original Length: " + str(len(feature_values[0])))
         if para_estimator['PCAType'] == '95variance':
             # Select first X components that describe 95 percent of the explained variance
             pca = PCA(n_components=None)
             pca.fit(feature_values)
-            evariance = pca.explained_variance_ratio
+            evariance = pca.explained_variance_ratio_
             num = 0
             sum = 0
             while sum < 0.95:
@@ -357,7 +481,6 @@ def fit_and_score(estimator, X, y, scorer,
             pca = PCA(n_components=num)
             pca.fit(feature_values)
             feature_values = pca.transform(feature_values)
-            feature_labels = pca.transform(feature_labels)
 
         else:
             # Assume a fixed number of components
@@ -365,9 +488,15 @@ def fit_and_score(estimator, X, y, scorer,
             pca = PCA(n_components=n_components)
             pca.fit(feature_values)
             feature_values = pca.transform(feature_values)
-            feature_labels = pca.transform(feature_labels)
+
+        if verbose:
+            print("New Length: " + str(len(feature_values[0])))
     else:
         pca = None
+
+    # Delete the object if we do not need to return it
+    if not return_all:
+        del pca
 
     if 'UsePCA' in para_estimator.keys():
         del para_estimator['UsePCA']
@@ -382,6 +511,24 @@ def fit_and_score(estimator, X, y, scorer,
     # For certainty, we delete all parameters again
     para_estimator = delete_nonestimator_parameters(para_estimator)
 
+    # NOTE: This just has to go to the construct classifier function,
+    # although it is more convenient here due to the hyperparameter search
+    if type(y) is list:
+        labellength = 1
+    else:
+        try:
+            labellength = y.shape[1]
+        except IndexError:
+            labellength = 1
+
+    if labellength > 1 and type(estimator) != RankedSVM:
+        # Multiclass, hence employ a multiclass classifier for e.g. SVM, RF
+        estimator.set_params(**para_estimator)
+        estimator = OneVsRestClassifier(estimator)
+        para_estimator = {}
+
+    if verbose:
+        print("Fitting ML.")
     ret = _fit_and_score(estimator, feature_values, y,
                          scorer, train,
                          test, verbose,
@@ -390,10 +537,21 @@ def fit_and_score(estimator, X, y, scorer,
                          return_n_test_samples,
                          return_times, error_score)
 
+    # Remove 'estimator object', it's the causes of a bug.
+    # Somewhere between scikit-learn 0.18.2 and 0.20.2
+    # the estimator object return value was added
+    # removing this element fixes a bug that occurs later
+    # in SearchCV.py, where an array without estimator
+    # object is expected.
+    del ret[-1]
+
     # Paste original parameters in performance
     ret.append(para)
 
-    return ret, GroupSel, VarSel, SelectModel, feature_labels[0], scaler, imputer, pca, StatisticalSel
+    if return_all:
+        return ret, GroupSel, VarSel, SelectModel, feature_labels[0], scaler, imputer, pca, StatisticalSel, ReliefSel
+    else:
+        return ret
 
 
 def delete_nonestimator_parameters(parameters):

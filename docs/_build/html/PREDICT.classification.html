@@ -1,0 +1,475 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>PREDICT.classification package &#8212; PREDICT 2.1.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="predict-classification-package">
+<h1>PREDICT.classification package<a class="headerlink" href="#predict-classification-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-PREDICT.classification.RankedSVM">
+<span id="predict-classification-rankedsvm-module"></span><h2>PREDICT.classification.RankedSVM module<a class="headerlink" href="#module-PREDICT.classification.RankedSVM" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="PREDICT.classification.RankedSVM.RankSVM_test">
+<code class="descclassname">PREDICT.classification.RankedSVM.</code><code class="descname">RankSVM_test</code><span class="sig-paren">(</span><em>test_data</em>, <em>num_class</em>, <em>Weights</em>, <em>Bias</em>, <em>SVs</em>, <em>svm='Poly'</em>, <em>gamma=0.05</em>, <em>coefficient=0.05</em>, <em>degree=3</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.classification.RankedSVM.RankSVM_test" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="PREDICT.classification.RankedSVM.RankSVM_test_original">
+<code class="descclassname">PREDICT.classification.RankedSVM.</code><code class="descname">RankSVM_test_original</code><span class="sig-paren">(</span><em>test_data</em>, <em>test_target</em>, <em>Weights</em>, <em>Bias</em>, <em>SVs</em>, <em>svm='Poly'</em>, <em>gamma=0.05</em>, <em>coefficient=0.05</em>, <em>degree=3</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.classification.RankedSVM.RankSVM_test_original" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="PREDICT.classification.RankedSVM.RankSVM_train">
+<code class="descclassname">PREDICT.classification.RankedSVM.</code><code class="descname">RankSVM_train</code><span class="sig-paren">(</span><em>train_data</em>, <em>train_target</em>, <em>cost=1</em>, <em>lambda_tol=1e-06</em>, <em>norm_tol=0.0001</em>, <em>max_iter=500</em>, <em>svm='Poly'</em>, <em>gamma=0.05</em>, <em>coefficient=0.05</em>, <em>degree=3</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.classification.RankedSVM.RankSVM_train" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="PREDICT.classification.RankedSVM.RankSVM_train_old">
+<code class="descclassname">PREDICT.classification.RankedSVM.</code><code class="descname">RankSVM_train_old</code><span class="sig-paren">(</span><em>train_data</em>, <em>train_target</em>, <em>cost=1</em>, <em>lambda_tol=1e-06</em>, <em>norm_tol=0.0001</em>, <em>max_iter=500</em>, <em>svm='Poly'</em>, <em>gamma=0.05</em>, <em>coefficient=0.05</em>, <em>degree=3</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.classification.RankedSVM.RankSVM_train_old" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div>Weights,Bias,SVs = RankSVM_train(train_data,train_target,cost,lambda_tol,norm_tol,max_iter,svm,gamma,coefficient,degree)</div></blockquote>
+<p>Description</p>
+<blockquote>
+<div><blockquote>
+<div><dl class="docutils">
+<dt>RankSVM_train takes,</dt>
+<dd><p class="first">train_data   - An MxN array, the ith instance of training instance is stored in train_data[i,:]
+train_target - A QxM array, if the ith training instance belongs to the jth class, then train_target[j,i] equals +1, otherwise train_target(j,i) equals -1</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>svm          - svm gives the type of svm used in training, which can take the value of &#8216;RBF&#8217;, &#8216;Poly&#8217; or &#8216;Linear&#8217;; svm.para gives the corresponding parameters used for the svm:</dt>
+<dd><blockquote class="first">
+<div><ol class="arabic simple">
+<li>if svm is &#8216;RBF&#8217;, then gamma gives the value of gamma, where the kernel is exp(-Gamma*|x[i]-x[j]|^2)</li>
+</ol>
+</div></blockquote>
+<ol class="last arabic simple" start="2">
+<li>if svm is &#8216;Poly&#8217;, then three values are used gamma, coefficient, and degree respectively, where the kernel is (gamma*&lt;x[i],x[j]&gt;+coefficient)^degree.</li>
+<li>if svm is &#8216;Linear&#8217;, then svm is [].</li>
+</ol>
+</dd>
+</dl>
+</div></blockquote>
+<p class="last">cost         - The value of &#8216;C&#8217; used in the SVM, default=1
+lambda_tol   - The tolerance value for lambda described in the appendix of [1]; default value is 1e-6
+norm_tol     - The tolerance value for difference between alpha(p+1) and alpha(p) described in the appendix of [1]; default value is 1e-4
+max_iter     - The maximum number of iterations for RankSVM, default=500</p>
+</dd>
+<dt>and returns,</dt>
+<dd>Weights          - The value for beta[ki] as described in the appendix of [1] is stored in Weights[k,i]
+Bias             - The value for b[i] as described in the appendix of [1] is stored in Bias[1,i]
+SVs              - The ith support vector is stored in SVs[:,i]</dd>
+</dl>
+</div></blockquote>
+<p>For more details,please refer to [1] and [2].</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="PREDICT.classification.RankedSVM.is_empty">
+<code class="descclassname">PREDICT.classification.RankedSVM.</code><code class="descname">is_empty</code><span class="sig-paren">(</span><em>any_structure</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.classification.RankedSVM.is_empty" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="PREDICT.classification.RankedSVM.neg_dual_func">
+<code class="descclassname">PREDICT.classification.RankedSVM.</code><code class="descname">neg_dual_func</code><span class="sig-paren">(</span><em>Lambda</em>, <em>Alpha_old</em>, <em>Alpha_new</em>, <em>c_value</em>, <em>kernel</em>, <em>num_training</em>, <em>num_class</em>, <em>Label</em>, <em>not_Label</em>, <em>Label_size</em>, <em>size_alpha</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.classification.RankedSVM.neg_dual_func" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-PREDICT.classification.construct_classifier">
+<span id="predict-classification-construct-classifier-module"></span><h2>PREDICT.classification.construct_classifier module<a class="headerlink" href="#module-PREDICT.classification.construct_classifier" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="PREDICT.classification.construct_classifier.construct_SVM">
+<code class="descclassname">PREDICT.classification.construct_classifier.</code><code class="descname">construct_SVM</code><span class="sig-paren">(</span><em>config</em>, <em>image_features</em>, <em>regression=False</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.classification.construct_classifier.construct_SVM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs a SVM classifier</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">config (dict): Dictionary of the required config settings
+mutation_data (dict): Mutation data that should be classified
+features (pandas dataframe): A pandas dataframe containing the features</p>
+<blockquote class="last">
+<div>to be used for classification</div></blockquote>
+</dd>
+<dt>Returns:</dt>
+<dd>SVM/SVR classifier, parameter grid</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="PREDICT.classification.construct_classifier.construct_classifier">
+<code class="descclassname">PREDICT.classification.construct_classifier.</code><code class="descname">construct_classifier</code><span class="sig-paren">(</span><em>config</em>, <em>image_features</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.classification.construct_classifier.construct_classifier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interface to create classification</p>
+<p>Different classifications can be created using this common interface</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>config: dict, mandatory</dt>
+<dd>Contains the required config settings. See the Github Wiki for
+all available fields.</dd>
+</dl>
+</div></blockquote>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd>Constructed classifier</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-PREDICT.classification.crossval">
+<span id="predict-classification-crossval-module"></span><h2>PREDICT.classification.crossval module<a class="headerlink" href="#module-PREDICT.classification.crossval" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="PREDICT.classification.crossval.crossval">
+<code class="descclassname">PREDICT.classification.crossval.</code><code class="descname">crossval</code><span class="sig-paren">(</span><em>config</em>, <em>label_data</em>, <em>image_features</em>, <em>classifier</em>, <em>param_grid={}</em>, <em>use_fastr=False</em>, <em>fastr_plugin=None</em>, <em>tempsave=False</em>, <em>fixedsplits=None</em>, <em>ensemble={'Use': False}</em>, <em>outputfolder=None</em>, <em>modus='singlelabel'</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.classification.crossval.crossval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs multiple individual classifiers based on the label settings</p>
+<dl class="docutils">
+<dt>config: dict, mandatory</dt>
+<dd>Dictionary with config settings. See the Github Wiki for the
+available fields and formatting.</dd>
+<dt>label_data: dict, mandatory</dt>
+<dd><p class="first">Should contain the following:
+patient_IDs (list): IDs of the patients, used to keep track of test and</p>
+<blockquote>
+<div>training sets, and genetic data</div></blockquote>
+<dl class="last docutils">
+<dt>mutation_label (list): List of lists, where each list contains the</dt>
+<dd>mutations status for that patient for each
+mutations</dd>
+<dt>mutation_name (list): Contains the different mutations that are stored</dt>
+<dd>in the mutation_label</dd>
+</dl>
+</dd>
+<dt>image_features: numpy array, mandatory</dt>
+<dd>Consists of a tuple of two lists for each patient:
+(feature_values, feature_labels)</dd>
+<dt>classifier: sklearn classifier</dt>
+<dd>The untrained classifier used for training.</dd>
+<dt>param_grid: dictionary, optional</dt>
+<dd>Contains the parameters and their values wich are used in the
+grid or randomized search hyperparamater optimization. See the
+construct_classifier function for some examples.</dd>
+<dt>use_fastr: boolean, default False</dt>
+<dd><p class="first">If False, parallel execution through Joblib is used for fast
+execution of the hyperparameter optimization. Especially suited
+for execution on mutlicore (H)PC&#8217;s. The settings used are
+specified in the config.ini file in the IOparser folder, which you
+can adjust to your system.</p>
+<p class="last">If True, fastr is used to split the hyperparameter optimization in
+separate jobs. Parameters for the splitting can be specified in the
+config file. Especially suited for clusters.</p>
+</dd>
+<dt>fastr_plugin: string, default None</dt>
+<dd>Determines which plugin is used for fastr executions.
+When None, uses the default plugin from the fastr config.</dd>
+<dt>tempsave: boolean, default False</dt>
+<dd>If True, create a .hdf5 file after each cross validation containing
+the classifier and results from that that split. This is written to
+the GSOut folder in your fastr output mount. If False, only
+the result of all combined cross validations will be saved to a .hdf5
+file. This will also be done if set to True.</dd>
+<dt>fixedsplits: string, optional</dt>
+<dd>By default, random split cross validation is used to train and
+evaluate the machine learning methods. Optionally, you can provide
+a .xlsx file containing fixed splits to be used. See the Github Wiki
+for the format.</dd>
+<dt>ensemble: dictionary, optional</dt>
+<dd>Contains the configuration for constructing an ensemble.</dd>
+<dt>modus: string, default &#8216;singlelabel&#8217;</dt>
+<dd>Determine whether one-vs-all classification (or regression) for
+each single label is used (&#8216;singlelabel&#8217;) or if multilabel
+classification is performed (&#8216;multilabel&#8217;).</dd>
+</dl>
+<dl class="docutils">
+<dt>panda_data: pandas dataframe</dt>
+<dd>Contains all information on the trained classifier.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="PREDICT.classification.crossval.nocrossval">
+<code class="descclassname">PREDICT.classification.crossval.</code><code class="descname">nocrossval</code><span class="sig-paren">(</span><em>config</em>, <em>label_data_train</em>, <em>label_data_test</em>, <em>image_features_train</em>, <em>image_features_test</em>, <em>classifier</em>, <em>param_grid</em>, <em>use_fastr=False</em>, <em>fastr_plugin=None</em>, <em>ensemble={'Use': False}</em>, <em>modus='singlelabel'</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.classification.crossval.nocrossval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs multiple individual classifiers based on the label settings</p>
+<dl class="docutils">
+<dt>Arguments:</dt>
+<dd><p class="first">config (Dict): Dictionary with config settings
+label_data (Dict): should contain:
+patient_IDs (list): IDs of the patients, used to keep track of test and</p>
+<blockquote>
+<div>training sets, and genetic data</div></blockquote>
+<dl class="last docutils">
+<dt>mutation_label (list): List of lists, where each list contains the</dt>
+<dd>mutations status for that patient for each
+mutations</dd>
+<dt>mutation_name (list): Contains the different mutations that are stored</dt>
+<dd>in the mutation_label</dd>
+<dt>image_features (numpy array): Consists of a tuple of two lists for each patient:</dt>
+<dd>(feature_values, feature_labels)</dd>
+<dt>ensemble: dictionary, optional</dt>
+<dd>Contains the configuration for constructing an ensemble.</dd>
+<dt>modus: string, default &#8216;singlelabel&#8217;</dt>
+<dd>Determine whether one-vs-all classification (or regression) for
+each single label is used (&#8216;singlelabel&#8217;) or if multilabel
+classification is performed (&#8216;multilabel&#8217;).</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd>classifier_data (pandas dataframe)</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="PREDICT.classification.crossval.singleiteration">
+<code class="descclassname">PREDICT.classification.crossval.</code><code class="descname">singleiteration</code><span class="sig-paren">(</span><em>X_train</em>, <em>Y_train</em>, <em>PID_train</em>, <em>feature_labels</em>, <em>classifier</em>, <em>param_grid</em>, <em>config_hyperopt</em>, <em>use_SMOTE=False</em>, <em>SMOTE_ratio=1</em>, <em>SMOTE_neighbors=10</em>, <em>n_cores=4</em>, <em>N_jobs=4</em>, <em>random_state=None</em>, <em>use_fastr=False</em>, <em>fastr_plugin='LinearExecution'</em>, <em>use_ensemble=False</em>, <em>use_oversampling=True</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.classification.crossval.singleiteration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform a single iteration of a cross validation.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-PREDICT.classification.estimators">
+<span id="predict-classification-estimators-module"></span><h2>PREDICT.classification.estimators module<a class="headerlink" href="#module-PREDICT.classification.estimators" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PREDICT.classification.estimators.RankedSVM">
+<em class="property">class </em><code class="descclassname">PREDICT.classification.estimators.</code><code class="descname">RankedSVM</code><span class="sig-paren">(</span><em>cost=1</em>, <em>lambda_tol=1e-06</em>, <em>norm_tol=0.0001</em>, <em>max_iter=500</em>, <em>svm='Poly'</em>, <em>gamma=0.05</em>, <em>coefficient=0.05</em>, <em>degree=3</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.classification.estimators.RankedSVM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">sklearn.base.BaseEstimator</span></code>, <code class="xref py py-class docutils literal"><span class="pre">sklearn.base.ClassifierMixin</span></code></p>
+<p>An example classifier which implements a 1-NN algorithm.</p>
+<dl class="docutils">
+<dt>demo_param <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd>A parameter used for demonstation of how to pass and store paramters.</dd>
+</dl>
+<dl class="docutils">
+<dt><a href="#id1"><span class="problematic" id="id2">X_</span></a> <span class="classifier-delimiter">:</span> <span class="classifier">array, shape = [n_samples, n_features]</span></dt>
+<dd>The input passed during <a class="reference internal" href="#PREDICT.classification.estimators.RankedSVM.fit" title="PREDICT.classification.estimators.RankedSVM.fit"><code class="xref py py-meth docutils literal"><span class="pre">fit()</span></code></a></dd>
+<dt><a href="#id3"><span class="problematic" id="id4">y_</span></a> <span class="classifier-delimiter">:</span> <span class="classifier">array, shape = [n_samples]</span></dt>
+<dd>The labels passed during <a class="reference internal" href="#PREDICT.classification.estimators.RankedSVM.fit" title="PREDICT.classification.estimators.RankedSVM.fit"><code class="xref py py-meth docutils literal"><span class="pre">fit()</span></code></a></dd>
+</dl>
+<dl class="method">
+<dt id="PREDICT.classification.estimators.RankedSVM.fit">
+<code class="descname">fit</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.classification.estimators.RankedSVM.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>A reference implementation of a fitting function for a classifier.</p>
+<dl class="docutils">
+<dt>X <span class="classifier-delimiter">:</span> <span class="classifier">array-like, shape = [n_samples, n_features]</span></dt>
+<dd>The training input samples.</dd>
+<dt>y <span class="classifier-delimiter">:</span> <span class="classifier">array-like, shape = [n_samples]</span></dt>
+<dd>The target values. An array of int.</dd>
+</dl>
+<dl class="docutils">
+<dt>self <span class="classifier-delimiter">:</span> <span class="classifier">object</span></dt>
+<dd>Returns self.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="PREDICT.classification.estimators.RankedSVM.predict">
+<code class="descname">predict</code><span class="sig-paren">(</span><em>X</em>, <em>y=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.classification.estimators.RankedSVM.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>A reference implementation of a prediction for a classifier.</p>
+<dl class="docutils">
+<dt>X <span class="classifier-delimiter">:</span> <span class="classifier">array-like of shape = [n_samples, n_features]</span></dt>
+<dd>The input samples.</dd>
+</dl>
+<dl class="docutils">
+<dt>y <span class="classifier-delimiter">:</span> <span class="classifier">array of int of shape = [n_samples]</span></dt>
+<dd>The label for each sample is the label of the closest sample
+seen udring fit.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="PREDICT.classification.estimators.RankedSVM.predict_proba">
+<code class="descname">predict_proba</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.classification.estimators.RankedSVM.predict_proba" title="Permalink to this definition">¶</a></dt>
+<dd><p>A reference implementation of a prediction for a classifier.</p>
+<dl class="docutils">
+<dt>X <span class="classifier-delimiter">:</span> <span class="classifier">array-like of shape = [n_samples, n_features]</span></dt>
+<dd>The input samples.</dd>
+</dl>
+<dl class="docutils">
+<dt>y <span class="classifier-delimiter">:</span> <span class="classifier">array of int of shape = [n_samples]</span></dt>
+<dd>The label for each sample is the label of the closest sample
+seen udring fit.</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-PREDICT.classification.metrics">
+<span id="predict-classification-metrics-module"></span><h2>PREDICT.classification.metrics module<a class="headerlink" href="#module-PREDICT.classification.metrics" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="PREDICT.classification.metrics.multi_class_auc">
+<code class="descclassname">PREDICT.classification.metrics.</code><code class="descname">multi_class_auc</code><span class="sig-paren">(</span><em>y_truth</em>, <em>y_score</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.classification.metrics.multi_class_auc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="PREDICT.classification.metrics.multi_class_auc_score">
+<code class="descclassname">PREDICT.classification.metrics.</code><code class="descname">multi_class_auc_score</code><span class="sig-paren">(</span><em>y_truth</em>, <em>y_score</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.classification.metrics.multi_class_auc_score" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="PREDICT.classification.metrics.pairwise_auc">
+<code class="descclassname">PREDICT.classification.metrics.</code><code class="descname">pairwise_auc</code><span class="sig-paren">(</span><em>y_truth</em>, <em>y_score</em>, <em>class_i</em>, <em>class_j</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.classification.metrics.pairwise_auc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="PREDICT.classification.metrics.performance_multilabel">
+<code class="descclassname">PREDICT.classification.metrics.</code><code class="descname">performance_multilabel</code><span class="sig-paren">(</span><em>y_truth</em>, <em>y_prediction</em>, <em>y_score=None</em>, <em>beta=1</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.classification.metrics.performance_multilabel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Multiclass performance metrics.</p>
+<p>y_truth and y_prediction should both be lists with the multiclass label of each
+object, e.g.</p>
+<p>y_truth = [0, 0,    0,      0,      0,      0,      2,      2,      1,      1,      2]    ### Groundtruth
+y_prediction = [0, 0,       0,      0,      0,      0,      1,      2,      1,      2,      2]    ### Predicted labels</p>
+<p>Calculation of accuracy accorading to formula suggested in CAD Dementia Grand Challege <a class="reference external" href="http://caddementia.grand-challenge.org">http://caddementia.grand-challenge.org</a>
+Calculation of Multi Class AUC according to classpy: <a class="reference external" href="https://bitbucket.org/bigr_erasmusmc/classpy/src/master/classpy/multi_class_auc.py">https://bitbucket.org/bigr_erasmusmc/classpy/src/master/classpy/multi_class_auc.py</a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="PREDICT.classification.metrics.performance_singlelabel">
+<code class="descclassname">PREDICT.classification.metrics.</code><code class="descname">performance_singlelabel</code><span class="sig-paren">(</span><em>y_truth</em>, <em>y_prediction</em>, <em>y_score</em>, <em>regression=False</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.classification.metrics.performance_singlelabel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Singleclass performance metrics</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-PREDICT.classification.parameter_optimization">
+<span id="predict-classification-parameter-optimization-module"></span><h2>PREDICT.classification.parameter_optimization module<a class="headerlink" href="#module-PREDICT.classification.parameter_optimization" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="PREDICT.classification.parameter_optimization.random_search_parameters">
+<code class="descclassname">PREDICT.classification.parameter_optimization.</code><code class="descname">random_search_parameters</code><span class="sig-paren">(</span><em>features</em>, <em>labels</em>, <em>N_iter</em>, <em>test_size</em>, <em>classifier</em>, <em>param_grid</em>, <em>scoring_method</em>, <em>n_jobspercore=200</em>, <em>use_fastr=False</em>, <em>n_cores=1</em>, <em>fastr_plugin=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.classification.parameter_optimization.random_search_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Train a classifier and simultaneously optimizes hyperparameters using a
+randomized search.</p>
+<dl class="docutils">
+<dt>Arguments:</dt>
+<dd><p class="first">features: numpy array containing the training features.
+labels: list containing the object labels to be trained on.
+N_iter: integer listing the number of iterations to be used in the</p>
+<blockquote>
+<div>hyperparameter optimization.</div></blockquote>
+<dl class="docutils">
+<dt>test_size: float listing the test size percentage used in the cross</dt>
+<dd>validation.</dd>
+</dl>
+<p>classifier: sklearn classifier to be tested
+param_grid: dictionary containing all possible hyperparameters and their</p>
+<blockquote>
+<div>values or distrubitions.</div></blockquote>
+<dl class="last docutils">
+<dt>scoring_method: string defining scoring method used in optimization,</dt>
+<dd>e.g. f1_weighted for a SVM.</dd>
+<dt>n_jobsperscore: integer listing the number of jobs that are ran on a</dt>
+<dd>single core when using the fastr randomized search.</dd>
+<dt>use_fastr: Boolean determining of either fastr or joblib should be used</dt>
+<dd>for the opimization.</dd>
+<dt>fastr_plugin: determines which plugin is used for fastr executions.</dt>
+<dd>When None, uses the default plugin from the fastr config.</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd>random_search: sklearn randomsearch object containing the results.</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-PREDICT.classification">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-PREDICT.classification" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">PREDICT.classification package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-PREDICT.classification.RankedSVM">PREDICT.classification.RankedSVM module</a></li>
+<li><a class="reference internal" href="#module-PREDICT.classification.construct_classifier">PREDICT.classification.construct_classifier module</a></li>
+<li><a class="reference internal" href="#module-PREDICT.classification.crossval">PREDICT.classification.crossval module</a></li>
+<li><a class="reference internal" href="#module-PREDICT.classification.estimators">PREDICT.classification.estimators module</a></li>
+<li><a class="reference internal" href="#module-PREDICT.classification.metrics">PREDICT.classification.metrics module</a></li>
+<li><a class="reference internal" href="#module-PREDICT.classification.parameter_optimization">PREDICT.classification.parameter_optimization module</a></li>
+<li><a class="reference internal" href="#module-PREDICT.classification">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/PREDICT.classification.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Martijn Starmans & Sebastian van der Voort.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/PREDICT.classification.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

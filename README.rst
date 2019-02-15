@@ -1,8 +1,8 @@
-PREDICT v2.1.0
+PREDICT v2.1.1
 ==============
 
-PREDICT: a Radiomics Extensive Differentiable Interchangable Classification Toolkit
------------------------------------------------------------------------------------
+PREDICT: a Radiomics Extensive Digital Interchangable Classification Toolkit
+----------------------------------------------------------------------------
 
 This is an open-source python package supporting Radiomics medical image
 feature extraction and classification.
@@ -30,8 +30,16 @@ The documentation can then be viewed in a browser by opening
 Installation
 ~~~~~~~~~~~~
 
-PREDICT has currently only been tested on Unix with Python 2.7. The
-package can be installed through the setup file:
+PREDICT has currently only been tested on Unix with Python 2.7.6 and
+higher. We plan to merge towards Python 3 early 2019.
+
+The package can be installed through pip :
+
+::
+
+    pip install PREDICT
+
+Alternatively, you can use the provided setup.py file:
 
 ::
 
@@ -41,27 +49,7 @@ Make sure you first install the required packages:
 
 ::
 
-    pip install -r requirements.txts
-
-FASTR tools
-^^^^^^^^^^^
-
-When running the FASTR package with a version lower than 1.3.0, you need
-to manually add the PREDICT fastr\_tools path to the FASTR tools path.
-Go the your FASTR config file (default: ~/.fastr/config.py) and add the
-fastr\_tools path analogue to the description in the
-PREDICT/fastrconfig/PREDICT\_config.py file:
-
-::
-
-    packagedir = site.getsitepackages()[0]
-    tools_path = [os.path.join(packagedir, 'PREDICT', 'fastr_tools')] + tools_path
-
-When using FASTR >1.3.0, the PREDICT config file will be automatically
-created for you in the default: ~/.fastr/config.d folder.
-
-Note that the Python site package does not work properly in virtual
-environments. You must then manually locate the packagedir.
+    pip install -r requirements.txt
 
 Preprocessing
 ~~~~~~~~~~~~~

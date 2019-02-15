@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Welcome to PREDICT’s documentation! &#8212; PREDICT 2.1.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-predict-s-documentation">
+<h1>Welcome to PREDICT&#8217;s documentation!<a class="headerlink" href="#welcome-to-predict-s-documentation" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><p>This is an open-source python package supporting Radiomics medical image
+feature extraction and classification.</p>
+<p>We aim to add a wide variety of features and classifiers to address a
+wide variety classification problems. Through a modular setup, these can
+easily be interchanged and compared.</p>
+<p>For more information, see the sphinx generated documentation available
+<a class="reference external" href="http://predict.readthedocs.io/">here (WIP)</a>.</p>
+<p>Alternatively, you can generate the documentation by checking out the
+master branch and running from the root directory:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">build_sphinx</span>
+</pre></div>
+</div>
+<p>The documentation can then be viewed in a browser by opening
+<code class="docutils literal"><span class="pre">PACKAGE_ROOT\build\sphinx\html\index.html</span></code>.</p>
+<p>PREDICT has currently only been tested on Unix with Python 2.7.6 and
+higher. We plan to merge towards Python 3 early 2019.</p>
+<p>The package can be installed through pip :</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">PREDICT</span>
+</pre></div>
+</div>
+<p>Alternatively, you can use the provided setup.py file:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
+</pre></div>
+</div>
+<p>Make sure you first install the required packages:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+<p>From version 1.0.2 and on, preprocessing has been removed from PREDICT.
+It is now available as a separate tool in the <a class="reference external" href="https://github.com/MStarmans91/WORC">WORC
+package</a>, as it&#8217;s also a
+separate step in the radiomics workflow. We do advice to use the
+preprocessing function and thus also WORC.</p>
+<p>We mainly rely on the following packages:</p>
+<ul class="simple">
+<li>SimpleITK (Image loading and preprocessing)</li>
+<li>numpy (Feature computation)</li>
+<li>sklearn, scipy (Classification)</li>
+<li>FASTR (Fast and parallel workflow execution)</li>
+<li>pandas (Storage)</li>
+<li>PyRadiomics</li>
+</ul>
+<p>See also the <a class="reference external" href="requirements.txt">requirements file</a>.</p>
+<p>This package is covered by the open source <a class="reference external" href="APACHE-LICENSE-2.0">APACHE 2.0
+License</a>.</p>
+<p>We are happy to help you with any questions: please send us a message or
+create an issue on Github.</p>
+</div></blockquote>
+<div class="toctree-wrapper compound">
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Welcome to PREDICT&#8217;s documentation!</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Martijn Starmans & Sebastian van der Voort.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

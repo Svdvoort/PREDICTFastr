@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright 2011-2017 Biomedical Imaging Group Rotterdam, Departments of
+# Copyright 2017-2018 Biomedical Imaging Group Rotterdam, Departments of
 # Medical Informatics and Radiology, Erasmus MC, Rotterdam, The Netherlands
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,7 +41,7 @@ import random
 import string
 import fastr
 from joblib import Parallel, delayed
-from PREDICT.processing.fitandscore import fit_and_score, replacenan
+from PREDICT.processing.fitandscore import fit_and_score, replacenan, delete_nonestimator_parameters
 import PREDICT.addexceptions as PREDICTexceptions
 import pandas as pd
 import json
@@ -50,6 +50,9 @@ from itertools import islice
 import shutil
 from sklearn.metrics import f1_score, roc_auc_score, mean_squared_error
 from sklearn.metrics import accuracy_score
+from sklearn.multiclass import OneVsRestClassifier
+from PREDICT.classification.estimators import RankedSVM
+from sklearn import svm
 
 
 def rms_score(truth, prediction):
@@ -110,15 +113,43 @@ class Ensemble(six.with_metaclass(ABCMeta, BaseEstimator,
         """
         self.estimators[0]._check_is_fitted('predict')
 
-        outcome = np.zeros((self.n_estimators, len(X)))
-        for num, est in enumerate(self.estimators):
-            outcome[num, :] = est.predict(X)
+        # NOTE: Check if we are dealing with multilabel
+        if type(self.estimators[0].best_estimator_) == OneVsRestClassifier:
+            # Multilabel
+            nlabels = self.estimators[0].predict(X).shape[1]
+            outcome = np.zeros((self.n_estimators, len(X), nlabels))
+            for num, est in enumerate(self.estimators):
+                if hasattr(est, 'predict_proba'):
+                    est.best_estimator_.kernel = str(est.best_estimator_.kernel)
+                    outcome[num, :, :] = est.predict_proba(X)[:, 1]
+                else:
+                    outcome[num, :, :] = est.predict(X)
 
-        outcome = np.squeeze(np.mean(outcome, axis=0))
+            outcome = np.squeeze(np.mean(outcome, axis=0))
 
-        # Binarize
-        outcome[outcome >= 0.5] = 1
-        outcome[outcome < 0.5] = 0
+            # NOTE: Binarize specifically for multiclass
+            for i in range(0, outcome.shape[0]):
+                label = np.argmax(outcome[i, :])
+                outcome[i, :] = np.zeros(outcome.shape[1])
+                outcome[i, label] = 1
+
+        else:
+            # Singlelabel
+            outcome = np.zeros((self.n_estimators, len(X)))
+            for num, est in enumerate(self.estimators):
+                if hasattr(est, 'predict_proba'):
+                    est.best_estimator_.kernel = str(est.best_estimator_.kernel)
+                    outcome[num, :] = est.predict_proba(X)[:, 1]
+                else:
+                    outcome[num, :] = est.predict(X)
+
+            outcome = np.squeeze(np.mean(outcome, axis=0))
+
+            # Binarize
+            if type(est.best_estimator_) != svm.classes.SVR:
+                outcome[outcome >= 0.5] = 1
+                outcome[outcome < 0.5] = 0
+
         return outcome
 
     def predict_proba(self, X):
@@ -186,11 +217,24 @@ class Ensemble(six.with_metaclass(ABCMeta, BaseEstimator,
         """
         self.estimators[0]._check_is_fitted('decision_function')
 
-        outcome = np.zeros((self.n_estimators, len(X)))
-        for num, est in enumerate(self.estimators):
-            outcome[num, :] = est.decision_function(X)
+        # NOTE: Check if we are dealing with multilabel
+        if type(self.estimators[0].best_estimator_) == OneVsRestClassifier:
+            # Multilabel
+            nlabels = self.estimators[0].decision_function(X).shape[1]
+            outcome = np.zeros((self.n_estimators, len(X), nlabels))
+            for num, est in enumerate(self.estimators):
+                outcome[num, :, :] = est.decision_function(X)
 
-        outcome = np.squeeze(np.mean(outcome, axis=0))
+            outcome = np.squeeze(np.mean(outcome, axis=0))
+
+        else:
+            # Singlelabel
+            outcome = np.zeros((self.n_estimators, len(X)))
+            for num, est in enumerate(self.estimators):
+                outcome[num, :] = est.decision_function(X)
+
+            outcome = np.squeeze(np.mean(outcome, axis=0))
+
         return outcome
 
     def transform(self, X):
@@ -269,7 +313,6 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
         self.error_score = error_score
         self.return_train_score = return_train_score
         self.maxlen = maxlen
-
 
     @property
     def _estimator_type(self):
@@ -351,6 +394,8 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
         """
         self._check_is_fitted('predict_proba')
 
+        # BUG: kernel sometimes saved as unicode
+        self.best_estimator_.kernel = str(self.best_estimator_.kernel)
         if self.ensemble:
             return self.ensemble.predict_proba(X)
         else:
@@ -373,6 +418,8 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
         """
         self._check_is_fitted('predict_log_proba')
 
+        # BUG: kernel sometimes saved as unicode
+        self.best_estimator_.kernel = str(self.best_estimator_.kernel)
         if self.ensemble:
             return self.ensemble.predict_log_proba(X)
         else:
@@ -455,16 +502,18 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
         # Replace NaNs if they are still left at this stage, see also fit_and_score
         X = replacenan(X, self.verbose)
 
-        if self.best_modelsel is not None:
-            X = self.best_modelsel.transform(X)
         if self.best_varsel is not None:
             X = self.best_varsel.transform(X)
         if self.best_statisticalsel is not None:
             X = self.best_statisticalsel.transform(X)
         if self.best_scaler is not None:
             X = self.best_scaler.transform(X)
+        if self.best_reliefsel is not None:
+            X = self.best_reliefsel.transform(X)
         if self.best_pca is not None:
             X = self.best_pca.transform(X)
+        if self.best_modelsel is not None:
+            X = self.best_modelsel.transform(X)
 
         return X
 
@@ -502,8 +551,7 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
         return grid_scores
 
     def process_fit(self, n_splits, parameters_est, parameters_all,
-                    fitted_objects,
-                    feature_labels, test_sample_counts, test_scores,
+                    test_sample_counts, test_scores,
                     train_scores, fit_time, score_time, cv_iter,
                     base_estimator, X, y):
 
@@ -511,17 +559,11 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
         Process the outcomes of a SearchCV fit and find the best settings
         over all cross validations from all hyperparameters tested
 
-        fitted_objects: contains items such as  GroupSel,
-                        Imputers, SelectModel, VarSel, scalers, PCAs,
-                        StatisticalSel. Moet een dictionary zijn!
-
         """
         # We take only one result per split, default by sklearn
         candidate_params_est = list(parameters_est[::n_splits])
         candidate_params_all = list(parameters_all[::n_splits])
-        feature_labels = list(feature_labels[::n_splits])
         n_candidates = len(candidate_params_est)
-        fitted_objects = {k: list(v[::n_splits]) for k, v in fitted_objects.iteritems()}
 
         # Computed the (weighted) mean and std for test scores alone
         # NOTE test_sample counts (weights) remain the same for all candidates
@@ -540,7 +582,13 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
                     results["split%d_%s"
                             % (split_i, key_name)] = array[:, split_i]
 
-            array_means = np.average(array, axis=1, weights=weights)
+            try:
+                array_means = np.average(array, axis=1, weights=weights)
+            except ZeroDivisionError as e:
+                e = ('[PREDICT Warning] {}. Setting {} }to zeros.').format(e, key_name)
+                print(e)
+                array_means = [0] * array.shape[1]
+
             results['mean_%s' % key_name] = array_means
             # Weighted std is not directly available in numpy
             array_stds = np.sqrt(np.average((array -
@@ -564,22 +612,13 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
         indices = range(0, len(ranked_test_scores))
         sortedindices = [x for _, x in sorted(zip(ranked_test_scores, indices))]
 
-        # In order to reduce the memory used, we will only save at
+        # In order to reduce the memory used, we will only save
         # a maximum of results
         maxlen = min(self.maxlen, n_candidates)
         bestindices = sortedindices[0:maxlen]
 
         candidate_params_est = np.asarray(candidate_params_est)[bestindices].tolist()
         candidate_params_all = np.asarray(candidate_params_all)[bestindices].tolist()
-        fitted_objects = {k: np.asarray(v)[bestindices].tolist() for k, v in fitted_objects.iteritems()}
-
-        # Feature labels cannot be indiced, as it is a list of sequences and
-        # cannot be converted to a numpy aray
-        feature_labels_temp = list()
-        for num, f in enumerate(feature_labels):
-            if num in bestindices:
-                feature_labels_temp.append(f)
-        feature_labels = feature_labels_temp
         for k in results.keys():
             results[k] = results[k][bestindices]
         n_candidates = len(candidate_params_est)
@@ -587,8 +626,7 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
         # Store the atributes of the best performing estimator
         best_index = np.flatnonzero(results["rank_test_score"] == 1)[0]
         best_parameters_est = candidate_params_est[best_index]
-        best_featlab = feature_labels[best_index]
-        best_fitted_objects = {'best_' + k: v[best_index] for k, v in fitted_objects.iteritems()}
+        best_parameters_all = candidate_params_all[best_index]
 
         # Use one MaskedArray and mask all the places where the param is not
         # applicable for that candidate. Use defaultdict as each candidate may
@@ -608,30 +646,16 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
         results['params'] = candidate_params_est
         results['params_all'] = candidate_params_all
 
-        for k, v in best_fitted_objects.iteritems():
-            setattr(self, k, v)
-
         self.cv_results_ = results
         self.best_index_ = best_index
-        self.best_featlab = best_featlab
         self.n_splits_ = n_splits
         self.cv_iter = cv_iter
 
-        if self.refit:
-            # fit the best estimator using the entire dataset
-            # clone first to work around broken estimators
-            best_estimator = clone(base_estimator).set_params(
-                **best_parameters_est)
+        # Refit all objects with best settings on the full dataset
+        indices = range(0, len(y))
+        self.refit_and_score(X, y, best_parameters_all, best_parameters_est,
+                             train=indices, test=indices)
 
-            # Select only the feature values, not the labels
-            X = [x[0] for x in X]
-            X = self.preprocess(X)
-
-            if y is not None:
-                best_estimator.fit(X, y, **self.fit_params)
-            else:
-                best_estimator.fit(X, **self.fit_params)
-            self.best_estimator_ = best_estimator
         return self
 
     def refit_and_score(self, X, y, parameters_all, parameters_est,
@@ -679,10 +703,12 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
                             return_n_test_samples=True,
                             return_times=True, return_parameters=True,
                             error_score=self.error_score,
-                            verbose=verbose)
+                            verbose=verbose,
+                            return_all=True)
 
         # Associate best options with new fits
-        (save_data, GroupSel, VarSel, SelectModel, feature_labels, scalers, Imputers, PCAs, StatisticalSel) = out
+        (save_data, GroupSel, VarSel, SelectModel, feature_labels, scalers,\
+            Imputers, PCAs, StatisticalSel, ReliefSel) = out
         self.best_groupsel = GroupSel
         self.best_scaler = scalers
         self.best_varsel = VarSel
@@ -691,13 +717,30 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
         self.best_pca = PCAs
         self.best_featlab = feature_labels
         self.best_statisticalsel = StatisticalSel
+        self.best_reliefsel = ReliefSel
 
         # Fit the estimator using the preprocessed features
         X = [x[0] for x in X]
         X = self.preprocess(X)
 
+        parameters_est = delete_nonestimator_parameters(parameters_est)
         best_estimator = clone(base_estimator).set_params(
             **parameters_est)
+
+        # NOTE: This just has to go to the construct classifier function,
+        # although it is more convenient here due to the hyperparameter search
+        if type(y) is list:
+            labellength = 1
+        else:
+            try:
+                labellength = y.shape[1]
+            except IndexError:
+                labellength = 1
+
+        if labellength > 1 and type(best_estimator) != RankedSVM:
+            # Multiclass, hence employ a multiclass classifier for e.g. SVM, RF
+            best_estimator = OneVsRestClassifier(best_estimator)
+
         if y is not None:
             best_estimator.fit(X, y, **self.fit_params)
         else:
@@ -707,7 +750,7 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
         return self
 
     def create_ensemble(self, X_train, Y_train, verbose=None, initialize=True,
-                        scoring=None, method='Top50'):
+                        scoring=None, method=50):
         # NOTE: Function is still WIP, do not actually use this.
         '''
 
@@ -776,6 +819,140 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
             if verbose:
                 print('Creating ensemble using top {} individual classifiers.').format(str(method))
             ensemble = range(0, method)
+
+        elif method == 'FitNumber':
+            # Use optimum number of models
+            # BUG: kernel parameter is sometimes saved in unicode
+            for i in range(0, len(parameters_est)):
+                kernel = str(parameters_est[i][u'kernel'])
+                del parameters_est[i][u'kernel']
+                del parameters_all[i][u'kernel']
+                parameters_est[i]['kernel'] = kernel
+                parameters_all[i]['kernel'] = kernel
+
+            # In order to speed up the process, we precompute all scores of the possible
+            # classifiers in all cross validation estimatons
+
+            # Create the training and validation set scores
+            if verbose:
+                print('Precomputing scores on training and validation set.')
+            Y_valid_score = list()
+            Y_valid_truth = list()
+            performances = np.zeros((n_iter, n_classifiers))
+            for it, (train, valid) in enumerate(self.cv_iter):
+                if verbose:
+                    print(' - iteration {} / {}.').format(str(it + 1), str(n_iter))
+                Y_valid_score_it = np.zeros((n_classifiers, len(valid)))
+
+                # Loop over the 100 best estimators
+                for num, (p_est, p_all) in enumerate(zip(parameters_est, parameters_all)):
+                    # NOTE: Explicitly exclude validation set, elso refit and score
+                    # somehow still seems to use it.
+                    X_train_temp = [X_train[i] for i in train]
+                    Y_train_temp = [Y_train[i] for i in train]
+                    train_temp = range(0, len(train))
+
+                    # Refit a SearchCV object with the provided parameters
+                    base_estimator.refit_and_score(X_train_temp, Y_train_temp, p_all,
+                                                   p_est, train_temp, train_temp,
+                                                   verbose=False)
+
+                    # Predict and save scores
+                    X_train_values = [x[0] for x in X_train] # Throw away labels
+                    X_train_values_valid = [X_train_values[i] for i in valid]
+                    Y_valid_score_temp = base_estimator.predict_proba(X_train_values_valid)
+
+                    # Only take the probabilities for the second class
+                    Y_valid_score_temp = Y_valid_score_temp[:, 1]
+
+                    # Append to array for all classifiers on this validation set
+                    Y_valid_score_it[num, :] = Y_valid_score_temp
+
+                    if num == 0:
+                        # Also store the validation ground truths
+                        Y_valid_truth.append(Y_train[valid])
+
+                    performances[it, num] = compute_performance(scoring,
+                                                                Y_train[valid],
+                                                                Y_valid_score_temp)
+
+                Y_valid_score.append(Y_valid_score_it)
+
+            # Sorted Ensemble Initialization -------------------------------------
+            # Go on adding to the ensemble untill we find the optimal performance
+            # Initialize variables
+
+            # Note: doing this in a greedy way doesnt work. We compute the
+            # performances for the ensembles of lengt [1, n_classifiers] and
+            # select the optimum
+            best_performance = 0
+            new_performance = 0.001
+            iteration = 0
+            ensemble = list()
+            y_score = [None]*n_iter
+            best_index = 0
+            single_estimator_performance = new_performance
+
+            if initialize:
+                # Rank the models based on scoring on the validation set
+                performances = np.mean(performances, axis=0)
+                sortedindices = np.argsort(performances)[::-1]
+                performances_n_class = list()
+
+                if verbose:
+                    print("\n")
+                    print('Sorted Ensemble Initialization.')
+                # while new_performance > best_performance:
+                for dummy in range(0, n_classifiers):
+                    # Score is better, so expand ensemble and replace new best score
+                    best_performance = new_performance
+
+                    if iteration > 1:
+                        # Stack scores: not needed for first iteration
+                        ensemble.append(best_index)
+                        # N_models += 1
+                        for num in range(0, n_iter):
+                            y_score[num] = np.vstack((y_score[num], Y_valid_score[num][ensemble[-1], :]))
+
+                    elif iteration == 1:
+                        # Create y_score object for second iteration
+                        single_estimator_performance = new_performance
+                        ensemble.append(best_index)
+                        # N_models += 1
+                        for num in range(0, n_iter):
+                            y_score[num] = Y_valid_score[num][ensemble[-1], :]
+
+                    # Perform n-fold cross validation to estimate performance of next best classifier
+                    performances_temp = np.zeros((n_iter))
+                    for n_crossval in range(0, n_iter):
+                        # For each estimator, add the score to the ensemble and new ensemble performance
+                        if iteration == 0:
+                            # No y_score yet, so we need to build it instead of stacking
+                            y_valid_score_new = Y_valid_score[n_crossval][sortedindices[iteration], :]
+                        else:
+                            # Stack scores of added model on top of previous scores and average
+                            y_valid_score_new = np.mean(np.vstack((y_score[n_crossval], Y_valid_score[n_crossval][sortedindices[iteration], :])), axis=0)
+
+                        perf = compute_performance(scoring, Y_valid_truth[n_crossval], y_valid_score_new)
+                        performances_temp[n_crossval] = perf
+
+                    # Check which ensemble should be in the ensemble to maximally improve
+                    new_performance = np.mean(performances_temp)
+                    performances_n_class.append(new_performance)
+                    best_index = sortedindices[iteration]
+                    iteration += 1
+
+                # Select N_models for initialization
+                new_performance = max(performances_n_class)
+                N_models = performances_n_class.index(new_performance) + 1  # +1 due to python indexing
+                ensemble = ensemble[0:N_models]
+                best_performance = new_performance
+
+                # Print the performance gain
+                print("Ensembling best {}: {}.").format(scoring, str(best_performance))
+                print("Single estimator best {}: {}.").format(scoring, str(single_estimator_performance))
+                print('Ensemble consists of {} estimators {}.').format(str(len(ensemble)), str(ensemble))
+
         elif method == 'Caruana':
             # Use the method from Caruana
             if verbose:
@@ -983,9 +1160,16 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
         parameters_all = [parameters_all[i] for i in ensemble]
         estimators = list()
         train = range(0, len(X_train))
-        for p_est, p_all in zip(parameters_est, parameters_all):
+        nest = len(ensemble)
+        for enum, (p_est, p_all) in enumerate(zip(parameters_est, parameters_all)):
             # Refit a SearchCV object with the provided parameters
+            print("Refitting estimator {} / {}.").format(str(enum+1), str(nest))
             base_estimator = clone(base_estimator)
+
+            # # Check if we need to create a multiclass estimator
+            # if Y_train.shape[1] > 1 and type(base_estimator) != RankedSVM:
+            #     # Multiclass, hence employ a multiclass classifier for SVM
+            #     base_estimator = OneVsRestClassifier(base_estimator)
 
             base_estimator.refit_and_score(X_train, Y_train, p_all,
                                            p_est, train, train,
@@ -1104,7 +1288,7 @@ class BaseSearchCVfastr(BaseSearchCV):
         parameter_data = network.create_source('JsonFile', id_='parameters')
         sink_output = network.create_sink('HDF5', id_='output')
 
-        fitandscore = network.create_node('fitandscore', memory='8G', id_='fitandscore')
+        fitandscore = network.create_node('fitandscore', memory='2G', id_='fitandscore')
         fitandscore.inputs['estimatordata'].input_group = 'estimator'
         fitandscore.inputs['traintest'].input_group = 'traintest'
         fitandscore.inputs['parameters'].input_group = 'parameters'
@@ -1127,25 +1311,9 @@ class BaseSearchCVfastr(BaseSearchCV):
         # TODO: expanding fastr url is probably a nicer way
         sink_files = glob.glob(os.path.join(fastr.config.mounts['tmp'], 'GS', name) + '/output*.hdf5')
         save_data = list()
-        feature_labels = list()
-        scalers = list()
-        GroupSel = list()
-        VarSel = list()
-        SelectModel = list()
-        Imputers = list()
-        PCAs = list()
-        StatisticalSel = list()
         for output in sink_files:
             data = pd.read_hdf(output)
             save_data.extend(list(data['RET']))
-            feature_labels.extend(list(data['feature_labels']))
-            scalers.extend(list(data['scaler']))
-            GroupSel.extend(list(data['GroupSelection']))
-            VarSel.extend(list(data['VarSelection']))
-            SelectModel.extend(list(data['SelectModel']))
-            Imputers.extend(list(data['Imputer']))
-            PCAs.extend(list(data['PCA']))
-            StatisticalSel.extend(list(data['StatisticalSel']))
 
         # if one choose to see train score, "out" will contain train score info
         try:
@@ -1157,33 +1325,22 @@ class BaseSearchCVfastr(BaseSearchCV):
                 (test_scores, test_sample_counts,
                  fit_time, score_time, parameters_est, parameters_all) =\
                   zip(*save_data)
-        except ValueError:
-            message = ('Fitting classifiers has failed. The temporary' +
+        except ValueError as e:
+            print e
+            message = ('Fitting classifiers has failed. The temporary ' +
                        'results where not deleted and can be found in {}. ' +
                        'Probably your fitting and scoring failed: check out ' +
-                       'the tmp/fitandscore folder within the tempfolder for' +
+                       'the tmp/fitandscore folder within the tempfolder for ' +
                        'the fastr job temporary results.').format(tempfolder)
             raise PREDICTexceptions.PREDICTValueError(message)
 
         # Remove the temporary folder used
         shutil.rmtree(tempfolder)
 
-        # Create a dictionary from all the fitted objects
-        fitted_objects = dict()
-        fitted_objects['groupsel'] = GroupSel
-        fitted_objects['imputer'] = Imputers
-        fitted_objects['modelsel'] = SelectModel
-        fitted_objects['varsel'] = VarSel
-        fitted_objects['statisticalsel'] = StatisticalSel
-        fitted_objects['scaler'] = scalers
-        fitted_objects['pca'] = PCAs
-
         # Process the results of the fitting procedure
         self.process_fit(n_splits=n_splits,
                          parameters_est=parameters_est,
                          parameters_all=parameters_all,
-                         fitted_objects=fitted_objects,
-                         feature_labels=feature_labels,
                          test_sample_counts=test_sample_counts,
                          test_scores=test_scores,
                          train_scores=train_scores,
@@ -1192,8 +1349,6 @@ class BaseSearchCVfastr(BaseSearchCV):
                          cv_iter=cv_iter,
                          base_estimator=base_estimator,
                          X=X, y=y)
-
-        # return self
 
 
 class RandomizedSearchCVfastr(BaseSearchCVfastr):
@@ -1472,37 +1627,25 @@ class BaseSearchCVJoblib(BaseSearchCV):
                                  return_n_test_samples=True,
                                  return_times=True, return_parameters=True,
                                  error_score=self.error_score,
-                                 verbose=self.verbose)
+                                 verbose=self.verbose,
+                                 return_all=False)
           for parameters in parameter_iterable
           for train, test in cv_iter)
-        (save_data, GroupSel, VarSel, SelectModel, feature_labels, scalers,
-            Imputers, PCAs, StatisticalSel) = zip(*out)
+        save_data = zip(*out)
 
         # if one choose to see train score, "out" will contain train score info
         if self.return_train_score:
             (train_scores, test_scores, test_sample_counts,
              fit_time, score_time, parameters_est, parameters_all) =\
-              zip(*save_data)
+              save_data
         else:
             (test_scores, test_sample_counts,
              fit_time, score_time, parameters_est, parameters_all) =\
-              zip(*save_data)
-
-        # Create a dictionary from all the fitted objects
-        fitted_objects = dict()
-        fitted_objects['groupsel'] = GroupSel
-        fitted_objects['imputer'] = Imputers
-        fitted_objects['modelsel'] = SelectModel
-        fitted_objects['varsel'] = VarSel
-        fitted_objects['statisticalsel'] = StatisticalSel
-        fitted_objects['scaler'] = scalers
-        fitted_objects['pca'] = PCAs
+              save_data
 
         self.process_fit(n_splits=n_splits,
                          parameters_est=parameters_est,
                          parameters_all=parameters_all,
-                         fitted_objects=fitted_objects,
-                         feature_labels=feature_labels,
                          test_sample_counts=test_sample_counts,
                          test_scores=test_scores,
                          train_scores=train_scores,
@@ -1512,7 +1655,7 @@ class BaseSearchCVJoblib(BaseSearchCV):
                          base_estimator=base_estimator,
                          X=X, y=y)
 
-        # return self
+        return self
 
 
 class GridSearchCVfastr(BaseSearchCVfastr):

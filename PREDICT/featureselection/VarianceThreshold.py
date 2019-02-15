@@ -19,6 +19,7 @@ from sklearn.feature_selection import VarianceThreshold
 from sklearn.base import BaseEstimator
 from sklearn.feature_selection.base import SelectorMixin
 import numpy as np
+import PREDICT.addexceptions as ae
 
 
 class VarianceThresholdMean(BaseEstimator, SelectorMixin):
@@ -58,7 +59,8 @@ class VarianceThresholdMean(BaseEstimator, SelectorMixin):
         pass
 
 
-def selfeat_variance(image_features, labels=None, thresh=0.99, method='nomean'):
+def selfeat_variance(image_features, labels=None, thresh=0.99,
+                     method='nomean'):
     '''
     Select features using a variance threshold.
 
@@ -95,11 +97,17 @@ def selfeat_variance(image_features, labels=None, thresh=0.99, method='nomean'):
     '''
     if method == 'nomean':
         sel = VarianceThreshold(threshold=thresh*(1 - thresh))
-    else:
+    elif method == 'mean':
         sel = VarianceThresholdMean(threshold=thresh*(1 - thresh))
+    else:
+        raise ae.PREDICTKeyError(('Invalid method {} given for ' +
+                                  'VarianceThreshold feature selection. ' +
+                                  'Should be "mean" or ' +
+                                  '"nomean".').format(str(method)))
 
     sel = sel.fit(image_features)
     image_features = sel.transform(image_features)
-    labels = sel.transform(labels)
+    if labels is not None:
+        labels = sel.transform(labels)
 
     return image_features, labels, sel

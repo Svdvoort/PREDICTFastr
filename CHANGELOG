@@ -6,6 +6,59 @@ All notable changes to this project will be documented in this file.
 The format is based on `Keep a Changelog <http://keepachangelog.com/>`_
 and this project adheres to `Semantic Versioning <http://semver.org/>`_
 
+2.1.1 - 2019-02-15
+------------------
+
+Added
+~~~~~~~
+- Relief feature selection.
+- RankedSVM for multilabel classification.
+- Multilabel workflow. All binary classifiers can now also be used
+  for multilabel classification true a sklearn OneVsRestClassifier
+  object.
+- Multilabel performance metrics. Automatically used in plot_SVM
+  when using multilabel workflow.
+- Full oversampling of underrepresented classes.
+- log_uniform and exp_uniform distributions
+- Volume now also computed when only providing a Nifti
+- Single class Relief feature selection.
+- MultiSVR ensembling.
+- Start on F1_average metric.
+
+
+Changed
+~~~~~~~
+- Reduced memory usage by not passing fitted objects, but just the
+ (hyper)parameters.
+- All metrics used in evaluation are now combined in a metrics
+  script in the classification folder.
+- Cleaned crossval function for readability.
+- SVM hyperparameters are adjusted.
+- GroupSel now has a separate Hyperparameter for all texture groups.
+- Plot_barchart also compatible with above hyperparameter change.
+- Ranked images are now named with their rank, making it easier to read the
+  output.
+
+Fixed
+~~~~~
+- Catch error when validation set is too small.
+- Logging of cross validation now works properly by removing previous
+  log filehandles.
+- Ordering of methods in the SearchCV preprocess function now
+  corresponds with fitandscore.
+- Bugs for multiclass predict in SearchCV and in plot_SVM
+- Backend used in matplotlib is now agg, hence usage on platforms
+  not supporting tkinter is now supported.
+- Raise an error when multiple label matches for a single feature file are found.
+- Plot_SVM: Y_score needs to be computed with predict_proba, not the decision_function.
+- SearchCV, Ensemble, Predict: Average was taken over binary scores. The
+  average is now taken over the posteriors.
+- Plotting posteriors in ranked_images now correctly prints the posterior. Was
+  previously converted to integer.
+- Samples get a unique ID in the crossvalidation, so we always now which sample was used.
+- Bug in usage of PCA that caused it to never be used, plus a attribute name error.
+
+
 2.1.0 - 2018-08-09
 ------------------
 

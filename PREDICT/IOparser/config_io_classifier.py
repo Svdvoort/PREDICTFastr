@@ -16,7 +16,6 @@
 # limitations under the License.
 
 import configparser
-import re
 
 
 def load_config(config_file_path):
@@ -80,7 +79,27 @@ def load_config(config_file_path):
         [float(str(item).strip()) for item in
          settings['Featsel']['StatisticalTestThreshold'].split(',')]
 
-    for label in ['Use', 'strategy', 'n_neighbors']:
+    settings_dict['Featsel']['ReliefUse'] =\
+        [str(item).strip() for item in
+         settings['Featsel']['ReliefUse'].split(',')]
+
+    settings_dict['Featsel']['ReliefNN'] =\
+        [int(str(item).strip()) for item in
+         settings['Featsel']['ReliefNN'].split(',')]
+
+    settings_dict['Featsel']['ReliefSampleSize'] =\
+        [int(str(item).strip()) for item in
+         settings['Featsel']['ReliefSampleSize'].split(',')]
+
+    settings_dict['Featsel']['ReliefDistanceP'] =\
+        [int(str(item).strip()) for item in
+         settings['Featsel']['ReliefDistanceP'].split(',')]
+
+    settings_dict['Featsel']['ReliefNumFeatures'] =\
+        [int(str(item).strip()) for item in
+         settings['Featsel']['ReliefNumFeatures'].split(',')]
+
+    for label in ['use', 'strategy', 'n_neighbors']:
         settings_dict['Imputation'][label] =\
             [str(item).strip() for item in
              settings['Imputation'][label].split(',')]
@@ -115,19 +134,12 @@ def load_config(config_file_path):
         settings['CrossValidation'].getfloat('test_size')
 
     # Genetic settings
-    # label_names_setting = str(settings['Genetics']['label_names'])
-    #
-    # label_namess = re.findall("\[(.*?)\]", label_names_setting)
-    #
-    # for i_index, i_label_names in enumerate(label_namess):
-    #     stripped_label_names = [x.strip() for x in i_label_names.split(',')]
-    #     label_namess[i_index] = stripped_label_names
-    #
-    # settings_dict['Genetics']['label_names'] =\
-    #     label_namess
     settings_dict['Genetics']['label_names'] =\
         [str(item).strip() for item in
          settings['Genetics']['label_names'].split(',')]
+
+    settings_dict['Genetics']['modus'] =\
+        str(settings['Genetics']['modus'])
 
     # Settings for hyper optimization
     settings_dict['HyperOptimization']['scoring_method'] =\
@@ -150,6 +162,9 @@ def load_config(config_file_path):
         settings['SampleProcessing'].getfloat('SMOTE_ratio')
     settings_dict['SampleProcessing']['SMOTE_neighbors'] =\
         settings['SampleProcessing'].getint('SMOTE_neighbors')
+
+    settings_dict['SampleProcessing']['Oversampling'] =\
+        settings['SampleProcessing'].getboolean('Oversampling')
 
     settings_dict['Ensemble']['Use'] =\
         settings['Ensemble'].getboolean('Use')
