@@ -537,6 +537,14 @@ def fit_and_score(estimator, X, y, scorer,
                          return_n_test_samples,
                          return_times, error_score)
 
+    # Remove 'estimator object', it's the causes of a bug.
+    # Somewhere between scikit-learn 0.18.2 and 0.20.2
+    # the estimator object return value was added
+    # removing this element fixes a bug that occurs later
+    # in SearchCV.py, where an array without estimator
+    # object is expected.
+    del ret[-1]
+
     # Paste original parameters in performance
     ret.append(para)
 
