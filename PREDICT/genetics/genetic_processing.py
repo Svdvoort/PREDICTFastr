@@ -202,7 +202,7 @@ def findmutationdata(patientinfo, mutation_type, filenames,
             raise ae.PREDICTIOError(message)
 
         elif ifound == 0:
-            message = ('No found in labeling for feature file {}.').format(str(feat))
+            message = ('No entry found in labeling for feature file {}.').format(str(feat))
             raise ae.PREDICTIOError(message)
 
     # if image_features_temp is not None:

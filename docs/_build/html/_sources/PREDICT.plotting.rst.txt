@@ -4,8 +4,8 @@ PREDICT.plotting package
 Submodules
 ----------
 
-PREDICT.plotting.compute\_CI module
------------------------------------
+PREDICT.plotting.compute_CI module
+----------------------------------
 
 .. automodule:: PREDICT.plotting.compute_CI
     :members:
@@ -28,56 +28,56 @@ PREDICT.plotting.linstretch module
     :undoc-members:
     :show-inheritance:
 
-PREDICT.plotting.plot\_ROC module
----------------------------------
+PREDICT.plotting.plot_ROC module
+--------------------------------
 
 .. automodule:: PREDICT.plotting.plot_ROC
     :members:
     :undoc-members:
     :show-inheritance:
 
-PREDICT.plotting.plot\_SVM module
----------------------------------
+PREDICT.plotting.plot_SVM module
+--------------------------------
 
 .. automodule:: PREDICT.plotting.plot_SVM
     :members:
     :undoc-members:
     :show-inheritance:
 
-PREDICT.plotting.plot\_SVR module
----------------------------------
+PREDICT.plotting.plot_SVR module
+--------------------------------
 
 .. automodule:: PREDICT.plotting.plot_SVR
     :members:
     :undoc-members:
     :show-inheritance:
 
-PREDICT.plotting.plot\_barchart module
---------------------------------------
+PREDICT.plotting.plot_barchart module
+-------------------------------------
 
 .. automodule:: PREDICT.plotting.plot_barchart
     :members:
     :undoc-members:
     :show-inheritance:
 
-PREDICT.plotting.plot\_boxplot module
--------------------------------------
+PREDICT.plotting.plot_boxplot module
+------------------------------------
 
 .. automodule:: PREDICT.plotting.plot_boxplot
     :members:
     :undoc-members:
     :show-inheritance:
 
-PREDICT.plotting.plot\_images module
-------------------------------------
+PREDICT.plotting.plot_images module
+-----------------------------------
 
 .. automodule:: PREDICT.plotting.plot_images
     :members:
     :undoc-members:
     :show-inheritance:
 
-PREDICT.plotting.plot\_ranked\_scores module
---------------------------------------------
+PREDICT.plotting.plot_ranked_scores module
+------------------------------------------
 
 .. automodule:: PREDICT.plotting.plot_ranked_scores
     :members:

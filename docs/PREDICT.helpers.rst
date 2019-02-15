@@ -4,40 +4,40 @@ PREDICT.helpers package
 Submodules
 ----------
 
-PREDICT.helpers.contour\_functions module
------------------------------------------
+PREDICT.helpers.contour_functions module
+----------------------------------------
 
 .. automodule:: PREDICT.helpers.contour_functions
     :members:
     :undoc-members:
     :show-inheritance:
 
-PREDICT.helpers.contour\_functions\_3d module
----------------------------------------------
+PREDICT.helpers.contour_functions_3d module
+-------------------------------------------
 
 .. automodule:: PREDICT.helpers.contour_functions_3d
     :members:
     :undoc-members:
     :show-inheritance:
 
-PREDICT.helpers.image\_helper module
-------------------------------------
+PREDICT.helpers.image_helper module
+-----------------------------------
 
 .. automodule:: PREDICT.helpers.image_helper
     :members:
     :undoc-members:
     :show-inheritance:
 
-PREDICT.helpers.orientation\_functions module
----------------------------------------------
+PREDICT.helpers.orientation_functions module
+--------------------------------------------
 
 .. automodule:: PREDICT.helpers.orientation_functions
     :members:
     :undoc-members:
     :show-inheritance:
 
-PREDICT.helpers.sitk\_helper module
------------------------------------
+PREDICT.helpers.sitk_helper module
+----------------------------------
 
 .. automodule:: PREDICT.helpers.sitk_helper
     :members:

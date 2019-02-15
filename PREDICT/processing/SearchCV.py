@@ -41,7 +41,7 @@ import random
 import string
 import fastr
 from joblib import Parallel, delayed
-from PREDICT.processing.fitandscore import fit_and_score, replacenan
+from PREDICT.processing.fitandscore import fit_and_score, replacenan, delete_nonestimator_parameters
 import PREDICT.addexceptions as PREDICTexceptions
 import pandas as pd
 import json
@@ -52,6 +52,7 @@ from sklearn.metrics import f1_score, roc_auc_score, mean_squared_error
 from sklearn.metrics import accuracy_score
 from sklearn.multiclass import OneVsRestClassifier
 from PREDICT.classification.estimators import RankedSVM
+from sklearn import svm
 
 
 def rms_score(truth, prediction):
@@ -145,8 +146,9 @@ class Ensemble(six.with_metaclass(ABCMeta, BaseEstimator,
             outcome = np.squeeze(np.mean(outcome, axis=0))
 
             # Binarize
-            outcome[outcome >= 0.5] = 1
-            outcome[outcome < 0.5] = 0
+            if type(est.best_estimator_) != svm.classes.SVR:
+                outcome[outcome >= 0.5] = 1
+                outcome[outcome < 0.5] = 0
 
         return outcome
 
@@ -721,6 +723,7 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
         X = [x[0] for x in X]
         X = self.preprocess(X)
 
+        parameters_est = delete_nonestimator_parameters(parameters_est)
         best_estimator = clone(base_estimator).set_params(
             **parameters_est)
 

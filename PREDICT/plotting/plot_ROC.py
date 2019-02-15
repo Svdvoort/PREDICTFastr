@@ -313,7 +313,7 @@ def main():
              output_csv=args.output_csv)
 
 
-def plot_ROC(prediction, pinfo, ensemble=50, label_type=None,
+def plot_ROC(prediction, pinfo, ensemble=1, label_type=None,
              output_png=None, output_tex=None, output_csv=None):
     # Convert the inputs to the correct format
     if type(prediction) is list:

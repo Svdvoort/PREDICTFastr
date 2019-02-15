@@ -24,6 +24,7 @@ import os
 import PREDICT.genetics.genetic_processing as gp
 from PREDICT.classification import metrics
 import PREDICT.addexceptions as ae
+from sklearn import svm
 
 
 def plot_SVM(prediction, label_data, label_type, show_plots=False,
@@ -127,6 +128,7 @@ def plot_SVM(prediction, label_data, label_type, show_plots=False,
 
     # Extract the estimators, features and labels
     SVMs = prediction[label_type]['classifiers']
+    regression = type(SVMs[0].best_estimator_) == svm.classes.SVR
     Y_test = prediction[label_type]['Y_test']
     X_test = prediction[label_type]['X_test']
     X_train = prediction[label_type]['X_train']
@@ -194,7 +196,10 @@ def plot_SVM(prediction, label_data, label_type, show_plots=False,
                                     scoring=ensemble_scoring)
 
         # Create prediction
-        y_prediction = SVMs[i].predict(X_test_temp)
+        if regression:
+            y_score = y_prediction
+        else:
+            y_score = SVMs[i].predict_proba(X_test_temp)[:, 1]
 
         print("Truth: " + str(y_truth))
         print("Prediction: " + str(y_prediction))
@@ -232,11 +237,20 @@ def plot_SVM(prediction, label_data, label_type, show_plots=False,
             # Compute confusion matrix and use for sensitivity/specificity
             if modus == 'singlelabel':
                 # Compute singlelabel performance metrics
-                accuracy_temp, sensitivity_temp, specificity_temp,\
-                    precision_temp, f1_score_temp, auc_temp =\
-                    metrics.performance_singlelabel(y_truth,
-                                                    y_prediction,
-                                                    y_score)
+                if regression:
+                    accuracy_temp, sensitivity_temp, specificity_temp,\
+                        precision_temp, f1_score_temp, auc_temp =\
+                        metrics.performance_singlelabel(y_truth,
+                                                        y_prediction,
+                                                        y_score,
+                                                        regression)
+                else:
+                    r2score, MSE, coefICC, PearsonC, PearsonP, SpearmanC,\
+                        SpearmanP =\
+                        metrics.performance_singlelabel(y_truth,
+                                                        y_prediction,
+                                                        y_score,
+                                                        regression)
 
             elif modus == 'multilabel':
                 # Convert class objects to single label per patient
@@ -317,7 +331,12 @@ def plot_SVM(prediction, label_data, label_type, show_plots=False,
         for i_ID in patient_classification_list:
             percentage_right = patient_classification_list[i_ID]['N_correct'] / float(patient_classification_list[i_ID]['N_test'])
 
-            label = mutation_label[0][np.where(i_ID == patient_IDs)]
+            if i_ID in patient_IDs:
+                label = mutation_label[0][np.where(i_ID == patient_IDs)]
+            else:
+                # Multiple instance of one patient
+                label = mutation_label[0][np.where(i_ID.split('_')[0] == patient_IDs)]
+
             label = label[0][0]
             percentages[i_ID] = str(label) + ': ' + str(round(percentage_right, 2) * 100) + '%'
             if percentage_right == 1.0:

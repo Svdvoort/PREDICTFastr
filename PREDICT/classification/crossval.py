@@ -203,7 +203,11 @@ def crossval(config, label_data, image_features,
                 # Use Random Split. Split per patient, not per sample
                 unique_patient_IDs, unique_indices =\
                     np.unique(np.asarray(patient_IDs), return_index=True)
-                unique_stratify = [stratify[i] for i in unique_indices]
+                if type(classifier) == sklearn.svm.classes.SVR:
+                    unique_stratify = None
+                else:
+                    unique_stratify = [stratify[i] for i in unique_indices]
+
                 try:
                     unique_PID_train, indices_PID_test\
                         = train_test_split(unique_patient_IDs,

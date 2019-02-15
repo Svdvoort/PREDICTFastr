@@ -5,39 +5,55 @@ from sklearn.metrics import confusion_matrix
 from sklearn.metrics import f1_score
 import numpy as np
 from sklearn import metrics
+from scipy.stats import pearsonr, spearmanr
+from PREDICT.processing.ICC import ICC
 
 
-def performance_singlelabel(y_truth, y_prediction, y_score):
+def performance_singlelabel(y_truth, y_prediction, y_score, regression=False):
     '''
     Singleclass performance metrics
     '''
-    c_mat = confusion_matrix(y_truth, y_prediction)
-    TN = c_mat[0, 0]
-    FN = c_mat[1, 0]
-    TP = c_mat[1, 1]
-    FP = c_mat[0, 1]
+    if regression:
+        r2score = metrics.r2_score(y_truth, y_prediction)
+        MSE = metrics.mean_squared_error(y_truth, y_prediction)
+        coefICC = ICC(np.column_stack((y_prediction, y_truth)))
+        C = pearsonr(y_prediction, y_truth)
+        PearsonC = C[0]
+        PearsonP = C[1]
+        C = spearmanr(y_prediction, y_truth)
+        SpearmanC = C.correlation
+        SpearmanP = C.pvalue
 
-    if FN == 0 and TP == 0:
-        sensitivity = 0
+        return r2score, MSE, coefICC, PearsonC, PearsonP, SpearmanC, SpearmanP
+
     else:
-        sensitivity = float(TP)/(TP+FN)
+        c_mat = confusion_matrix(y_truth, y_prediction)
+        TN = c_mat[0, 0]
+        FN = c_mat[1, 0]
+        TP = c_mat[1, 1]
+        FP = c_mat[0, 1]
 
-    if FP == 0 and TN == 0:
-        specificity = 0
-    else:
-        specificity = float(TN)/(FP+TN)
+        if FN == 0 and TP == 0:
+            sensitivity = 0
+        else:
+            sensitivity = float(TP)/(TP+FN)
 
-    if TP == 0 and FP == 0:
-        precision = 0
-    else:
-        precision = float(TP)/(TP+FP)
+        if FP == 0 and TN == 0:
+            specificity = 0
+        else:
+            specificity = float(TN)/(FP+TN)
 
-    # Additionally, compute accuracy, AUC and f1-score
-    accuracy = accuracy_score(y_truth, y_prediction)
-    auc = roc_auc_score(y_truth, y_score)
-    f1_score_out = f1_score(y_truth, y_prediction, average='weighted')
+        if TP == 0 and FP == 0:
+            precision = 0
+        else:
+            precision = float(TP)/(TP+FP)
 
-    return accuracy, sensitivity, specificity, precision, f1_score_out, auc
+        # Additionally, compute accuracy, AUC and f1-score
+        accuracy = accuracy_score(y_truth, y_prediction)
+        auc = roc_auc_score(y_truth, y_score)
+        f1_score_out = f1_score(y_truth, y_prediction, average='weighted')
+
+        return accuracy, sensitivity, specificity, precision, f1_score_out, auc
 
 
 def performance_multilabel(y_truth, y_prediction, y_score=None, beta=1):

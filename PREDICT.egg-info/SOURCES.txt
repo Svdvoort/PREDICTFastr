@@ -114,6 +114,7 @@ docs/_build/html/genindex.html
 docs/_build/html/index.html
 docs/_build/html/modules.html
 docs/_build/html/objects.inv
+docs/_build/html/py-modindex.html
 docs/_build/html/search.html
 docs/_build/html/searchindex.js
 docs/_build/html/_sources/PREDICT.IOparser.rst.txt
@@ -135,11 +136,10 @@ docs/_build/html/_static/comment-close.png
 docs/_build/html/_static/comment.png
 docs/_build/html/_static/custom.css
 docs/_build/html/_static/doctools.js
-docs/_build/html/_static/documentation_options.js
 docs/_build/html/_static/down-pressed.png
 docs/_build/html/_static/down.png
 docs/_build/html/_static/file.png
-docs/_build/html/_static/jquery-3.2.1.js
+docs/_build/html/_static/jquery-3.1.0.js
 docs/_build/html/_static/jquery.js
 docs/_build/html/_static/minus.png
 docs/_build/html/_static/plus.png

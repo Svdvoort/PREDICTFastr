@@ -12,8 +12,8 @@ PREDICT.classification.RankedSVM module
     :undoc-members:
     :show-inheritance:
 
-PREDICT.classification.construct\_classifier module
----------------------------------------------------
+PREDICT.classification.construct_classifier module
+--------------------------------------------------
 
 .. automodule:: PREDICT.classification.construct_classifier
     :members:
@@ -44,8 +44,8 @@ PREDICT.classification.metrics module
     :undoc-members:
     :show-inheritance:
 
-PREDICT.classification.parameter\_optimization module
------------------------------------------------------
+PREDICT.classification.parameter_optimization module
+----------------------------------------------------
 
 .. automodule:: PREDICT.classification.parameter_optimization
     :members:
