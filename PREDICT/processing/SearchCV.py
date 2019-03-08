@@ -41,7 +41,8 @@ import random
 import string
 import fastr
 from joblib import Parallel, delayed
-from PREDICT.processing.fitandscore import fit_and_score, replacenan, delete_nonestimator_parameters
+from PREDICT.processing.fitandscore import fit_and_score, replacenan
+from PREDICT.processing.fitandscore import delete_nonestimator_parameters
 import PREDICT.addexceptions as PREDICTexceptions
 import pandas as pd
 import json

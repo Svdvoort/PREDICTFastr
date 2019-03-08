@@ -18,6 +18,7 @@ Changed
 ~~~~~~~
 - Upgraded imputer to work with newest sklearn versions.
 - Oversampling and SMOTE can now also be used in CASH optimization.
+- Moved max_iter of all iterative classifiers and regressors to general config.
 
 Fixed
 ~~~~~

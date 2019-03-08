@@ -56,7 +56,7 @@ def random_search_parameters(features, labels, N_iter, test_size,
     random_state = check_random_state(random_seed)
 
     regressors = ['SVR', 'RFR', 'SGDR', 'Lasso', 'ElasticNet']
-    if any(clf in regressors  for elem in param_grid['classifiers']):
+    if any(clf in regressors for clf in param_grid['classifiers']):
         # We cannot do a stratified shuffle split with regression
         cv = ShuffleSplit(n_splits=5, test_size=test_size,
                           random_state=random_state)

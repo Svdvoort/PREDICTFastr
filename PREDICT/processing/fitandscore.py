@@ -30,8 +30,11 @@ from sklearn.decomposition import PCA
 from PREDICT.featureselection.Relief import SelectMulticlassRelief
 from sklearn.multiclass import OneVsRestClassifier
 from PREDICT.classification.estimators import RankedSVM
-from imblearn.over_sampling import RandomOverSampler
 from PREDICT.classification import construct_classifier as cc
+from sklearn.metrics import check_scoring
+from imblearn.over_sampling import SMOTE, RandomOverSampler
+from sklearn.utils import check_random_state
+import random
 
 
 def fit_and_score(X, y, scoring,

@@ -26,7 +26,6 @@ import xlrd
 import natsort
 import PREDICT.classification.parameter_optimization as po
 import PREDICT.addexceptions as ae
-import random
 
 
 def crossval(config, label_data, image_features,
@@ -162,7 +161,6 @@ def crossval(config, label_data, image_features,
             print(('Cross validation iteration {} / {} .').format(str(i + 1), str(N_iterations)))
             logging.debug(('Cross validation iteration {} / {} .').format(str(i + 1), str(N_iterations)))
             random_seed = np.random.randint(5000)
-            random_state = check_random_state(random_seed)
 
             # Split into test and training set, where the percentage of each
             # label is maintained
@@ -438,7 +436,6 @@ def nocrossval(config, label_data_train, label_data_test, image_features_train,
         save_data = list()
 
         random_seed = np.random.randint(5000)
-        random_state = check_random_state(random_seed)
 
         # Split into test and training set, where the percentage of each
         # label is maintained

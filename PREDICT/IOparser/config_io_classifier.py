@@ -104,7 +104,7 @@ def load_config(config_file_path):
          settings['Featsel']['ReliefNumFeatures'].split(',')]
 
     settings_dict['Imputation']['use'] =\
-        [boolean(str(item).strip()) for item in
+        [bool(str(item).strip()) for item in
          settings['Imputation']['use'].split(',')]
 
     settings_dict['Imputation']['strategy'] =\
@@ -136,7 +136,8 @@ def load_config(config_file_path):
          settings['Classification']['classifiers'].split(',')]
 
     settings_dict['Classification']['max_iter'] =\
-        settings['Classification'].getint('max_iter')
+        [int(str(item).strip()) for item in
+         settings['Classification']['max_iter'].split(',')]
 
     # Specific SVM options
     settings_dict['Classification']['SVMKernel'] =\
@@ -208,7 +209,7 @@ def load_config(config_file_path):
         str(settings['FeatureScaling']['scaling_method'])
 
     settings_dict['SampleProcessing']['SMOTE'] =\
-        [boolean(str(item).strip()) for item in
+        [bool(str(item).strip()) for item in
          settings['SampleProcessing']['SMOTE'].split(',')]
 
     settings_dict['SampleProcessing']['SMOTE_ratio'] =\
@@ -220,7 +221,7 @@ def load_config(config_file_path):
          settings['SampleProcessing']['SMOTE_ratio'].split(',')]
 
     settings_dict['SampleProcessing']['Oversampling'] =\
-        [boolean(str(item).strip()) for item in
+        [bool(str(item).strip()) for item in
          settings['SampleProcessing']['Oversampling'].split(',')]
 
     settings_dict['Ensemble']['Use'] =\

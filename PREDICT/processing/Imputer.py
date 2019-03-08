@@ -60,10 +60,12 @@ class Imputer(object):
 
             '''
 
+            # Set parameters to objects
             self.missing_values = missing_values
             self.strategy = strategy
             self.n_neighbors = n_neighbors
 
+            # Depending on the imputations strategy, use a specific toolbox
             if strategy in ['mean', 'median', 'most_frequent', 'constant']:
                 self.Imputer =\
                  SimpleImputer(missing_values=self.missing_values,

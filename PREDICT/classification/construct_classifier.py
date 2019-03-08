@@ -22,7 +22,6 @@ from sklearn.linear_model import SGDClassifier, ElasticNet, SGDRegressor
 from sklearn.linear_model import LogisticRegression
 from sklearn.linear_model import Lasso
 import scipy
-import numpy as np
 import PREDICT.addexceptions as ae
 from PREDICT.classification.estimators import RankedSVM
 from PREDICT.processing.AdvancedSampler import log_uniform
@@ -43,62 +42,65 @@ def construct_classifier(config, image_features):
         Constructed classifier
     """
 
-    if 'SVM' in config['Classification']['classifier']:
+    # NOTE: Function is not working anymore for regression: need
+    # to move param grid creation to the create_param_grid function
+    max_iter = config['max_iter']
+    if 'SVM' in config['classifiers']:
         # Support Vector Machine
-        classifier, param_grid = construct_SVM(config, image_features)
+        classifier = construct_SVM(config, image_features)
 
-    elif config['Classification']['classifier'] == 'SVR':
+    elif config['classifiers'] == 'SVR':
         # Support Vector Regression
-        classifier, param_grid = construct_SVM(config, image_features, True)
+        classifier = construct_SVM(config, image_features, True)
 
-    elif config['Classification']['classifier'] == 'RF':
+    elif config['classifiers'] == 'RF':
         # Random forest kernel
-        param_grid = {'n_estimators': scipy.stats.randint(low=300, high=500),
-                      'min_samples_split': scipy.stats.randint(low=2, high=5),
-                      'max_depth': scipy.stats.randint(low=5, high=10)}
         classifier = RandomForestClassifier(verbose=0,
-                                            class_weight='balanced')
+                                            class_weight='balanced',
+                                            n_estimators=config['RFn_estimators'],
+                                            min_samples_split=config['RFmin_samples_split'],
+                                            max_depth=config['RFmax_depth'])
 
-    elif config['Classification']['classifier'] == 'RFR':
+    elif config['classifiers'] == 'RFR':
         # Random forest kernel regression
-        param_grid = {'n_estimators': scipy.stats.randint(low=100, high=300),
-                      'min_samples_split': scipy.stats.randint(low=2, high=5),
-                      'max_depth': scipy.stats.randint(low=5, high=10)}
-        classifier = RandomForestRegressor(verbose=0)
+        classifier = RandomForestRegressor(verbose=0,
+                                           n_estimators=config['RFn_estimators'],
+                                           min_samples_split=config['RFmin_samples_split'],
+                                           max_depth=config['RFmax_depth'])
 
-    elif config['Classification']['classifier'] == 'ElasticNet':
+    elif config['classifiers'] == 'ElasticNet':
         # Elastic Net Regression
         param_grid = {'alpha': scipy.stats.uniform(loc=1.0, scale=0.5),
                       'l1_ratio': scipy.stats.uniform(loc=0.5, scale=0.4)
                       }
-        classifier = ElasticNet(max_iter=100000)
+        classifier = ElasticNet(max_iter=max_iter)
 
-    elif config['Classification']['classifier'] == 'Lasso':
+    elif config['classifiers'] == 'Lasso':
         # LASSO Regression
         param_grid = {'alpha': scipy.stats.uniform(loc=1.0, scale=0.5)}
-        classifier = Lasso(max_iter=100000)
+        classifier = Lasso(max_iter=max_iter)
 
-    elif config['Classification']['classifier'] == 'SGD':
+    elif config['classifiers'] == 'SGD':
         # Stochastic Gradient Descent classifier
-        classifier = SGDClassifier(n_iter=config['Classification']['n_epoch'])
+        classifier = SGDClassifier(n_iter=config['max_iter'])
         param_grid = {'loss': ['hinge', 'squared_hinge', 'modified_huber'],
                       'penalty': ['none', 'l2', 'l1']}
 
-    elif config['Classification']['classifier'] == 'SGDR':
+    elif config['classifiers'] == 'SGDR':
         # Stochastic Gradient Descent regressor
-        classifier = SGDRegressor(n_iter=config['Classification']['n_epoch'])
+        classifier = SGDRegressor(n_iter=config['max_iter'])
         param_grid = {'alpha': scipy.stats.uniform(loc=1.0, scale=0.5),
                       'l1_ratio': scipy.stats.uniform(loc=0.5, scale=0.4),
                       'loss': ['hinge', 'squared_hinge', 'modified_huber'],
                       'penalty': ['none', 'l2', 'l1']}
 
-    elif config['Classification']['classifier'] == 'LR':
+    elif config['classifiers'] == 'LR':
         # Logistic Regression
-        classifier = LogisticRegression(max_iter=100000)
-        param_grid = {'penalty': ['l2', 'l1'],
-                      'C': scipy.stats.uniform(loc=0, scale=np.sqrt(len(image_features)))}
+        classifier = LogisticRegression(max_iter=max_iter,
+                                        penalty=config['LRpenalty'],
+                                        C=config['LRC'])
 
-    return classifier, param_grid
+    return classifier
 
 
 def construct_SVM(config, image_features, regression=False):
@@ -115,33 +117,20 @@ def construct_SVM(config, image_features, regression=False):
         SVM/SVR classifier, parameter grid
     """
 
-    # TODO: move the max_iter parameter to main config
+    max_iter = config['max_iter']
     if not regression:
-        clf = SVC(class_weight='balanced', probability=True, max_iter=1E5)
+        clf = SVC(class_weight='balanced', probability=True, max_iter=max_iter)
     else:
-        clf = SVMR(max_iter=1E5)
+        clf = SVMR(max_iter=max_iter)
 
-    if config['Classification']['Kernel'] == "polynomial" or config['Classification']['Kernel'] == "poly":
-        param_grid = {'kernel': ['poly'],
-                      'C': log_uniform(loc=0, scale=6),
-                      'degree': scipy.stats.uniform(loc=1, scale=6),
-                      'coef0': scipy.stats.uniform(loc=0, scale=1),
-                      'gamma': log_uniform(loc=-5, scale=5)}
-
-    elif config['Classification']['Kernel'] == "linear":
-        param_grid = {'kernel': ['linear'],
-                      'C': log_uniform(loc=0, scale=6),
-                      'coef0': scipy.stats.uniform(loc=0, scale=1)}
-
-    elif config['Classification']['Kernel'] == "rbf":
-        param_grid = {'kernel': ['rbf'],
-                      'C': log_uniform(loc=0, scale=6),
-                      'gamma': log_uniform(loc=-5, scale=5)}
-    else:
-        raise ae.PREDICTKeyError("{} is not a valid SVM kernel type!").format(config['Classification']['Kernel'])
+    clf.kernel = config['SVMKernel']
+    clf.C = config['SVMC']
+    clf.degree = config['SVMdegree']
+    clf.coef0 = config['SVMcoef0']
+    clf.gamma = config['SVMgamma']
 
     # Check if we need to use a ranked SVM
-    if config['Classification']['classifier'] == 'RankedSVM':
+    if config['classifiers'] == 'RankedSVM':
         clf = RankedSVM()
         param_grid = {'svm': ['Poly'],
                       'degree': [2, 3, 4, 5],
@@ -159,12 +148,13 @@ def create_param_grid(config):
     # We only need parameters from the Classification part of the config
     config = config['Classification']
 
-    # Create grid and put in name of classifiers
+    # Create grid and put in name of classifiers and maximum iterations
     param_grid = dict()
     param_grid['classifiers'] = config['classifiers']
+    param_grid['max_iter'] = config['max_iter']
 
     # SVM parameters
-    param_grid['SVMKernel'] =  config['SVMKernel']
+    param_grid['SVMKernel'] = config['SVMKernel']
     param_grid['SVMC'] = log_uniform(loc=config['SVMC'][0],
                                      scale=config['SVMC'][1])
     param_grid['SVMdegree'] = scipy.stats.uniform(loc=config['SVMdegree'][0],
