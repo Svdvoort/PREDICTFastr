@@ -2,7 +2,7 @@ configparser>=3.5.0
 cycler>=0.10.0
 dask>=0.11.0
 decorator>=4.0.10
-fastr>=1.1.2
+fastr==2.1.1
 funcsigs>=1.0.2
 future>=0.16.0
 ghalton>=0.6.1
@@ -15,6 +15,7 @@ lifelines>=0.9.3.2
 lxml>=3.7.1
 matplotlib>=2.1.1
 matplotlib2tikz>=0.6.17
+missingpy>=0.2.0
 mock>=2.0.0
 natsort>=5.0.1
 networkx>=1.11

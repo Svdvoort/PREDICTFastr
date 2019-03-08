@@ -25,7 +25,7 @@ import numpy as np
 from sklearn.linear_model import Lasso
 from sklearn.feature_selection import SelectFromModel
 import scipy
-from sklearn.preprocessing import Imputer
+from PREDICT.processing.Imputer import Imputer
 from sklearn.decomposition import PCA
 from PREDICT.featureselection.Relief import SelectMulticlassRelief
 from sklearn.multiclass import OneVsRestClassifier
@@ -160,6 +160,34 @@ def fit_and_score(estimator, X, y, scorer,
     feature_labels = np.asarray([x[1] for x in X])
 
     # ------------------------------------------------------------------------
+    # Feature imputation
+    if 'Imputation' in para_estimator.keys():
+        if para_estimator['Imputation'] == 'True':
+            imp_type = para_estimator['ImputationMethod']
+            imp_nn = para_estimator['ImputationNeighbours']
+
+            imputer = Imputer(missing_values='NaN', strategy=imp_type,
+                              n_neighbors=imp_nn)
+            imputer.fit(feature_values)
+            feature_values = imputer.transform(feature_values)
+        else:
+            imputer = None
+    else:
+        imputer = None
+
+    if 'Imputation' in para_estimator.keys():
+        del para_estimator['Imputation']
+        del para_estimator['ImputationMethod']
+        del para_estimator['ImputationNeighbours']
+
+    # Delete the object if we do not need to return it
+    if not return_all:
+        del imputer
+
+    # ------------------------------------------------------------------------
+    # SMOTE
+
+    # ------------------------------------------------------------------------
     # Groupwise feature selection
     if 'SelectGroups' in para_estimator:
         if verbose:
@@ -234,31 +262,6 @@ def fit_and_score(estimator, X, y, scorer,
             return ret, GroupSel, VarSel, SelectModel, feature_labels[0], scaler, imputer, pca, StatisticalSel, ReliefSel
         else:
             return ret
-
-    # ------------------------------------------------------------------------
-    # Feature imputation
-    if 'Imputation' in para_estimator.keys():
-        if para_estimator['Imputation'] == 'True':
-            imp_type = para_estimator['ImputationMethod']
-            imp_nn = para_estimator['ImputationNeighbours']
-
-            imputer = Imputer(missing_values='NaN', strategy=imp_type,
-                              n_neighbors=imp_nn, axis=0)
-            imputer.fit(feature_values)
-            feature_values = imputer.transform(feature_values)
-        else:
-            imputer = None
-    else:
-        imputer = None
-
-    if 'Imputation' in para_estimator.keys():
-        del para_estimator['Imputation']
-        del para_estimator['ImputationMethod']
-        del para_estimator['ImputationNeighbours']
-
-    # Delete the object if we do not need to return it
-    if not return_all:
-        del imputer
 
     # ------------------------------------------------------------------------
     # FIXME: When only using LBP feature, X is 3 dimensional with 3rd dimension length 1
