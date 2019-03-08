@@ -20,10 +20,7 @@ from sklearn.utils import check_random_state
 from sklearn.model_selection import StratifiedShuffleSplit, ShuffleSplit
 from PREDICT.processing.SearchCV import RandomizedSearchCVfastr, RandomizedSearchCVJoblib
 
-from sklearn.svm import SVR
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.linear_model import ElasticNet, SGDRegressor
-from sklearn.linear_model import Lasso
+from sklearn.utils.estimator_checks import is_regressor
 
 
 def random_search_parameters(features, labels, N_iter, test_size,
@@ -60,8 +57,7 @@ def random_search_parameters(features, labels, N_iter, test_size,
     random_seed = np.random.randint(1, 5000)
     random_state = check_random_state(random_seed)
 
-    if type(classifier) in [SVR, RandomForestRegressor, ElasticNet,
-                            SGDRegressor, Lasso]:
+    if is_regressor(classifier):
         # We cannot do a stratified shuffle split with regression
         cv = ShuffleSplit(n_splits=5, test_size=test_size,
                           random_state=random_state)

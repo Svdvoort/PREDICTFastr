@@ -494,24 +494,33 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
 
     def preprocess(self, X):
         '''Apply the available preprocssing methods to the features'''
-        if self.best_groupsel is not None:
-            X = self.best_groupsel.transform(X)
         if self.best_imputer is not None:
             X = self.best_imputer.transform(X)
 
-        # Replace NaNs if they are still left at this stage, see also fit_and_score
-        X = replacenan(X, self.verbose)
+        if self.best_SMOTE is not None:
+            X = self.best_SMOTE.transform(X)
+
+        if self.best_RandomOverSampler is not None:
+            X = self.best_RandomOverSampler.transform(X)
+
+        if self.best_groupsel is not None:
+            X = self.best_groupsel.transform(X)
 
         if self.best_varsel is not None:
             X = self.best_varsel.transform(X)
+
         if self.best_statisticalsel is not None:
             X = self.best_statisticalsel.transform(X)
+
         if self.best_scaler is not None:
             X = self.best_scaler.transform(X)
+
         if self.best_reliefsel is not None:
             X = self.best_reliefsel.transform(X)
+
         if self.best_pca is not None:
             X = self.best_pca.transform(X)
+
         if self.best_modelsel is not None:
             X = self.best_modelsel.transform(X)
 
@@ -708,7 +717,7 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
 
         # Associate best options with new fits
         (save_data, GroupSel, VarSel, SelectModel, feature_labels, scalers,\
-            Imputers, PCAs, StatisticalSel, ReliefSel) = out
+            Imputers, PCAs, StatisticalSel, ReliefSel, sm, ros) = out
         self.best_groupsel = GroupSel
         self.best_scaler = scalers
         self.best_varsel = VarSel
@@ -718,6 +727,8 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
         self.best_featlab = feature_labels
         self.best_statisticalsel = StatisticalSel
         self.best_reliefsel = ReliefSel
+        self.best_SMOTE = sm
+        self.best_RandomOverSampler = ros
 
         # Fit the estimator using the preprocessed features
         X = [x[0] for x in X]

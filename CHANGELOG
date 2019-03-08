@@ -17,6 +17,7 @@ Added
 Changed
 ~~~~~~~
 - Upgraded imputer to work with newest sklearn versions.
+- Oversampling and SMOTE can now also be used in CASH optimization.
 
 Fixed
 ~~~~~

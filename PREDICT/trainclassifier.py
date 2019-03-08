@@ -159,6 +159,13 @@ def trainclassifier(feat_train, patientinfo_train, config,
         else:
             param_grid['FeatureScaling'] = config['FeatureScaling']['scaling_method']
 
+    # Add parameters for oversampling methods
+    param_grid['SampleProcessing_SMOTE'] = config['SampleProcessing']['SMOTE']
+    param_grid['SampleProcessing_SMOTE_ratio'] = config['SampleProcessing']['SMOTE_ratio']
+    param_grid['SampleProcessing_SMOTE_neighbors'] = config['SampleProcessing']['SMOTE_neighbors']
+    param_grid['SampleProcessing_SMOTE_n_cores'] = config['General']['Joblib_ncores']
+    param_grid['SampleProcessing_Oversampling'] = config['SampleProcessing']['Oversampling']
+
     # Extract hyperparameter grid settings for SearchCV from config
     param_grid['Featsel_Variance'] = config['Featsel']['Variance']
 

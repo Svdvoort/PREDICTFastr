@@ -99,10 +99,17 @@ def load_config(config_file_path):
         [int(str(item).strip()) for item in
          settings['Featsel']['ReliefNumFeatures'].split(',')]
 
-    for label in ['use', 'strategy', 'n_neighbors']:
-        settings_dict['Imputation'][label] =\
-            [str(item).strip() for item in
-             settings['Imputation'][label].split(',')]
+    settings_dict['Imputation']['use'] =\
+        [boolean(str(item).strip()) for item in
+         settings['Imputation']['use'].split(',')]
+
+    settings_dict['Imputation']['strategy'] =\
+        [str(item).strip() for item in
+         settings['Imputation']['strategy'].split(',')]
+
+    settings_dict['Imputation']['n_neighbors'] =\
+        [int(str(item).strip()) for item in
+         settings['Imputation']['n_neighbors'].split(',')]
 
     settings_dict['General']['FeatureCalculator'] =\
         str(settings['General']['FeatureCalculator'])
@@ -157,14 +164,20 @@ def load_config(config_file_path):
         str(settings['FeatureScaling']['scaling_method'])
 
     settings_dict['SampleProcessing']['SMOTE'] =\
-        settings['SampleProcessing'].getboolean('SMOTE')
+        [boolean(str(item).strip()) for item in
+         settings['SampleProcessing']['SMOTE'].split(',')]
+
     settings_dict['SampleProcessing']['SMOTE_ratio'] =\
-        settings['SampleProcessing'].getfloat('SMOTE_ratio')
+        [float(str(item).strip()) for item in
+         settings['SampleProcessing']['SMOTE_ratio'].split(',')]
+
     settings_dict['SampleProcessing']['SMOTE_neighbors'] =\
-        settings['SampleProcessing'].getint('SMOTE_neighbors')
+        [int(str(item).strip()) for item in
+         settings['SampleProcessing']['SMOTE_ratio'].split(',')]
 
     settings_dict['SampleProcessing']['Oversampling'] =\
-        settings['SampleProcessing'].getboolean('Oversampling')
+        [boolean(str(item).strip()) for item in
+         settings['SampleProcessing']['Oversampling'].split(',')]
 
     settings_dict['Ensemble']['Use'] =\
         settings['Ensemble'].getboolean('Use')
