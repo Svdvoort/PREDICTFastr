@@ -31,9 +31,10 @@ from PREDICT.featureselection.Relief import SelectMulticlassRelief
 from sklearn.multiclass import OneVsRestClassifier
 from PREDICT.classification.estimators import RankedSVM
 from imblearn.over_sampling import RandomOverSampler
+from PREDICT.classification import construct_classifier as cc
 
 
-def fit_and_score(estimator, X, y, scorer,
+def fit_and_score(X, y, scoring,
                   train, test, para,
                   fit_params=None,
                   return_train_score=True,
@@ -155,6 +156,9 @@ def fit_and_score(estimator, X, y, scorer,
     '''
     # We copy the parameter object so we can alter it and keep the original
     para_estimator = para.copy()
+    estimator = cc.construct_classifier(para_estimator)
+    scorer = check_scoring(estimator, scoring=scoring)
+    para_estimator = delete_cc_para(para_estimator)
 
     # X is a tuple: split in two arrays
     feature_values = np.asarray([x[0] for x in X])
@@ -722,3 +726,26 @@ def replacenan(image_features, verbose=True, feature_labels=None):
                 image_features_temp[pnum, fnum] = 0
 
     return image_features_temp
+
+
+def delete_cc_para(para):
+    '''
+    Delete all parameters that are involved in classifier construction.
+    '''
+    deletekeys = ['classifiers',
+                  'SVMKernel',
+                  'SVMC',
+                  'SVMdegree',
+                  'SVMcoef0',
+                  'SVMgamma',
+                  'RFn_estimators',
+                  'RFmin_samples_split',
+                  'RFmax_depth',
+                  'LRpenalty',
+                  'LRC']
+
+    for k in deletekeys:
+        if k in para.keys():
+            del para[k]
+
+    return para

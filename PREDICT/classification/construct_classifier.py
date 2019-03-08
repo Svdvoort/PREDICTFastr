@@ -150,3 +150,44 @@ def construct_SVM(config, image_features, regression=False):
                       }
 
     return clf, param_grid
+
+
+def create_param_grid(config):
+    ''' Create a parameter grid for the PREDICT classifiers based on the
+        provided configuration. '''
+
+    # We only need parameters from the Classification part of the config
+    config = config['Classification']
+
+    # Create grid and put in name of classifiers
+    param_grid = dict()
+    param_grid['classifiers'] = config['classifiers']
+
+    # SVM parameters
+    param_grid['SVMKernel'] =  config['SVMKernel']
+    param_grid['SVMC'] = log_uniform(loc=config['SVMC'][0],
+                                     scale=config['SVMC'][1])
+    param_grid['SVMdegree'] = scipy.stats.uniform(loc=config['SVMdegree'][0],
+                                                  scale=config['SVMdegree'][1])
+    param_grid['SVMcoef0'] = scipy.stats.uniform(loc=config['SVMcoef0'][0],
+                                                 scale=config['SVMcoef0'][1])
+    param_grid['SVMgamma'] = log_uniform(loc=config['SVMgamma'][0],
+                                         scale=config['SVMgamma'][1])
+
+    # RF parameters
+    param_grid['RFn_estimators'] =\
+        scipy.stats.randint(loc=config['RFn_estimators'][0],
+                            scale=config['RFn_estimators'][1])
+    param_grid['RFmin_samples_split'] =\
+        scipy.stats.randint(loc=config['RFmin_samples_split'][0],
+                            scale=config['RFmin_samples_split'][1])
+    param_grid['RFmax_depth'] =\
+        scipy.stats.randint(loc=config['RFmax_depth'][0],
+                            scale=config['RFmax_depth'][1])
+
+    # Logistic Regression parameters
+    param_grid['LRpenalty'] = param_grid['LRpenalty']
+    param_grid['LRC'] = log_uniform(loc=config['LRC'][0],
+                                    scale=config['LRC'][1])
+
+    return param_grid

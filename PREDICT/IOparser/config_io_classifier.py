@@ -59,6 +59,10 @@ def load_config(config_file_path):
         [str(item).strip() for item in
          settings['Featsel']['SelectFromModel'].split(',')]
 
+    settings_dict['Featsel']['GroupwiseSearch'] =\
+        [str(item).strip() for item in
+         settings['Featsel']['GroupwiseSearch'].split(',')]
+
     settings_dict['Featsel']['UsePCA'] =\
         [str(item).strip() for item in
          settings['Featsel']['UsePCA'].split(',')]
@@ -127,11 +131,51 @@ def load_config(config_file_path):
     settings_dict['Classification']['fastr_plugin'] =\
         str(settings['Classification']['fastr_plugin'])
 
-    settings_dict['Classification']['classifier'] =\
-        str(settings['Classification']['classifier'])
+    settings_dict['Classification']['classifiers'] =\
+        [str(item).strip() for item in
+         settings['Classification']['classifiers'].split(',')]
 
-    settings_dict['Classification']['Kernel'] =\
-        str(settings['Classification']['Kernel'])
+    settings_dict['Classification']['max_iter'] =\
+        settings['Classification'].getint('max_iter')
+
+    # Specific SVM options
+    settings_dict['Classification']['SVMKernel'] =\
+        str(settings['Classification']['SVMKernel'])
+
+    settings_dict['Classification']['SVMC'] =\
+        [int(str(item).strip()) for item in
+         settings['Classification']['SVMC'].split(',')]
+
+    settings_dict['Classification']['SVMdegree'] =\
+        [int(str(item).strip()) for item in
+         settings['Classification']['SVMdegree'].split(',')]
+
+    settings_dict['Classification']['SVMcoef0'] =\
+        [int(str(item).strip()) for item in
+         settings['Classification']['SVMcoef0'].split(',')]
+
+    settings_dict['Classification']['SVMgamma'] =\
+        [int(str(item).strip()) for item in
+         settings['Classification']['SVMgamma'].split(',')]
+
+    # Specific RF options
+    settings_dict['Classification']['RFn_estimators'] =\
+        [int(str(item).strip()) for item in
+         settings['Classification']['RFn_estimators'].split(',')]
+    settings_dict['Classification']['RFmin_samples_split'] =\
+        [int(str(item).strip()) for item in
+         settings['Classification']['RFmin_samples_split'].split(',')]
+    settings_dict['Classification']['RFmax_depth'] =\
+        [int(str(item).strip()) for item in
+         settings['Classification']['RFmax_depth'].split(',')]
+
+    # Specific LR options
+    settings_dict['Classification']['LRpenalty'] =\
+        [str(item).strip() for item in
+         settings['Classification']['LRpenalty'].split(',')]
+    settings_dict['Classification']['LRC'] =\
+        [int(str(item).strip()) for item in
+         settings['Classification']['LRC'].split(',')]
 
     # Cross validation settings
     settings_dict['CrossValidation']['N_iterations'] =\

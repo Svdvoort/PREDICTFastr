@@ -12,7 +12,7 @@ Unreleased
 Added
 ~~~~~~~
 - If you have objects with missing features, put in NaN values.
-
+- CASH now also includes multiple machine learning model selection.
 
 Changed
 ~~~~~~~

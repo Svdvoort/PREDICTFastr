@@ -286,7 +286,7 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
                                       MetaEstimatorMixin)):
     """Base class for hyper parameter search with cross-validation."""
     @abstractmethod
-    def __init__(self, estimator, param_distributions={}, n_iter=10, scoring=None,
+    def __init__(self, param_distributions={}, n_iter=10, scoring=None,
                  fit_params=None, n_jobs=1, iid=True,
                  refit=True, cv=None, verbose=0, pre_dispatch='2*n_jobs',
                  random_state=None, error_score='raise', return_train_score=True,
@@ -302,7 +302,6 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
 
         # Below are the defaults from sklearn
         self.scoring = scoring
-        self.estimator = estimator
         self.n_jobs = n_jobs
         self.fit_params = fit_params if fit_params is not None else {}
         self.iid = iid
@@ -562,7 +561,7 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
     def process_fit(self, n_splits, parameters_est, parameters_all,
                     test_sample_counts, test_scores,
                     train_scores, fit_time, score_time, cv_iter,
-                    base_estimator, X, y):
+                    X, y):
 
         """
         Process the outcomes of a SearchCV fit and find the best settings
@@ -700,12 +699,8 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
         if verbose is None:
             verbose = self.verbose
 
-        # Clone the base estimator
-        base_estimator = clone(self.estimator)
-        self.scorer_ = check_scoring(self.estimator, scoring=self.scoring)
-
         # Refit all preprocessing functions
-        out = fit_and_score(clone(base_estimator), X, y, self.scorer_,
+        out = fit_and_score(X, y, self.scoring,
                             train, test, parameters_all,
                             fit_params=self.fit_params,
                             return_train_score=self.return_train_score,
@@ -735,8 +730,7 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
         X = self.preprocess(X)
 
         parameters_est = delete_nonestimator_parameters(parameters_est)
-        best_estimator = clone(base_estimator).set_params(
-            **parameters_est)
+        best_estimator = cc.construct_classifier(parameters_all)
 
         # NOTE: This just has to go to the construct classifier function,
         # although it is more convenient here due to the hyperparameter search
@@ -1200,9 +1194,11 @@ class BaseSearchCVfastr(BaseSearchCV):
     def _fit(self, X, y, groups, parameter_iterable):
         """Actual fitting,  performing the search over parameters."""
 
-        base_estimator = clone(self.estimator)
-        cv = check_cv(self.cv, y, classifier=is_classifier(base_estimator))
-        self.scorer_ = check_scoring(self.estimator, scoring=self.scoring)
+        regressors = ['SVR', 'RFR', 'SGDR', 'Lasso', 'ElasticNet']
+        isclassifier =\
+            any(clf in regressors  for elem in self.param_grid['classifiers'])
+
+        cv = check_cv(self.cv, y, classifier=isclassifier)
 
         X, y, groups = indexable(X, y, groups)
         n_splits = cv.get_n_splits(X, y, groups)
@@ -1273,13 +1269,13 @@ class BaseSearchCVfastr(BaseSearchCV):
             num += 1
 
         # Create the files containing the estimator and settings
-        estimator_labels = ['base_estimator', 'X', 'y', 'scorer',
+        estimator_labels = ['X', 'y', 'scoring',
                             'verbose', 'fit_params', 'return_train_score',
                             'return_n_test_samples',
                             'return_times', 'return_parameters',
                             'error_score']
 
-        estimator_data = pd.Series([clone(base_estimator), X, y, self.scorer_,
+        estimator_data = pd.Series(X, y, self.scoring,
                                     self.verbose,
                                     self.fit_params, self.return_train_score,
                                     True, True, True,
@@ -1571,13 +1567,13 @@ class RandomizedSearchCVfastr(BaseSearchCVfastr):
 
     """
 
-    def __init__(self, estimator, param_distributions={}, n_iter=10, scoring=None,
+    def __init__(self, param_distributions={}, n_iter=10, scoring=None,
                  fit_params=None, n_jobs=1, iid=True, refit=True, cv=None,
                  verbose=0, pre_dispatch='2*n_jobs', random_state=None,
                  error_score='raise', return_train_score=True,
                  n_jobspercore=100, fastr_plugin=None):
         super(RandomizedSearchCVfastr, self).__init__(
-             estimator=estimator, param_distributions=param_distributions, scoring=scoring, fit_params=fit_params,
+             param_distributions=param_distributions, scoring=scoring, fit_params=fit_params,
              n_iter=n_iter, random_state=random_state, n_jobs=n_jobs, iid=iid, refit=refit, cv=cv, verbose=verbose,
              pre_dispatch=pre_dispatch, error_score=error_score,
              return_train_score=return_train_score,

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright 2011-2017 Biomedical Imaging Group Rotterdam, Departments of
+# Copyright 2017-2019 Biomedical Imaging Group Rotterdam, Departments of
 # Medical Informatics and Radiology, Erasmus MC, Rotterdam, The Netherlands
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,8 +19,6 @@ import numpy as np
 from sklearn.utils import check_random_state
 from sklearn.model_selection import StratifiedShuffleSplit, ShuffleSplit
 from PREDICT.processing.SearchCV import RandomizedSearchCVfastr, RandomizedSearchCVJoblib
-
-from sklearn.utils.estimator_checks import is_regressor
 
 
 def random_search_parameters(features, labels, N_iter, test_size,
@@ -57,7 +55,8 @@ def random_search_parameters(features, labels, N_iter, test_size,
     random_seed = np.random.randint(1, 5000)
     random_state = check_random_state(random_seed)
 
-    if is_regressor(classifier):
+    regressors = ['SVR', 'RFR', 'SGDR', 'Lasso', 'ElasticNet']
+    if any(clf in regressors  for elem in param_grid['classifiers']):
         # We cannot do a stratified shuffle split with regression
         cv = ShuffleSplit(n_splits=5, test_size=test_size,
                           random_state=random_state)

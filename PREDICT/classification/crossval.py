@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright 2011-2017 Biomedical Imaging Group Rotterdam, Departments of
+# Copyright 2017-2019 Biomedical Imaging Group Rotterdam, Departments of
 # Medical Informatics and Radiology, Erasmus MC, Rotterdam, The Netherlands
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -128,10 +128,7 @@ def crossval(config, label_data, image_features,
     test_size = config['CrossValidation']['test_size']
 
     classifier_labelss = dict()
-
-    print('features')
     logging.debug('Starting classifier')
-    print(len(image_features))
 
     # We only need one label instance, assuming they are all the sample
     feature_labels = image_features[0][1]
@@ -169,7 +166,8 @@ def crossval(config, label_data, image_features,
 
             # Split into test and training set, where the percentage of each
             # label is maintained
-            if type(classifier) == sklearn.svm.classes.SVR:
+            regressors = ['SVR', 'RFR', 'SGDR', 'Lasso', 'ElasticNet']
+            if any(clf in regressors  for clf in param_grid['classifiers']):
                 # We cannot do a stratified shuffle split with regression
                 stratify = None
             else:

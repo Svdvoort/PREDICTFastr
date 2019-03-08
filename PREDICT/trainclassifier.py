@@ -142,13 +142,12 @@ def trainclassifier(feat_train, patientinfo_train, config,
     _, path = os.path.split(path)
     path = os.path.join(path, 'trainclassifier', filename)
 
-    # Construct the required classifier
-    classifier, param_grid =\
-        cc.construct_classifier(config, image_features_train)
+    # Construct the required classifier grid
+    param_grid = cc.create_param_grid(config)
 
-    # Append the feature groups to the parameter grid
-    if config['General']['FeatureCalculator'] == 'CalcFeatures':
-        param_grid['SelectGroups'] = ['True']
+    # IF at least once groupwise search is turned on, add it to the param grid
+    if 'True'in config['Featsel']['GroupwiseSearch']:
+        param_grid['SelectGroups'] = config['Featsel']['GroupwiseSearch']
         for group in config['SelectFeatGroup'].keys():
             param_grid[group] = config['SelectFeatGroup'][group]
 
