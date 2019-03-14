@@ -170,15 +170,14 @@ def fit_and_score(X, y, scoring,
     # ------------------------------------------------------------------------
     # Feature imputation
     if 'Imputation' in para_estimator.keys():
-        if para_estimator['Imputation']:
+        if para_estimator['Imputation'] == 'True':
             imp_type = para_estimator['ImputationMethod']
             imp_nn = para_estimator['ImputationNeighbours']
 
-            imputer = Imputer(missing_values='NaN', strategy=imp_type,
+            imputer = Imputer(missing_values=np.nan, strategy=imp_type,
                               n_neighbors=imp_nn)
             imputer.fit(feature_values)
             feature_values = imputer.transform(feature_values)
-            # NOTE: Also need to transform feature labels!
         else:
             imputer = None
     else:
@@ -196,24 +195,12 @@ def fit_and_score(X, y, scoring,
     # ------------------------------------------------------------------------
     # Use SMOTE oversampling
     if 'SampleProcessing_SMOTE' in para_estimator.keys():
-        if para_estimator['SampleProcessing_SMOTE']:
+        if para_estimator['SampleProcessing_SMOTE'] == 'True':
 
             # Determine our starting balance
             pos_initial = int(np.sum(y))
             neg_initial = int(len(y) - pos_initial)
             len_in = len(y)
-
-            # Stack all feature values in an array
-            for num, x in enumerate(X):
-                if num == 0:
-                    X_temp = np.zeros((len(x[0]), 1))
-                    X_temp[:, 0] = np.asarray(x[0])
-                else:
-                    xt = np.zeros((len(x[0]), 1))
-                    xt[:, 0] = np.asarray(x[0])
-                    X_temp = np.column_stack((X_temp, xt))
-
-            X_temp = np.transpose(X_temp)
 
             # Fit SMOTE object and transform dataset
             # NOTE: need to save random state for this one as well!
@@ -221,9 +208,9 @@ def fit_and_score(X, y, scoring,
                        ratio=para_estimator['SampleProcessing_SMOTE_ratio'],
                        m_neighbors=para_estimator['SampleProcessing_SMOTE_neighbors'],
                        kind='borderline1',
-                       n_jobs=para_estimator['SampleProcessing_n_cores'])
+                       n_jobs=para_estimator['SampleProcessing_SMOTE_n_cores'])
 
-            X, y = sm.fit_sample(X_temp, y)
+            feature_values, y = sm.fit_sample(feature_values, y)
 
             # Also make sure our feature label object has the same size
             # NOTE: Not sure if this is the best implementation
@@ -232,13 +219,14 @@ def fit_and_score(X, y, scoring,
             # Note the user what SMOTE did
             pos = int(np.sum(y))
             neg = int(len(y) - pos)
-            message = ("Sampling with SMOTE from {} ({} pos, {} neg) to {} ({} pos, {} neg) patients.").format(str(len_in),
-                                                                                                               str(pos_initial),
-                                                                                                               str(neg_initial),
-                                                                                                               str(len(y)),
-                                                                                                               str(pos),
-                                                                                                               str(neg))
-            print(message)
+            if verbose:
+                message = ("Sampling with SMOTE from {} ({} pos, {} neg) to {} ({} pos, {} neg) patients.").format(str(len_in),
+                                                                                                                   str(pos_initial),
+                                                                                                                   str(neg_initial),
+                                                                                                                   str(len(y)),
+                                                                                                                   str(pos),
+                                                                                                                   str(neg))
+                print(message)
         else:
             sm = None
 
@@ -246,7 +234,7 @@ def fit_and_score(X, y, scoring,
         del para_estimator['SampleProcessing_SMOTE']
         del para_estimator['SampleProcessing_SMOTE_ratio']
         del para_estimator['SampleProcessing_SMOTE_neighbors']
-        del para_estimator['SampleProcessing_n_cores']
+        del para_estimator['SampleProcessing_SMOTE_n_cores']
 
     # Delete the object if we do not need to return it
     if not return_all:
@@ -255,7 +243,7 @@ def fit_and_score(X, y, scoring,
     # ------------------------------------------------------------------------
     # Full Oversampling: To Do
     if 'SampleProcessing_Oversampling' in para_estimator.keys():
-        if para_estimator['SampleProcessing_Oversampling']:
+        if para_estimator['SampleProcessing_Oversampling'] == 'True':
             if verbose:
                 print('Oversample underrepresented classes in training.')
 
@@ -271,7 +259,7 @@ def fit_and_score(X, y, scoring,
                 random_state2 = check_random_state(random_seed2)
 
                 ros = RandomOverSampler(random_state=random_state2)
-                X, y = ros.fit_sample(X, y)
+                feature_values, y = ros.fit_sample(feature_values, y)
 
             else:
                 # Multi class, use own method as imblearn cannot do this
@@ -286,9 +274,9 @@ def fit_and_score(X, y, scoring,
                             n_sample = random.randint(0, len(nz) - 1)
                             n_sample = nz[n_sample]
                             i_sample = y[n_sample, :]
-                            x_sample = X[n_sample]
+                            x_sample = feature_values[n_sample]
                             y = np.vstack((y, i_sample))
-                            X.append(x_sample)
+                            feature_values.append(x_sample)
                             noversample -= 1
         else:
             ros = None
@@ -356,7 +344,7 @@ def fit_and_score(X, y, scoring,
         # TODO: Make a specific PREDICT exception for this warning.
         if verbose:
             print('[WARNING]: No features are selected! Probably all feature groups were set to False. Parameters:')
-            print para
+            print(para)
 
         # Return a zero performance dummy
         VarSel = None
@@ -414,7 +402,7 @@ def fit_and_score(X, y, scoring,
         # TODO: Make a specific PREDICT exception for this warning.
         if verbose:
             print('[WARNING]: No features are selected! Probably you selected a feature group that is not in your feature file. Parameters:')
-            print para
+            print(para)
         para_estimator = delete_nonestimator_parameters(para_estimator)
 
         # Return a zero performance dummy
@@ -464,7 +452,8 @@ def fit_and_score(X, y, scoring,
         # TODO: Make a specific PREDICT exception for this warning.
         if verbose:
             print('[WARNING]: No features are selected! Probably you selected a feature group that is not in your feature file. Parameters:')
-            print para
+            print(para)
+
         para_estimator = delete_nonestimator_parameters(para_estimator)
 
         # Return a zero performance dummy
@@ -704,7 +693,7 @@ def delete_nonestimator_parameters(parameters):
         del parameters['SampleProcessing_SMOTE']
         del parameters['SampleProcessing_SMOTE_ratio']
         del parameters['SampleProcessing_SMOTE_neighbors']
-        del parameters['SampleProcessing_n_cores']
+        del parameters['SampleProcessing_SMOTE_n_cores']
 
     if 'SampleProcessing_Oversampling' in parameters.keys():
         del parameters['SampleProcessing_Oversampling']
@@ -736,6 +725,7 @@ def delete_cc_para(para):
     Delete all parameters that are involved in classifier construction.
     '''
     deletekeys = ['classifiers',
+                  'max_iter',
                   'SVMKernel',
                   'SVMC',
                   'SVMdegree',
@@ -745,7 +735,17 @@ def delete_cc_para(para):
                   'RFmin_samples_split',
                   'RFmax_depth',
                   'LRpenalty',
-                  'LRC']
+                  'LRC',
+                  'LDA_solver',
+                  'LDA_shrinkage',
+                  'QDA_reg_param',
+                  'ElasticNet_alpha',
+                  'ElasticNet_l1_ratio',
+                  'SGD_alpha',
+                  'SGD_l1_ratio',
+                  'SGD_loss',
+                  'SGD_penalty',
+                  'CNB_alpha']
 
     for k in deletekeys:
         if k in para.keys():

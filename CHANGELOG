@@ -12,17 +12,25 @@ Unreleased
 Added
 ~~~~~~~
 - If you have objects with missing features, put in NaN values.
+- Several classifiers: LDA, QDA, GaussianNB and ComplementNB.
 - CASH now also includes multiple machine learning model selection.
+- Discrete uniform sampling
 
 Changed
 ~~~~~~~
 - Upgraded imputer to work with newest sklearn versions.
 - Oversampling and SMOTE can now also be used in CASH optimization.
 - Moved max_iter of all iterative classifiers and regressors to general config.
+- Moved classifier construction to fitandscore to enable CASH.
 
 Fixed
 ~~~~~
--
+- Replaced several print statements to be Python3 compatible.
+- SMOTE and Oversampling now only apply to the training set. Was previously
+  training plus validation.
+- Scipy randint distribution was not compatible with the sklearn
+  ParameterSampler, so replaced them by a new discrete uniform distribution.
+- Error catch when param_grid in CASH contains invalid values.
 
 2.1.1 - 2019-02-15
 ------------------

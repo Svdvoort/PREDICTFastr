@@ -71,7 +71,7 @@ def load_data(featurefiles, patientinfo=None, label_names=None, modnames=[]):
         image_features_temp.append((feature_values_temp, feature_labels_temp))
 
         # Also make a list of all unique label names
-        feature_labels_all = list(set(feature_labels_all) + set(feature_labels_temp))
+        feature_labels_all = feature_labels_all + list(set(feature_labels_temp) - set(feature_labels_all))
 
     # If some objects miss certain features, we will identify these with NaN values
     feature_labels_all.sort()

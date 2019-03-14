@@ -30,13 +30,26 @@ class log_uniform():
         self.loc = loc
         self.scale = scale
         self.base = base
+        self.uniform_dist = uniform(loc=self.loc, scale=self.scale)
 
     def rvs(self, size=None, random_state=None):
-        uniform_dist = uniform(loc=self.loc, scale=self.scale)
         if size is None:
-            return np.power(self.base, uniform_dist.rvs(random_state=random_state))
+            return np.power(self.base, self.uniform_dist.rvs(random_state=random_state))
         else:
-            return np.power(self.base, uniform_dist.rvs(size=size, random_state=random_state))
+            return np.power(self.base, self.uniform_dist.rvs(size=size, random_state=random_state))
+
+
+class discrete_uniform():
+    def __init__(self, loc=-1, scale=0):
+        self.loc = loc
+        self.scale = scale
+        self.uniform_dist = uniform(loc=self.loc, scale=self.scale)
+
+    def rvs(self, size=None, random_state=None):
+        if size is None:
+            return int(self.uniform_dist.rvs(random_state=random_state))
+        else:
+            return int(self.uniform_dist.rvs(size=size, random_state=random_state))
 
 
 class exp_uniform():
@@ -140,13 +153,13 @@ class AdvancedSampler(object):
                 point = sample[ind]
                 # Check if the parameter space is a distribution or a list
                 if hasattr(v, "rvs"):
-                    print point
+                    print(point)
                     # Parameter space is a distribution, hence sample
                     params[k] = v.ppf(point)
                 else:
                     # Parameter space is a list, so select an index
                     point = int(round(point*float(len(v) - 1)))
-                    print point
+                    print(point)
                     params[k] = v[point]
             yield params
 
@@ -179,4 +192,4 @@ if __name__ == '__main__':
 
 
     for s in sampled_params:
-        print s
+        print(s)

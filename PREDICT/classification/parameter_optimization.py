@@ -22,7 +22,7 @@ from PREDICT.processing.SearchCV import RandomizedSearchCVfastr, RandomizedSearc
 
 
 def random_search_parameters(features, labels, N_iter, test_size,
-                             classifier, param_grid, scoring_method,
+                             param_grid, scoring_method,
                              n_jobspercore=200, use_fastr=False,
                              n_cores=1, fastr_plugin=None):
     """
@@ -65,8 +65,7 @@ def random_search_parameters(features, labels, N_iter, test_size,
                                     random_state=random_state)
 
     if use_fastr:
-        random_search = RandomizedSearchCVfastr(classifier,
-                                                param_distributions=param_grid,
+        random_search = RandomizedSearchCVfastr(param_distributions=param_grid,
                                                 n_iter=N_iter,
                                                 scoring=scoring_method,
                                                 n_jobs=n_cores,
@@ -74,8 +73,7 @@ def random_search_parameters(features, labels, N_iter, test_size,
                                                 verbose=1, cv=cv,
                                                 fastr_plugin=fastr_plugin)
     else:
-        random_search = RandomizedSearchCVJoblib(classifier,
-                                                 param_distributions=param_grid,
+        random_search = RandomizedSearchCVJoblib(param_distributions=param_grid,
                                                  n_iter=N_iter,
                                                  scoring=scoring_method,
                                                  n_jobs=n_cores,

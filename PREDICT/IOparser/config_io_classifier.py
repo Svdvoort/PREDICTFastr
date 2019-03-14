@@ -141,7 +141,8 @@ def load_config(config_file_path):
 
     # Specific SVM options
     settings_dict['Classification']['SVMKernel'] =\
-        str(settings['Classification']['SVMKernel'])
+        [str(item).strip() for item in
+         settings['Classification']['SVMKernel'].split(',')]
 
     settings_dict['Classification']['SVMC'] =\
         [int(str(item).strip()) for item in
@@ -175,8 +176,46 @@ def load_config(config_file_path):
         [str(item).strip() for item in
          settings['Classification']['LRpenalty'].split(',')]
     settings_dict['Classification']['LRC'] =\
-        [int(str(item).strip()) for item in
+        [float(str(item).strip()) for item in
          settings['Classification']['LRC'].split(',')]
+
+    # Specific LDA/QDA options
+    settings_dict['Classification']['LDA_solver'] =\
+        [str(item).strip() for item in
+         settings['Classification']['LDA_solver'].split(',')]
+    settings_dict['Classification']['LDA_shrinkage'] =\
+        [int(str(item).strip()) for item in
+         settings['Classification']['LDA_shrinkage'].split(',')]
+    settings_dict['Classification']['QDA_reg_param'] =\
+        [int(str(item).strip()) for item in
+         settings['Classification']['QDA_reg_param'].split(',')]
+
+    # ElasticNet options
+    settings_dict['Classification']['ElasticNet_alpha'] =\
+        [int(str(item).strip()) for item in
+         settings['Classification']['ElasticNet_alpha'].split(',')]
+    settings_dict['Classification']['ElasticNet_l1_ratio'] =\
+        [float(str(item).strip()) for item in
+         settings['Classification']['ElasticNet_l1_ratio'].split(',')]
+
+    # SGD (R) options
+    settings_dict['Classification']['SGD_alpha'] =\
+        [int(str(item).strip()) for item in
+         settings['Classification']['SGD_alpha'].split(',')]
+    settings_dict['Classification']['SGD_l1_ratio'] =\
+        [float(str(item).strip()) for item in
+         settings['Classification']['SGD_l1_ratio'].split(',')]
+    settings_dict['Classification']['SGD_loss'] =\
+        [str(item).strip() for item in
+         settings['Classification']['SGD_loss'].split(',')]
+    settings_dict['Classification']['SGD_penalty'] =\
+        [str(item).strip() for item in
+         settings['Classification']['SGD_penalty'].split(',')]
+
+    # Naive Bayes options
+    settings_dict['Classification']['CNB_alpha'] =\
+        [int(str(item).strip()) for item in
+         settings['Classification']['CNB_alpha'].split(',')]
 
     # Cross validation settings
     settings_dict['CrossValidation']['N_iterations'] =\
@@ -213,12 +252,12 @@ def load_config(config_file_path):
          settings['SampleProcessing']['SMOTE'].split(',')]
 
     settings_dict['SampleProcessing']['SMOTE_ratio'] =\
-        [float(str(item).strip()) for item in
+        [int(str(item).strip()) for item in
          settings['SampleProcessing']['SMOTE_ratio'].split(',')]
 
     settings_dict['SampleProcessing']['SMOTE_neighbors'] =\
         [int(str(item).strip()) for item in
-         settings['SampleProcessing']['SMOTE_ratio'].split(',')]
+         settings['SampleProcessing']['SMOTE_neighbors'].split(',')]
 
     settings_dict['SampleProcessing']['Oversampling'] =\
         [bool(str(item).strip()) for item in

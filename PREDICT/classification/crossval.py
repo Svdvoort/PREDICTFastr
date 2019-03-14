@@ -20,16 +20,13 @@ import pandas as pd
 import logging
 import os
 from sklearn.model_selection import train_test_split
-from sklearn.utils import check_random_state
-import sklearn
 import xlrd
-import natsort
-import PREDICT.classification.parameter_optimization as po
+import parameter_optimization as po
 import PREDICT.addexceptions as ae
 
 
 def crossval(config, label_data, image_features,
-             classifier, param_grid={}, use_fastr=False,
+             param_grid=None, use_fastr=False,
              fastr_plugin=None, tempsave=False,
              fixedsplits=None, ensemble={'Use': False}, outputfolder=None,
              modus='singlelabel'):
@@ -55,9 +52,6 @@ def crossval(config, label_data, image_features,
     image_features: numpy array, mandatory
             Consists of a tuple of two lists for each patient:
             (feature_values, feature_labels)
-
-    classifier: sklearn classifier
-            The untrained classifier used for training.
 
     param_grid: dictionary, optional
             Contains the parameters and their values wich are used in the
@@ -109,6 +103,11 @@ def crossval(config, label_data, image_features,
     if tempsave:
         import fastr
 
+
+    # Define all possible regressors
+    regressors = ['SVR', 'RFR', 'SGDR', 'Lasso', 'ElasticNet']
+
+    # Process input data
     patient_IDs = label_data['patient_IDs']
     label_value = label_data['mutation_label']
     label_name = label_data['mutation_name']
@@ -164,8 +163,7 @@ def crossval(config, label_data, image_features,
 
             # Split into test and training set, where the percentage of each
             # label is maintained
-            regressors = ['SVR', 'RFR', 'SGDR', 'Lasso', 'ElasticNet']
-            if any(clf in regressors  for clf in param_grid['classifiers']):
+            if any(clf in regressors for clf in param_grid['classifiers']):
                 # We cannot do a stratified shuffle split with regression
                 stratify = None
             else:
@@ -197,7 +195,7 @@ def crossval(config, label_data, image_features,
                 # Use Random Split. Split per patient, not per sample
                 unique_patient_IDs, unique_indices =\
                     np.unique(np.asarray(patient_IDs), return_index=True)
-                if type(classifier) == sklearn.svm.classes.SVR:
+                if any(clf in regressors for clf in param_grid['classifiers']):
                     unique_stratify = None
                 else:
                     unique_stratify = [stratify[i] for i in unique_indices]
@@ -267,7 +265,6 @@ def crossval(config, label_data, image_features,
                             ind_train.append(num)
                             success = True
                     if not success:
-                        print natsort.natsorted(patient_IDs)
                         raise ae.PREDICTIOError("Patient " + str(j).zfill(3) + " is not included!")
 
                 ind_test = list()
@@ -278,7 +275,6 @@ def crossval(config, label_data, image_features,
                             ind_test.append(num)
                             success = True
                     if not success:
-                        print natsort.natsorted(patient_IDs)
                         raise ae.PREDICTIOError("Patient " + str(j).zfill(3) + " is not included!")
 
                 X_train = np.asarray(image_features)[ind_train].tolist()
@@ -294,7 +290,6 @@ def crossval(config, label_data, image_features,
             n_cores = config['General']['Joblib_ncores']
             trained_classifier = po.random_search_parameters(features=X_train,
                                                              labels=Y_train,
-                                                             classifier=classifier,
                                                              param_grid=param_grid,
                                                              n_cores=n_cores,
                                                              **config['HyperOptimization'])
@@ -366,7 +361,7 @@ def crossval(config, label_data, image_features,
 
 
 def nocrossval(config, label_data_train, label_data_test, image_features_train,
-               image_features_test, classifier, param_grid, use_fastr=False,
+               image_features_test, param_grid=None, use_fastr=False,
                fastr_plugin=None, ensemble={'Use': False},
                modus='singlelabel'):
     """
@@ -466,7 +461,6 @@ def nocrossval(config, label_data_train, label_data_test, image_features_train,
         n_cores = config['General']['Joblib_ncores']
         trained_classifier = po.random_search_parameters(features=X_train,
                                                          labels=Y_train,
-                                                         classifier=classifier,
                                                          param_grid=param_grid,
                                                          n_cores=n_cores,
                                                          **config['HyperOptimization'])

@@ -133,7 +133,7 @@ def CalcFeatures(image, segmentation, parameters, output,
     if verbose:
         print('Feature Values:')
         for v, k in zip(feature_values, feature_labels):
-            print k, v
+            print(k, v)
 
 
 def load_images(image_file, image_type, metadata_file=None,

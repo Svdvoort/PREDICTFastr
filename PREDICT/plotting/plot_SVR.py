@@ -19,7 +19,7 @@
 import numpy as np
 from sklearn.metrics import r2_score, mean_squared_error
 import sys
-import compute_CI
+import PREDICT.plotting.compute_CI
 import pandas as pd
 import os
 import lifelines as ll
@@ -113,8 +113,8 @@ def plot_single_SVR(prediction, mutation_data, label_type, survival=False,
         #     # Normalize the scores
         #     y_prediction = np.subtract(1.01, np.divide(y_prediction, np.max(y_prediction)))
 
-        print "Truth: ", y_truth
-        print "Prediction: ", y_prediction
+        print("Truth: " + y_truth)
+        print("Prediction: " + y_prediction)
 
         # Compute error per patient
         for i_truth, i_predict, i_test_ID in zip(y_truth, y_prediction, test_patient_IDs):
@@ -187,7 +187,7 @@ def plot_single_SVR(prediction, mutation_data, label_type, survival=False,
             stats["Cox p 95%:"] = str(compute_CI.compute_confidence(coxp, N_1, N_2, alpha))
 
     for k, v in stats.iteritems():
-        print k, v
+        print(k, v)
 
     # Calculate and sort individual patient MSE
     patient_MSE = {k: np.mean(v) for k, v in patient_MSE.iteritems()}
@@ -197,7 +197,7 @@ def plot_single_SVR(prediction, mutation_data, label_type, survival=False,
     patient_MSE = [(k, v) for k, v in zip(sortedkeys, sortedvalues)]
 
     for p in patient_MSE:
-        print p[0], p[1]
+        print(p[0], p[1])
 
     stats["Patient_MSE"] = patient_MSE
 

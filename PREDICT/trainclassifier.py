@@ -26,6 +26,7 @@ from PREDICT.plotting.plot_SVR import plot_single_SVR
 import PREDICT.IOparser.file_io as file_io
 import PREDICT.IOparser.config_io_classifier as config_io
 from scipy.stats import uniform
+from PREDICT.processing.AdvancedSampler import discrete_uniform
 
 
 def trainclassifier(feat_train, patientinfo_train, config,
@@ -160,9 +161,13 @@ def trainclassifier(feat_train, patientinfo_train, config,
 
     # Add parameters for oversampling methods
     param_grid['SampleProcessing_SMOTE'] = config['SampleProcessing']['SMOTE']
-    param_grid['SampleProcessing_SMOTE_ratio'] = config['SampleProcessing']['SMOTE_ratio']
-    param_grid['SampleProcessing_SMOTE_neighbors'] = config['SampleProcessing']['SMOTE_neighbors']
-    param_grid['SampleProcessing_SMOTE_n_cores'] = config['General']['Joblib_ncores']
+    param_grid['SampleProcessing_SMOTE_ratio'] =\
+        uniform(loc=config['SampleProcessing']['SMOTE_ratio'][0],
+                scale=config['SampleProcessing']['SMOTE_ratio'][1])
+    param_grid['SampleProcessing_SMOTE_neighbors'] =\
+        uniform(loc=config['SampleProcessing']['SMOTE_neighbors'][0],
+                scale=config['SampleProcessing']['SMOTE_neighbors'][1])
+    param_grid['SampleProcessing_SMOTE_n_cores'] = [config['General']['Joblib_ncores']]
     param_grid['SampleProcessing_Oversampling'] = config['SampleProcessing']['Oversampling']
 
     # Extract hyperparameter grid settings for SearchCV from config
@@ -189,27 +194,27 @@ def trainclassifier(feat_train, patientinfo_train, config,
         config['Featsel']['ReliefUse']
 
     param_grid['ReliefNN'] =\
-        range(config['Featsel']['ReliefNN'][0],
-              config['Featsel']['ReliefNN'][1] + 1)
+        discrete_uniform(loc=config['Featsel']['ReliefNN'][0],
+                         scale=config['Featsel']['ReliefNN'][1])
 
     param_grid['ReliefSampleSize'] =\
-        range(config['Featsel']['ReliefSampleSize'][0],
-              config['Featsel']['ReliefSampleSize'][1] + 1)
+        discrete_uniform(loc=config['Featsel']['ReliefSampleSize'][0],
+                         scale=config['Featsel']['ReliefSampleSize'][1])
 
     param_grid['ReliefDistanceP'] =\
-        range(config['Featsel']['ReliefDistanceP'][0],
-              config['Featsel']['ReliefDistanceP'][1] + 1)
+        discrete_uniform(loc=config['Featsel']['ReliefDistanceP'][0],
+                         scale=config['Featsel']['ReliefDistanceP'][1])
 
     param_grid['ReliefNumFeatures'] =\
-        range(config['Featsel']['ReliefNumFeatures'][0],
-              config['Featsel']['ReliefNumFeatures'][1] + 1)
+        discrete_uniform(loc=config['Featsel']['ReliefNumFeatures'][0],
+                         scale=config['Featsel']['ReliefNumFeatures'][1])
 
     # For N_iter, perform k-fold crossvalidation
     outputfolder = os.path.dirname(output_hdf)
     if feat_test is None:
         trained_classifier = cv.crossval(config, label_data_train,
                                          image_features_train,
-                                         classifier, param_grid,
+                                         param_grid,
                                          modus=modus,
                                          use_fastr=config['Classification']['fastr'],
                                          fastr_plugin=config['Classification']['fastr_plugin'],
@@ -222,7 +227,7 @@ def trainclassifier(feat_train, patientinfo_train, config,
                                            label_data_test,
                                            image_features_train,
                                            image_features_test,
-                                           classifier, param_grid,
+                                           param_grid,
                                            modus=modus,
                                            use_fastr=config['Classification']['fastr'],
                                            fastr_plugin=config['Classification']['fastr_plugin'],
@@ -233,9 +238,14 @@ def trainclassifier(feat_train, patientinfo_train, config,
 
     trained_classifier.to_hdf(output_hdf, 'SVMdata')
 
+    # Check whether we do regression or classification
+    regressors = ['SVR', 'RFR', 'SGDR', 'Lasso', 'ElasticNet']
+    isclassifier =\
+        not any(clf in regressors for clf in config['Classification']['classifiers'])
+
     # Calculate statistics of performance
     if feat_test is None:
-        if type(classifier) == sklearn.svm.SVR:
+        if not isclassifier:
             statistics = plot_single_SVR(trained_classifier, label_data_train,
                                          label_type)
         else:
@@ -243,7 +253,7 @@ def trainclassifier(feat_train, patientinfo_train, config,
                                   label_type, modus=modus)
     else:
         if patientinfo_test is not None:
-            if type(classifier) == sklearn.svm.SVR:
+            if not isclassifier:
                 statistics = plot_single_SVR(trained_classifier,
                                              label_data_test,
                                              label_type)

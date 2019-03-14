@@ -19,15 +19,17 @@ from sklearn.svm import SVC
 from sklearn.svm import SVR as SVMR
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.linear_model import SGDClassifier, ElasticNet, SGDRegressor
-from sklearn.linear_model import LogisticRegression
-from sklearn.linear_model import Lasso
+from sklearn.linear_model import LogisticRegression, Lasso
+from sklearn.naive_bayes import GaussianNB, ComplementNB
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis as QDA
 import scipy
-import PREDICT.addexceptions as ae
 from PREDICT.classification.estimators import RankedSVM
-from PREDICT.processing.AdvancedSampler import log_uniform
+from PREDICT.processing.AdvancedSampler import log_uniform, discrete_uniform
+import PREDICT.addexceptions as ae
 
 
-def construct_classifier(config, image_features):
+def construct_classifier(config):
     """Interface to create classification
 
     Different classifications can be created using this common interface
@@ -47,11 +49,11 @@ def construct_classifier(config, image_features):
     max_iter = config['max_iter']
     if 'SVM' in config['classifiers']:
         # Support Vector Machine
-        classifier = construct_SVM(config, image_features)
+        classifier = construct_SVM(config)
 
     elif config['classifiers'] == 'SVR':
         # Support Vector Regression
-        classifier = construct_SVM(config, image_features, True)
+        classifier = construct_SVM(config, True)
 
     elif config['classifiers'] == 'RF':
         # Random forest kernel
@@ -70,10 +72,9 @@ def construct_classifier(config, image_features):
 
     elif config['classifiers'] == 'ElasticNet':
         # Elastic Net Regression
-        param_grid = {'alpha': scipy.stats.uniform(loc=1.0, scale=0.5),
-                      'l1_ratio': scipy.stats.uniform(loc=0.5, scale=0.4)
-                      }
-        classifier = ElasticNet(max_iter=max_iter)
+        classifier = ElasticNet(alpha=config['ElasticNet_alpha'],
+                                l1_ratio=config['ElasticNet_l1_ratio'],
+                                max_iter=max_iter)
 
     elif config['classifiers'] == 'Lasso':
         # LASSO Regression
@@ -82,28 +83,55 @@ def construct_classifier(config, image_features):
 
     elif config['classifiers'] == 'SGD':
         # Stochastic Gradient Descent classifier
-        classifier = SGDClassifier(n_iter=config['max_iter'])
-        param_grid = {'loss': ['hinge', 'squared_hinge', 'modified_huber'],
-                      'penalty': ['none', 'l2', 'l1']}
+        classifier = SGDClassifier(n_iter=config['max_iter'],
+                                   alpha=config['SGD_alpha'],
+                                   l1_ratio=config['SGD_l1_ratio'],
+                                   loss=config['SGD_loss'],
+                                   penalty=config['SGD_penalty'])
 
     elif config['classifiers'] == 'SGDR':
         # Stochastic Gradient Descent regressor
-        classifier = SGDRegressor(n_iter=config['max_iter'])
-        param_grid = {'alpha': scipy.stats.uniform(loc=1.0, scale=0.5),
-                      'l1_ratio': scipy.stats.uniform(loc=0.5, scale=0.4),
-                      'loss': ['hinge', 'squared_hinge', 'modified_huber'],
-                      'penalty': ['none', 'l2', 'l1']}
+        classifier = SGDRegressor(n_iter=config['max_iter'],
+                                  alpha=config['SGD_alpha'],
+                                  l1_ratio=config['SGD_l1_ratio'],
+                                  loss=config['SGD_loss'],
+                                  penalty=config['SGD_penalty'])
 
     elif config['classifiers'] == 'LR':
         # Logistic Regression
         classifier = LogisticRegression(max_iter=max_iter,
                                         penalty=config['LRpenalty'],
                                         C=config['LRC'])
+    elif config['classifiers'] == 'GaussianNB':
+        # Naive Bayes classifier using Gaussian distributions
+        classifier = GaussianNB()
+
+    elif config['classifiers'] == 'ComplementNB':
+        # Complement Naive Bayes classifier
+        classifier = ComplementNB()
+
+    elif config['classifiers'] == 'LDA':
+        # Linear Discriminant Analysis
+        if config['LDA_solver'] == 'svd':
+            # Shrinkage does not work with svd solver
+            shrinkage = None
+        else:
+            shrinkage = config['LDA_shrinkage']
+
+        classifier = LDA(solver=config['LDA_solver'],
+                         shrinkage=shrinkage)
+
+    elif config['classifiers'] == 'QDA':
+        # Linear Discriminant Analysis
+        classifier = QDA(reg_param=config['QDA_reg_param'])
+    else:
+        message = ('Classifier {} unknown.').format(str(config['classifiers']))
+        raise ae.PREDICTKeyError(message)
 
     return classifier
 
 
-def construct_SVM(config, image_features, regression=False):
+def construct_SVM(config, regression=False):
     """
     Constructs a SVM classifier
 
@@ -123,7 +151,7 @@ def construct_SVM(config, image_features, regression=False):
     else:
         clf = SVMR(max_iter=max_iter)
 
-    clf.kernel = config['SVMKernel']
+    clf.kernel = str(config['SVMKernel'])
     clf.C = config['SVMC']
     clf.degree = config['SVMdegree']
     clf.coef0 = config['SVMcoef0']
@@ -138,7 +166,7 @@ def construct_SVM(config, image_features, regression=False):
                       'coefficient': scipy.stats.uniform(loc=0, scale=1e-2),
                       }
 
-    return clf, param_grid
+    return clf
 
 
 def create_param_grid(config):
@@ -165,19 +193,51 @@ def create_param_grid(config):
                                          scale=config['SVMgamma'][1])
 
     # RF parameters
+    # RF parameters
     param_grid['RFn_estimators'] =\
-        scipy.stats.randint(loc=config['RFn_estimators'][0],
-                            scale=config['RFn_estimators'][1])
+        discrete_uniform(loc=config['RFn_estimators'][0],
+                         scale=config['RFn_estimators'][1])
     param_grid['RFmin_samples_split'] =\
-        scipy.stats.randint(loc=config['RFmin_samples_split'][0],
-                            scale=config['RFmin_samples_split'][1])
+        discrete_uniform(loc=config['RFmin_samples_split'][0],
+                         scale=config['RFmin_samples_split'][1])
     param_grid['RFmax_depth'] =\
-        scipy.stats.randint(loc=config['RFmax_depth'][0],
-                            scale=config['RFmax_depth'][1])
+        discrete_uniform(loc=config['RFmax_depth'][0],
+                         scale=config['RFmax_depth'][1])
 
     # Logistic Regression parameters
-    param_grid['LRpenalty'] = param_grid['LRpenalty']
-    param_grid['LRC'] = log_uniform(loc=config['LRC'][0],
-                                    scale=config['LRC'][1])
+    param_grid['LRpenalty'] = config['LRpenalty']
+    param_grid['LRC'] = scipy.stats.uniform(loc=config['LRC'][0],
+                                            scale=config['LRC'][1])
+
+    # LDA/QDA parameters
+    param_grid['LDA_solver'] = config['LDA_solver']
+    param_grid['LDA_shrinkage'] = log_uniform(loc=config['LDA_shrinkage'][0],
+                                              scale=config['LDA_shrinkage'][1])
+    param_grid['QDA_reg_param'] = log_uniform(loc=config['QDA_reg_param'][0],
+                                              scale=config['QDA_reg_param'][1])
+
+    # ElasticNet parameters
+    param_grid['ElasticNet_alpha'] =\
+        log_uniform(loc=config['ElasticNet_alpha'][0],
+                    scale=config['ElasticNet_alpha'][1])
+    param_grid['ElasticNet_l1_ratio'] =\
+        scipy.stats.uniform(loc=config['ElasticNet_l1_ratio'][0],
+                            scale=config['ElasticNet_l1_ratio'][1])
+
+    # SGD Regression parameters
+    param_grid['SGD_alpha'] =\
+        log_uniform(loc=config['SGD_alpha'][0],
+                    scale=config['SGD_alpha'][1])
+
+    param_grid['SGD_l1_ratio'] =\
+        scipy.stats.uniform(loc=config['SGD_l1_ratio'][0],
+                            scale=config['SGD_l1_ratio'][1])
+    param_grid['SGD_loss'] = config['SGD_loss']
+    param_grid['SGD_penalty'] = config['SGD_penalty']
+
+    # Naive Bayes parameters
+    param_grid['CNB_alpha'] =\
+        scipy.stats.uniform(loc=config['CNB_alpha'][0],
+                            scale=config['CNB_alpha'][1])
 
     return param_grid
