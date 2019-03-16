@@ -121,7 +121,9 @@ class Ensemble(six.with_metaclass(ABCMeta, BaseEstimator,
             outcome = np.zeros((self.n_estimators, len(X), nlabels))
             for num, est in enumerate(self.estimators):
                 if hasattr(est, 'predict_proba'):
-                    est.best_estimator_.kernel = str(est.best_estimator_.kernel)
+                    # BUG: SVM kernel can be wrong type
+                    if hasattr(est.best_estimator_, 'kernel'):
+                        est.best_estimator_.kernel = str(est.best_estimator_.kernel)
                     outcome[num, :, :] = est.predict_proba(X)[:, 1]
                 else:
                     outcome[num, :, :] = est.predict(X)
@@ -139,7 +141,9 @@ class Ensemble(six.with_metaclass(ABCMeta, BaseEstimator,
             outcome = np.zeros((self.n_estimators, len(X)))
             for num, est in enumerate(self.estimators):
                 if hasattr(est, 'predict_proba'):
-                    est.best_estimator_.kernel = str(est.best_estimator_.kernel)
+                    # BUG: SVM kernel can be wrong type
+                    if hasattr(est.best_estimator_, 'kernel'):
+                        est.best_estimator_.kernel = str(est.best_estimator_.kernel)
                     outcome[num, :] = est.predict_proba(X)[:, 1]
                 else:
                     outcome[num, :] = est.predict(X)
@@ -175,7 +179,9 @@ class Ensemble(six.with_metaclass(ABCMeta, BaseEstimator,
         outcome_class1 = np.zeros((self.n_estimators, len(X)))
         outcome_class2 = np.zeros((self.n_estimators, len(X)))
         for num, est in enumerate(self.estimators):
-            est.best_estimator_.kernel = str(est.best_estimator_.kernel)
+            # BUG: SVM kernel can be wrong type
+            if hasattr(est.best_estimator_, 'kernel'):
+                est.best_estimator_.kernel = str(est.best_estimator_.kernel)
             outcome_class1[num, :] = est.predict_proba(X)[:, 0]
             outcome_class2[num, :] = est.predict_proba(X)[:, 1]
 
@@ -397,7 +403,9 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
         self._check_is_fitted('predict_proba')
 
         # BUG: kernel sometimes saved as unicode
-        self.best_estimator_.kernel = str(self.best_estimator_.kernel)
+        # BUG: SVM kernel can be wrong type
+        if hasattr(self.best_estimator_, 'kernel'):
+            self.best_estimator_.kernel = str(self.best_estimator_.kernel)
         if self.ensemble:
             return self.ensemble.predict_proba(X)
         else:
@@ -420,8 +428,10 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
         """
         self._check_is_fitted('predict_log_proba')
 
-        # BUG: kernel sometimes saved as unicode
-        self.best_estimator_.kernel = str(self.best_estimator_.kernel)
+        # BUG: SVM kernel can be wrong type
+        if hasattr(self.est.best_estimator_, 'kernel'):
+            self.best_estimator_.kernel = str(self.best_estimator_.kernel)
+
         if self.ensemble:
             return self.ensemble.predict_log_proba(X)
         else:
@@ -832,13 +842,6 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
 
         elif method == 'FitNumber':
             # Use optimum number of models
-            # BUG: kernel parameter is sometimes saved in unicode
-            for i in range(0, len(parameters_est)):
-                kernel = str(parameters_est[i][u'SVMKernel'])
-                del parameters_est[i][u'SVMKernel']
-                del parameters_all[i][u'SVMKernel']
-                parameters_est[i]['SVMKernel'] = kernel
-                parameters_all[i]['SVMKernel'] = kernel
 
             # In order to speed up the process, we precompute all scores of the possible
             # classifiers in all cross validation estimatons
