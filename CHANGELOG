@@ -15,6 +15,7 @@ Added
 - Several classifiers: LDA, QDA, GaussianNB and ComplementNB.
 - CASH now also includes multiple machine learning model selection.
 - Discrete uniform sampling
+- average_precision_weighted scorer.
 
 Changed
 ~~~~~~~
@@ -22,6 +23,8 @@ Changed
 - Oversampling and SMOTE can now also be used in CASH optimization.
 - Moved max_iter of all iterative classifiers and regressors to general config.
 - Moved classifier construction to fitandscore to enable CASH.
+- Surrogate for sklearn's check_scoring used to enable use of alternative
+  metrics.
 
 Fixed
 ~~~~~

@@ -7,6 +7,8 @@ import numpy as np
 from sklearn import metrics
 from scipy.stats import pearsonr, spearmanr
 from PREDICT.processing.ICC import ICC
+from sklearn.metrics import make_scorer, average_precision_score
+from sklearn.metrics import check_scoring as check_scoring_sklearn
 
 
 def performance_singlelabel(y_truth, y_prediction, y_score, regression=False):
@@ -166,3 +168,15 @@ def multi_class_auc(y_truth, y_score):
 
 def multi_class_auc_score(y_truth, y_score):
     return metrics.make_scorer(multi_class_auc, needs_proba=True)
+
+
+def check_scoring(estimator, scoring=None, allow_none=False):
+    '''
+    Surrogate for sklearn's check_scoring to enable use of some other
+    scoring metrics.
+    '''
+    if scoring == 'average_precision_weighted':
+        scorer = make_scorer(average_precision_score, average='weighted')
+    else:
+        scorer = check_scoring_sklearn(estimator, scoring=scoring)
+    return scorer

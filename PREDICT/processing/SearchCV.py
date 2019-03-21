@@ -21,7 +21,7 @@ from sklearn.base import MetaEstimatorMixin
 from sklearn.exceptions import NotFittedError
 from sklearn.utils.metaestimators import if_delegate_has_method
 from sklearn.utils.validation import indexable, check_is_fitted
-from sklearn.metrics.scorer import check_scoring
+from PREDICT.classification.metrics import check_scoring
 from sklearn.model_selection._split import check_cv
 from scipy.stats import rankdata
 from sklearn.externals import six
@@ -1321,7 +1321,7 @@ class BaseSearchCVfastr(BaseSearchCV):
         parameter_data = network.create_source('JsonFile', id_='parameters')
         sink_output = network.create_sink('HDF5', id_='output')
 
-        fitandscore = network.create_node('fitandscore', memory='2G', id_='fitandscore')
+        fitandscore = network.create_node('fitandscore', memory='4G', id_='fitandscore')
         fitandscore.inputs['estimatordata'].input_group = 'estimator'
         fitandscore.inputs['traintest'].input_group = 'traintest'
         fitandscore.inputs['parameters'].input_group = 'parameters'
@@ -1634,9 +1634,11 @@ class BaseSearchCVJoblib(BaseSearchCV):
     def _fit(self, X, y, groups, parameter_iterable):
         """Actual fitting,  performing the search over parameters."""
 
-        base_estimator = clone(self.estimator)
-        cv = check_cv(self.cv, y, classifier=is_classifier(base_estimator))
-        self.scorer_ = check_scoring(self.estimator, scoring=self.scoring)
+        regressors = ['SVR', 'RFR', 'SGDR', 'Lasso', 'ElasticNet']
+        isclassifier =\
+            not any(clf in regressors for clf in self.param_distributions['classifiers'])
+
+        cv = check_cv(self.cv, y, classifier=isclassifier)
 
         X, y, groups = indexable(X, y, groups)
         n_splits = cv.get_n_splits(X, y, groups)
@@ -1652,7 +1654,7 @@ class BaseSearchCVJoblib(BaseSearchCV):
         out = Parallel(
             n_jobs=self.n_jobs, verbose=self.verbose,
             pre_dispatch=pre_dispatch
-        )(delayed(fit_and_score)(clone(base_estimator), X, y, self.scorer_,
+        )(delayed(fit_and_score)(X, y, self.scoring,
                                  train, test, parameters,
                                  fit_params=self.fit_params,
                                  return_train_score=self.return_train_score,
