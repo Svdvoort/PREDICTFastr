@@ -35,6 +35,7 @@ from PREDICT.classification.metrics import check_scoring
 from imblearn.over_sampling import SMOTE, RandomOverSampler
 from sklearn.utils import check_random_state
 import random
+from sklearn.metrics import make_scorer, average_precision_score
 
 
 def fit_and_score(X, y, scoring,
@@ -160,7 +161,11 @@ def fit_and_score(X, y, scoring,
     # We copy the parameter object so we can alter it and keep the original
     para_estimator = para.copy()
     estimator = cc.construct_classifier(para_estimator)
-    scorer = check_scoring(estimator, scoring=scoring)
+    if scoring != 'average_precision_weighted':
+        scorer = check_scoring(estimator, scoring=scoring)
+    else:
+        scorer = make_scorer(average_precision_score, average='weighted')
+
     para_estimator = delete_cc_para(para_estimator)
 
     # X is a tuple: split in two arrays
@@ -172,6 +177,9 @@ def fit_and_score(X, y, scoring,
     if 'Imputation' in para_estimator.keys():
         if para_estimator['Imputation'] == 'True':
             imp_type = para_estimator['ImputationMethod']
+            if verbose:
+                message = ('Imputing NaN with {}.').format(imp_type)
+                print(message)
             imp_nn = para_estimator['ImputationNeighbours']
 
             imputer = Imputer(missing_values=np.nan, strategy=imp_type,

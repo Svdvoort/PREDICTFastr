@@ -165,8 +165,8 @@ def trainclassifier(feat_train, patientinfo_train, config,
         uniform(loc=config['SampleProcessing']['SMOTE_ratio'][0],
                 scale=config['SampleProcessing']['SMOTE_ratio'][1])
     param_grid['SampleProcessing_SMOTE_neighbors'] =\
-        uniform(loc=config['SampleProcessing']['SMOTE_neighbors'][0],
-                scale=config['SampleProcessing']['SMOTE_neighbors'][1])
+        discrete_uniform(loc=config['SampleProcessing']['SMOTE_neighbors'][0],
+                         scale=config['SampleProcessing']['SMOTE_neighbors'][1])
     param_grid['SampleProcessing_SMOTE_n_cores'] = [config['General']['Joblib_ncores']]
     param_grid['SampleProcessing_Oversampling'] = config['SampleProcessing']['Oversampling']
 
@@ -175,7 +175,9 @@ def trainclassifier(feat_train, patientinfo_train, config,
 
     param_grid['Imputation'] = config['Imputation']['use']
     param_grid['ImputationMethod'] = config['Imputation']['strategy']
-    param_grid['ImputationNeighbours'] = config['Imputation']['n_neighbors']
+    param_grid['ImputationNeighbours'] =\
+        discrete_uniform(loc=config['Imputation']['n_neighbors'][0],
+                         scale=config['Imputation']['n_neighbors'][1])
 
     param_grid['SelectFromModel'] = config['Featsel']['SelectFromModel']
 

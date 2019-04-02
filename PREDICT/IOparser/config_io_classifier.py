@@ -104,7 +104,7 @@ def load_config(config_file_path):
          settings['Featsel']['ReliefNumFeatures'].split(',')]
 
     settings_dict['Imputation']['use'] =\
-        [bool(str(item).strip()) for item in
+        [str(item).strip() for item in
          settings['Imputation']['use'].split(',')]
 
     settings_dict['Imputation']['strategy'] =\
@@ -248,7 +248,7 @@ def load_config(config_file_path):
         str(settings['FeatureScaling']['scaling_method'])
 
     settings_dict['SampleProcessing']['SMOTE'] =\
-        [bool(str(item).strip()) for item in
+        [str(item).strip() for item in
          settings['SampleProcessing']['SMOTE'].split(',')]
 
     settings_dict['SampleProcessing']['SMOTE_ratio'] =\
@@ -260,7 +260,7 @@ def load_config(config_file_path):
          settings['SampleProcessing']['SMOTE_neighbors'].split(',')]
 
     settings_dict['SampleProcessing']['Oversampling'] =\
-        [bool(str(item).strip()) for item in
+        [str(item).strip() for item in
          settings['SampleProcessing']['Oversampling'].split(',')]
 
     settings_dict['Ensemble']['Use'] =\
