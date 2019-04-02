@@ -1,4 +1,4 @@
-PREDICT v2.1.1
+PREDICT v2.1.2
 ==============
 
 PREDICT: a Radiomics Extensive Digital Interchangable Classification Toolkit
@@ -31,7 +31,7 @@ Installation
 ~~~~~~~~~~~~
 
 PREDICT has currently only been tested on Unix with Python 2.7.6 and
-higher. We plan to merge towards Python 3 early 2019.
+higher. We plan to merge towards Python 3 before may 2019.
 
 The package can be installed through pip :
 

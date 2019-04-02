@@ -81,16 +81,6 @@ PREDICT/plotting/plot_images.py
 PREDICT/plotting/plot_ranked_scores.py
 PREDICT/plotting/plotminmaxresponse.py
 PREDICT/plotting/scatterplot.py
-PREDICT/plotting/Deprecated/boxplot.py
-PREDICT/plotting/Deprecated/fitcoxmodel.py
-PREDICT/plotting/Deprecated/plot_ROC.py
-PREDICT/plotting/Deprecated/plot_ROC_new.py
-PREDICT/plotting/Deprecated/plot_SVM.py
-PREDICT/plotting/Deprecated/plotposteriors.py
-PREDICT/plotting/Deprecated/showallscores.py
-PREDICT/plotting/Deprecated/showprobs.py
-PREDICT/plotting/Deprecated/showscores.py
-PREDICT/plotting/Deprecated/showsensspec.py
 PREDICT/processing/AdvancedSampler.py
 PREDICT/processing/ICC.py
 PREDICT/processing/Imputer.py
@@ -114,7 +104,6 @@ docs/_build/html/genindex.html
 docs/_build/html/index.html
 docs/_build/html/modules.html
 docs/_build/html/objects.inv
-docs/_build/html/py-modindex.html
 docs/_build/html/search.html
 docs/_build/html/searchindex.js
 docs/_build/html/_sources/PREDICT.IOparser.rst.txt

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>PREDICT.featureselection package &#8212; PREDICT 2.1.1 documentation</title>
+    <title>PREDICT.featureselection package &#8212; PREDICT 2.1.2 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '2.1.1',
+        VERSION:     '2.1.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -46,217 +46,23 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.featureselection.Relief">
-<span id="predict-featureselection-relief-module"></span><h2>PREDICT.featureselection.Relief module<a class="headerlink" href="#module-PREDICT.featureselection.Relief" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="PREDICT.featureselection.Relief.SelectMulticlassRelief">
-<em class="property">class </em><code class="descclassname">PREDICT.featureselection.Relief.</code><code class="descname">SelectMulticlassRelief</code><span class="sig-paren">(</span><em>n_neighbours=3</em>, <em>sample_size=1</em>, <em>distance_p=2</em>, <em>numf=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.featureselection.Relief.SelectMulticlassRelief" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">sklearn.base.BaseEstimator</span></code>, <code class="xref py py-class docutils literal"><span class="pre">sklearn.feature_selection.base.SelectorMixin</span></code></p>
-<p>Object to fit feature selection based on the type group the feature belongs
-to. The label for the feature is used for this procedure.</p>
-<dl class="method">
-<dt id="PREDICT.featureselection.Relief.SelectMulticlassRelief.fit">
-<code class="descname">fit</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.featureselection.Relief.SelectMulticlassRelief.fit" title="Permalink to this definition">¶</a></dt>
-<dd><p>Select only features specificed by parameters per patient.</p>
-<dl class="docutils">
-<dt>feature_values: numpy array, mandatory</dt>
-<dd>Array containing feature values used for model_selection.
-Number of objects on first axis, features on second axis.</dd>
-<dt>feature_labels: list, mandatory</dt>
-<dd>Contains the labels of all features used. The index in this
-list will be used in the transform funtion to select features.</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="PREDICT.featureselection.Relief.SelectMulticlassRelief.multi_class_relief">
-<code class="descname">multi_class_relief</code><span class="sig-paren">(</span><em>feature_set</em>, <em>label_set</em>, <em>nb=3</em>, <em>sample_size=1</em>, <em>distance_p=2</em>, <em>numf=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.featureselection.Relief.SelectMulticlassRelief.multi_class_relief" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="PREDICT.featureselection.Relief.SelectMulticlassRelief.single_class_relief">
-<code class="descname">single_class_relief</code><span class="sig-paren">(</span><em>feature_set</em>, <em>label_set</em>, <em>nb=3</em>, <em>sample_size=1</em>, <em>distance_p=2</em>, <em>numf=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.featureselection.Relief.SelectMulticlassRelief.single_class_relief" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="PREDICT.featureselection.Relief.SelectMulticlassRelief.transform">
-<code class="descname">transform</code><span class="sig-paren">(</span><em>inputarray</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.featureselection.Relief.SelectMulticlassRelief.transform" title="Permalink to this definition">¶</a></dt>
-<dd><p>Transform the inputarray to select only the features based on the
-result from the fit function.</p>
-<dl class="docutils">
-<dt>inputarray: numpy array, mandatory</dt>
-<dd>Array containing the items to use selection on. The type of
-item in this list does not matter, e.g. floats, strings etc.</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="predict-featureselection-relief-module">
+<h2>PREDICT.featureselection.Relief module<a class="headerlink" href="#predict-featureselection-relief-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.featureselection.SelectGroups">
-<span id="predict-featureselection-selectgroups-module"></span><h2>PREDICT.featureselection.SelectGroups module<a class="headerlink" href="#module-PREDICT.featureselection.SelectGroups" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="PREDICT.featureselection.SelectGroups.SelectGroups">
-<em class="property">class </em><code class="descclassname">PREDICT.featureselection.SelectGroups.</code><code class="descname">SelectGroups</code><span class="sig-paren">(</span><em>parameters</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.featureselection.SelectGroups.SelectGroups" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">sklearn.base.BaseEstimator</span></code>, <code class="xref py py-class docutils literal"><span class="pre">sklearn.feature_selection.base.SelectorMixin</span></code></p>
-<p>Object to fit feature selection based on the type group the feature belongs
-to. The label for the feature is used for this procedure.</p>
-<dl class="method">
-<dt id="PREDICT.featureselection.SelectGroups.SelectGroups.fit">
-<code class="descname">fit</code><span class="sig-paren">(</span><em>feature_labels</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.featureselection.SelectGroups.SelectGroups.fit" title="Permalink to this definition">¶</a></dt>
-<dd><p>Select only features specificed by parameters per patient.</p>
-<dl class="docutils">
-<dt>feature_labels: list, optional</dt>
-<dd>Contains the labels of all features used. The index in this
-list will be used in the transform funtion to select features.</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="PREDICT.featureselection.SelectGroups.SelectGroups.transform">
-<code class="descname">transform</code><span class="sig-paren">(</span><em>inputarray</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.featureselection.SelectGroups.SelectGroups.transform" title="Permalink to this definition">¶</a></dt>
-<dd><p>Transform the inputarray to select only the features based on the
-result from the fit function.</p>
-<dl class="docutils">
-<dt>inputarray: numpy array, mandatory</dt>
-<dd>Array containing the items to use selection on. The type of
-item in this list does not matter, e.g. floats, strings etc.</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="predict-featureselection-selectgroups-module">
+<h2>PREDICT.featureselection.SelectGroups module<a class="headerlink" href="#predict-featureselection-selectgroups-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.featureselection.SelectIndividuals">
-<span id="predict-featureselection-selectindividuals-module"></span><h2>PREDICT.featureselection.SelectIndividuals module<a class="headerlink" href="#module-PREDICT.featureselection.SelectIndividuals" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="PREDICT.featureselection.SelectIndividuals.SelectIndividuals">
-<em class="property">class </em><code class="descclassname">PREDICT.featureselection.SelectIndividuals.</code><code class="descname">SelectIndividuals</code><span class="sig-paren">(</span><em>parameters=['hf_mean', 'sf_compactness']</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.featureselection.SelectIndividuals.SelectIndividuals" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">sklearn.base.BaseEstimator</span></code>, <code class="xref py py-class docutils literal"><span class="pre">sklearn.feature_selection.base.SelectorMixin</span></code></p>
-<p>Object to fit feature selection based on the type group the feature belongs
-to. The label for the feature is used for this procedure.</p>
-<dl class="method">
-<dt id="PREDICT.featureselection.SelectIndividuals.SelectIndividuals.fit">
-<code class="descname">fit</code><span class="sig-paren">(</span><em>feature_labels</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.featureselection.SelectIndividuals.SelectIndividuals.fit" title="Permalink to this definition">¶</a></dt>
-<dd><p>Select only features specificed by parameters per patient.</p>
-<dl class="docutils">
-<dt>feature_labels: list, optional</dt>
-<dd>Contains the labels of all features used. The index in this
-list will be used in the transform funtion to select features.</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="PREDICT.featureselection.SelectIndividuals.SelectIndividuals.transform">
-<code class="descname">transform</code><span class="sig-paren">(</span><em>inputarray</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.featureselection.SelectIndividuals.SelectIndividuals.transform" title="Permalink to this definition">¶</a></dt>
-<dd><p>Transform the inputarray to select only the features based on the
-result from the fit function.</p>
-<dl class="docutils">
-<dt>inputarray: numpy array, mandatory</dt>
-<dd>Array containing the items to use selection on. The type of
-item in this list does not matter, e.g. floats, strings etc.</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="predict-featureselection-selectindividuals-module">
+<h2>PREDICT.featureselection.SelectIndividuals module<a class="headerlink" href="#predict-featureselection-selectindividuals-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.featureselection.StatisticalTestThreshold">
-<span id="predict-featureselection-statisticaltestthreshold-module"></span><h2>PREDICT.featureselection.StatisticalTestThreshold module<a class="headerlink" href="#module-PREDICT.featureselection.StatisticalTestThreshold" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="PREDICT.featureselection.StatisticalTestThreshold.StatisticalTestThreshold">
-<em class="property">class </em><code class="descclassname">PREDICT.featureselection.StatisticalTestThreshold.</code><code class="descname">StatisticalTestThreshold</code><span class="sig-paren">(</span><em>metric='ttest'</em>, <em>threshold=0.05</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.featureselection.StatisticalTestThreshold.StatisticalTestThreshold" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">sklearn.base.BaseEstimator</span></code>, <code class="xref py py-class docutils literal"><span class="pre">sklearn.feature_selection.base.SelectorMixin</span></code></p>
-<p>Object to fit feature selection based on statistical tests.</p>
-<dl class="method">
-<dt id="PREDICT.featureselection.StatisticalTestThreshold.StatisticalTestThreshold.fit">
-<code class="descname">fit</code><span class="sig-paren">(</span><em>X_train</em>, <em>Y_train</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.featureselection.StatisticalTestThreshold.StatisticalTestThreshold.fit" title="Permalink to this definition">¶</a></dt>
-<dd><p>Select only features specificed by the metric and threshold per patient.</p>
-<dl class="docutils">
-<dt>X_train: numpy array, mandatory</dt>
-<dd>Array containing feature values used for model_selection.
-Number of objects on first axis, features on second axis.</dd>
-<dt>Y_train: numpy array, mandatory</dt>
-<dd>Array containing the binary labels for each object in X_train.</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="PREDICT.featureselection.StatisticalTestThreshold.StatisticalTestThreshold.transform">
-<code class="descname">transform</code><span class="sig-paren">(</span><em>inputarray</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.featureselection.StatisticalTestThreshold.StatisticalTestThreshold.transform" title="Permalink to this definition">¶</a></dt>
-<dd><p>Transform the inputarray to select only the features based on the
-result from the fit function.</p>
-<dl class="docutils">
-<dt>inputarray: numpy array, mandatory</dt>
-<dd>Array containing the items to use selection on. The type of
-item in this list does not matter, e.g. floats, strings etc.</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="predict-featureselection-statisticaltestthreshold-module">
+<h2>PREDICT.featureselection.StatisticalTestThreshold module<a class="headerlink" href="#predict-featureselection-statisticaltestthreshold-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.featureselection.VarianceThreshold">
-<span id="predict-featureselection-variancethreshold-module"></span><h2>PREDICT.featureselection.VarianceThreshold module<a class="headerlink" href="#module-PREDICT.featureselection.VarianceThreshold" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="PREDICT.featureselection.VarianceThreshold.VarianceThresholdMean">
-<em class="property">class </em><code class="descclassname">PREDICT.featureselection.VarianceThreshold.</code><code class="descname">VarianceThresholdMean</code><span class="sig-paren">(</span><em>threshold</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.featureselection.VarianceThreshold.VarianceThresholdMean" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">sklearn.base.BaseEstimator</span></code>, <code class="xref py py-class docutils literal"><span class="pre">sklearn.feature_selection.base.SelectorMixin</span></code></p>
-<p>Select features based on variance among objects. Similar to VarianceThreshold
-from sklearn, but does take the mean of the feature into account.</p>
-<dl class="method">
-<dt id="PREDICT.featureselection.VarianceThreshold.VarianceThresholdMean.fit">
-<code class="descname">fit</code><span class="sig-paren">(</span><em>image_features</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.featureselection.VarianceThreshold.VarianceThresholdMean.fit" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="PREDICT.featureselection.VarianceThreshold.VarianceThresholdMean.transform">
-<code class="descname">transform</code><span class="sig-paren">(</span><em>inputarray</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.featureselection.VarianceThreshold.VarianceThresholdMean.transform" title="Permalink to this definition">¶</a></dt>
-<dd><p>Transform the inputarray to select only the features based on the
-result from the fit function.
-Parameters
-&#8212;&#8212;&#8212;-
-inputarray: numpy array, mandatory</p>
-<blockquote>
-<div>Array containing the items to use selection on. The type of
-item in this list does not matter, e.g. floats, strings etc.</div></blockquote>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.featureselection.VarianceThreshold.selfeat_variance">
-<code class="descclassname">PREDICT.featureselection.VarianceThreshold.</code><code class="descname">selfeat_variance</code><span class="sig-paren">(</span><em>image_features</em>, <em>labels=None</em>, <em>thresh=0.99</em>, <em>method='nomean'</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.featureselection.VarianceThreshold.selfeat_variance" title="Permalink to this definition">¶</a></dt>
-<dd><p>Select features using a variance threshold.</p>
-<dl class="docutils">
-<dt>image_features: numpy array, mandatory</dt>
-<dd>Array containing the feature values to apply the variance threshold
-selection on. The rows correspond to the patients, the column to the
-features.</dd>
-<dt>labels: numpy array, optional</dt>
-<dd>Array containing the labels of the corresponding features. Array
-should therefore have the same shape as the image_features array.</dd>
-<dt>thresh: float, default 0.99</dt>
-<dd>Threshold to be used as lower boundary for feature variance among
-patients.</dd>
-<dt>method: string, default nomean.</dt>
-<dd>Method to use for selection. Default: do not use the mean of the
-features. Other valid option is &#8216;mean&#8217;.</dd>
-</dl>
-<dl class="docutils">
-<dt>image_features: numpy array</dt>
-<dd>Transformed features array.</dd>
-<dt>labels: list or None</dt>
-<dd>When labels are given, returns the transformed labels. That object
-contains a list of all label names kept.</dd>
-<dt>sel: VarianceThreshold object</dt>
-<dd>The fitted variance threshold object.</dd>
-</dl>
-</dd></dl>
-
+<div class="section" id="predict-featureselection-variancethreshold-module">
+<h2>PREDICT.featureselection.VarianceThreshold module<a class="headerlink" href="#predict-featureselection-variancethreshold-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.featureselection">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-PREDICT.featureselection" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -270,12 +76,12 @@ contains a list of all label names kept.</dd>
   <ul>
 <li><a class="reference internal" href="#">PREDICT.featureselection package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-PREDICT.featureselection.Relief">PREDICT.featureselection.Relief module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.featureselection.SelectGroups">PREDICT.featureselection.SelectGroups module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.featureselection.SelectIndividuals">PREDICT.featureselection.SelectIndividuals module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.featureselection.StatisticalTestThreshold">PREDICT.featureselection.StatisticalTestThreshold module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.featureselection.VarianceThreshold">PREDICT.featureselection.VarianceThreshold module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.featureselection">Module contents</a></li>
+<li><a class="reference internal" href="#predict-featureselection-relief-module">PREDICT.featureselection.Relief module</a></li>
+<li><a class="reference internal" href="#predict-featureselection-selectgroups-module">PREDICT.featureselection.SelectGroups module</a></li>
+<li><a class="reference internal" href="#predict-featureselection-selectindividuals-module">PREDICT.featureselection.SelectIndividuals module</a></li>
+<li><a class="reference internal" href="#predict-featureselection-statisticaltestthreshold-module">PREDICT.featureselection.StatisticalTestThreshold module</a></li>
+<li><a class="reference internal" href="#predict-featureselection-variancethreshold-module">PREDICT.featureselection.VarianceThreshold module</a></li>
+<li><a class="reference internal" href="#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>

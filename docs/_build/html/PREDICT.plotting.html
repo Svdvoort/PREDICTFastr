@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>PREDICT.plotting package &#8212; PREDICT 2.1.1 documentation</title>
+    <title>PREDICT.plotting package &#8212; PREDICT 2.1.2 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '2.1.1',
+        VERSION:     '2.1.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -46,359 +46,44 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.plotting.compute_CI">
-<span id="predict-plotting-compute-ci-module"></span><h2>PREDICT.plotting.compute_CI module<a class="headerlink" href="#module-PREDICT.plotting.compute_CI" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="PREDICT.plotting.compute_CI.compute_confidence">
-<code class="descclassname">PREDICT.plotting.compute_CI.</code><code class="descname">compute_confidence</code><span class="sig-paren">(</span><em>metric</em>, <em>N_train</em>, <em>N_test</em>, <em>alpha=0.95</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.plotting.compute_CI.compute_confidence" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function to calculate the adjusted confidence interval
-metric: numpy array containing the result for a metric for the different cross validations
-(e.g. If 20 cross-validations are performed it is a list of length 20 with the calculated accuracy for
-each cross validation)
-N_train: Integer, number of training samples
-N_test: Integer, number of test_samples
-alpha: float ranging from 0 to 1 to calculate the alpha*100% CI, default 95%</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.plotting.compute_CI.compute_confidence_logit">
-<code class="descclassname">PREDICT.plotting.compute_CI.</code><code class="descname">compute_confidence_logit</code><span class="sig-paren">(</span><em>metric</em>, <em>N_train</em>, <em>N_test</em>, <em>alpha=0.95</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.plotting.compute_CI.compute_confidence_logit" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function to calculate the adjusted confidence interval
-metric: numpy array containing the result for a metric for the different cross validations
-(e.g. If 20 cross-validations are performed it is a list of length 20 with the calculated accuracy for
-each cross validation)
-N_train: Integer, number of training samples
-N_test: Integer, number of test_samples
-alpha: float ranging from 0 to 1 to calculate the alpha*100% CI, default 95%</p>
-</dd></dl>
-
+<div class="section" id="predict-plotting-compute-ci-module">
+<h2>PREDICT.plotting.compute_CI module<a class="headerlink" href="#predict-plotting-compute-ci-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.plotting.getfeatureimages">
-<span id="predict-plotting-getfeatureimages-module"></span><h2>PREDICT.plotting.getfeatureimages module<a class="headerlink" href="#module-PREDICT.plotting.getfeatureimages" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="PREDICT.plotting.getfeatureimages.gabor_filter">
-<code class="descclassname">PREDICT.plotting.getfeatureimages.</code><code class="descname">gabor_filter</code><span class="sig-paren">(</span><em>image</em>, <em>mask</em>, <em>kernel</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.plotting.getfeatureimages.gabor_filter" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.plotting.getfeatureimages.getfeatureimages">
-<code class="descclassname">PREDICT.plotting.getfeatureimages.</code><code class="descname">getfeatureimages</code><span class="sig-paren">(</span><em>image, segmentation, gabor_settings=None, image_type=None, parameters=None, types=['LBP'], slicenum=None, save=False</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.plotting.getfeatureimages.getfeatureimages" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.plotting.getfeatureimages.save_LBP_features">
-<code class="descclassname">PREDICT.plotting.getfeatureimages.</code><code class="descname">save_LBP_features</code><span class="sig-paren">(</span><em>image</em>, <em>mask</em>, <em>output</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.plotting.getfeatureimages.save_LBP_features" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.plotting.getfeatureimages.save_gabor_features">
-<code class="descclassname">PREDICT.plotting.getfeatureimages.</code><code class="descname">save_gabor_features</code><span class="sig-paren">(</span><em>image</em>, <em>mask</em>, <em>gabor_settings</em>, <em>output</em>, <em>n_jobs=None</em>, <em>backend=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.plotting.getfeatureimages.save_gabor_features" title="Permalink to this definition">¶</a></dt>
-<dd><p>Apply gabor filters to image, done in parallel.
-Note: on a cluster, where parallelisation of the gabor filters
-is not possible, use backend=&#8221;threading&#8221;</p>
-</dd></dl>
-
+<div class="section" id="predict-plotting-getfeatureimages-module">
+<h2>PREDICT.plotting.getfeatureimages module<a class="headerlink" href="#predict-plotting-getfeatureimages-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.plotting.linstretch">
-<span id="predict-plotting-linstretch-module"></span><h2>PREDICT.plotting.linstretch module<a class="headerlink" href="#module-PREDICT.plotting.linstretch" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="PREDICT.plotting.linstretch.linstretch">
-<code class="descclassname">PREDICT.plotting.linstretch.</code><code class="descname">linstretch</code><span class="sig-paren">(</span><em>i</em>, <em>i_max=255</em>, <em>i_min=0</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.plotting.linstretch.linstretch" title="Permalink to this definition">¶</a></dt>
-<dd><p>Stretch the input image i pixel values from i_min to i_max</p>
-</dd></dl>
-
+<div class="section" id="predict-plotting-linstretch-module">
+<h2>PREDICT.plotting.linstretch module<a class="headerlink" href="#predict-plotting-linstretch-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.plotting.plot_ROC">
-<span id="predict-plotting-plot-roc-module"></span><h2>PREDICT.plotting.plot_ROC module<a class="headerlink" href="#module-PREDICT.plotting.plot_ROC" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="PREDICT.plotting.plot_ROC.ROC_thresholding">
-<code class="descclassname">PREDICT.plotting.plot_ROC.</code><code class="descname">ROC_thresholding</code><span class="sig-paren">(</span><em>fprt</em>, <em>tprt</em>, <em>thresholds</em>, <em>nsamples=20</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.plotting.plot_ROC.ROC_thresholding" title="Permalink to this definition">¶</a></dt>
-<dd><p>Construct FPR and TPR ratios at different thresholds for the scores of an
-estimator.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.plotting.plot_ROC.main">
-<code class="descclassname">PREDICT.plotting.plot_ROC.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.plotting.plot_ROC.main" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.plotting.plot_ROC.plot_ROC">
-<code class="descclassname">PREDICT.plotting.plot_ROC.</code><code class="descname">plot_ROC</code><span class="sig-paren">(</span><em>prediction</em>, <em>pinfo</em>, <em>ensemble=1</em>, <em>label_type=None</em>, <em>output_png=None</em>, <em>output_tex=None</em>, <em>output_csv=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.plotting.plot_ROC.plot_ROC" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.plotting.plot_ROC.plot_ROC_CIc">
-<code class="descclassname">PREDICT.plotting.plot_ROC.</code><code class="descname">plot_ROC_CIc</code><span class="sig-paren">(</span><em>y_truth</em>, <em>y_score</em>, <em>N_1</em>, <em>N_2</em>, <em>plot='default'</em>, <em>alpha=0.95</em>, <em>verbose=False</em>, <em>DEBUG=False</em>, <em>tsamples=20</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.plotting.plot_ROC.plot_ROC_CIc" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot a Receiver Operator Characteristic (ROC) curve with confidence intervals.</p>
-<dl class="docutils">
-<dt>tsamples: number of sample points on which to determine the confidence intervals.</dt>
-<dd>The sample pointsare used on the thresholds for y_score.</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.plotting.plot_ROC.plot_single_ROC">
-<code class="descclassname">PREDICT.plotting.plot_ROC.</code><code class="descname">plot_single_ROC</code><span class="sig-paren">(</span><em>y_truth</em>, <em>y_score</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.plotting.plot_ROC.plot_single_ROC" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the False Positive Ratio (FPR) and True Positive Ratio (TPR)
-for the ground truth and score of a single estimator. These ratios
-can be used to plot a Receiver Operator Characteristic (ROC) curve.</p>
-</dd></dl>
-
+<div class="section" id="predict-plotting-plot-roc-module">
+<h2>PREDICT.plotting.plot_ROC module<a class="headerlink" href="#predict-plotting-plot-roc-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.plotting.plot_SVM">
-<span id="predict-plotting-plot-svm-module"></span><h2>PREDICT.plotting.plot_SVM module<a class="headerlink" href="#module-PREDICT.plotting.plot_SVM" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="PREDICT.plotting.plot_SVM.main">
-<code class="descclassname">PREDICT.plotting.plot_SVM.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.plotting.plot_SVM.main" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.plotting.plot_SVM.plot_SVM">
-<code class="descclassname">PREDICT.plotting.plot_SVM.</code><code class="descname">plot_SVM</code><span class="sig-paren">(</span><em>prediction</em>, <em>label_data</em>, <em>label_type</em>, <em>show_plots=False</em>, <em>alpha=0.95</em>, <em>ensemble=False</em>, <em>verbose=True</em>, <em>ensemble_scoring=None</em>, <em>output='stats'</em>, <em>modus='singlelabel'</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.plotting.plot_SVM.plot_SVM" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot the output of a single binary estimator, e.g. a SVM.</p>
-<dl class="docutils">
-<dt>prediction: pandas dataframe or string, mandatory</dt>
-<dd>output of trainclassifier function, either a pandas dataframe
-or a HDF5 file</dd>
-<dt>label_data: string, mandatory</dt>
-<dd>Contains the path referring to a .txt file containing the
-patient label(s) and value(s) to be used for learning. See
-the Github Wiki for the format.</dd>
-<dt>label_type: string, mandatory</dt>
-<dd>Name of the label to extract from the label data to test the
-estimator on.</dd>
-<dt>show_plots: Boolean, default False</dt>
-<dd>Determine whether matplotlib performance plots are made.</dd>
-<dt>alpha: float, default 0.95</dt>
-<dd>Significance of confidence intervals.</dd>
-<dt>ensemble: False, integer or &#8216;Caruana&#8217;</dt>
-<dd>Determine whether an ensemble will be created. If so,
-either provide an integer to determine how many of the
-top performing classifiers should be in the ensemble, or use
-the string &#8220;Caruana&#8221; to use smart ensembling based on
-Caruana et al. 2004.</dd>
-<dt>verbose: boolean, default True</dt>
-<dd>Plot intermedate messages.</dd>
-<dt>ensemble_scoring: string, default None</dt>
-<dd>Metric to be used for evaluating the ensemble. If None,
-the option set in the prediction object will be used.</dd>
-<dt>output: string, default stats</dt>
-<dd>Determine which results are put out. If stats, the statistics of the
-estimator will be returned. If scores, the scores will be returned.</dd>
-</dl>
-<p>Depending on the output parameters, the following outputs are returned:</p>
-<p>If output == &#8216;stats&#8217;:
-stats: dictionary</p>
-<blockquote>
-<div>Contains the confidence intervals of the performance metrics
-and the number of times each patient was classifier correctly
-or incorrectly.</div></blockquote>
-<p>If output == &#8216;scores&#8217;:
-y_truths: list</p>
-<blockquote>
-<div>Contains the true label for each object.</div></blockquote>
-<dl class="docutils">
-<dt>y_scores: list</dt>
-<dd>Contains the score (e.g. posterior) for each object.</dd>
-<dt>y_predictions: list</dt>
-<dd>Contains the predicted label for each object.</dd>
-<dt>PIDs: list</dt>
-<dd>Contains the patient ID/name for each object.</dd>
-</dl>
-</dd></dl>
-
+<div class="section" id="predict-plotting-plot-svm-module">
+<h2>PREDICT.plotting.plot_SVM module<a class="headerlink" href="#predict-plotting-plot-svm-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.plotting.plot_SVR">
-<span id="predict-plotting-plot-svr-module"></span><h2>PREDICT.plotting.plot_SVR module<a class="headerlink" href="#module-PREDICT.plotting.plot_SVR" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="PREDICT.plotting.plot_SVR.main">
-<code class="descclassname">PREDICT.plotting.plot_SVR.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.plotting.plot_SVR.main" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.plotting.plot_SVR.plot_single_SVR">
-<code class="descclassname">PREDICT.plotting.plot_SVR.</code><code class="descname">plot_single_SVR</code><span class="sig-paren">(</span><em>prediction</em>, <em>mutation_data</em>, <em>label_type</em>, <em>survival=False</em>, <em>show_plots=False</em>, <em>alpha=0.95</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.plotting.plot_SVR.plot_single_SVR" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<div class="section" id="predict-plotting-plot-svr-module">
+<h2>PREDICT.plotting.plot_SVR module<a class="headerlink" href="#predict-plotting-plot-svr-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.plotting.plot_barchart">
-<span id="predict-plotting-plot-barchart-module"></span><h2>PREDICT.plotting.plot_barchart module<a class="headerlink" href="#module-PREDICT.plotting.plot_barchart" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="PREDICT.plotting.plot_barchart.count_parameters">
-<code class="descclassname">PREDICT.plotting.plot_barchart.</code><code class="descname">count_parameters</code><span class="sig-paren">(</span><em>parameters</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.plotting.plot_barchart.count_parameters" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.plotting.plot_barchart.main">
-<code class="descclassname">PREDICT.plotting.plot_barchart.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.plotting.plot_barchart.main" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.plotting.plot_barchart.paracheck">
-<code class="descclassname">PREDICT.plotting.plot_barchart.</code><code class="descname">paracheck</code><span class="sig-paren">(</span><em>parameters</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.plotting.plot_barchart.paracheck" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.plotting.plot_barchart.plot_barchart">
-<code class="descclassname">PREDICT.plotting.plot_barchart.</code><code class="descname">plot_barchart</code><span class="sig-paren">(</span><em>prediction</em>, <em>estimators=10</em>, <em>label_type=None</em>, <em>output_tex=None</em>, <em>output_png=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.plotting.plot_barchart.plot_barchart" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make a barchart of the top X hyperparameters settings of the ranked
-estimators in all cross validation iterations.</p>
-<dl class="docutils">
-<dt>prediction: filepath, mandatory</dt>
-<dd>Path pointing to the .hdf5 file which was is the output of the
-trainclassifier function.</dd>
-<dt>estimators: integer, default 10</dt>
-<dd>Number of hyperparameter settings/estimators used in each cross
-validation. The settings are ranked, so when supplying e.g. 10,
-the best 10 settings in each cross validation setting will be used.</dd>
-<dt>label_type: string, default None</dt>
-<dd>The name of the label predicted by the estimator. If None,
-the first label from the prediction file will be used.</dd>
-<dt>output_tex: filepath, optional</dt>
-<dd>If given, the barchart will be written to this tex file.</dd>
-<dt>output_png: filepath, optional</dt>
-<dd>If given, the barchart will be written to this png file.</dd>
-</dl>
-<dl class="docutils">
-<dt>fig: matplotlib figure</dt>
-<dd>The figure in which the barchart is plotted.</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.plotting.plot_barchart.plot_bars">
-<code class="descclassname">PREDICT.plotting.plot_barchart.</code><code class="descname">plot_bars</code><span class="sig-paren">(</span><em>params</em>, <em>normalization_factor=None</em>, <em>figwidth=20</em>, <em>fontsize=20</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.plotting.plot_barchart.plot_bars" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<div class="section" id="predict-plotting-plot-barchart-module">
+<h2>PREDICT.plotting.plot_barchart module<a class="headerlink" href="#predict-plotting-plot-barchart-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.plotting.plot_boxplot">
-<span id="predict-plotting-plot-boxplot-module"></span><h2>PREDICT.plotting.plot_boxplot module<a class="headerlink" href="#module-PREDICT.plotting.plot_boxplot" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="PREDICT.plotting.plot_boxplot.generate_boxplots">
-<code class="descclassname">PREDICT.plotting.plot_boxplot.</code><code class="descname">generate_boxplots</code><span class="sig-paren">(</span><em>image_features</em>, <em>mutation_data</em>, <em>outputfolder</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.plotting.plot_boxplot.generate_boxplots" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate boxplots of the feature values among different objects.</p>
-<dl class="docutils">
-<dt>features: list, mandatory</dt>
-<dd>List with a dictionary of the feature labels and values for each patient.</dd>
-<dt>mutation_data: pandas dataframe, mandatory</dt>
-<dd>Dataframe containing the labels of the objects.</dd>
-<dt>outputfolder: path, mandatory</dt>
-<dd>Folder to which the output boxplots should be written.</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.plotting.plot_boxplot.main">
-<code class="descclassname">PREDICT.plotting.plot_boxplot.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.plotting.plot_boxplot.main" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<div class="section" id="predict-plotting-plot-boxplot-module">
+<h2>PREDICT.plotting.plot_boxplot module<a class="headerlink" href="#predict-plotting-plot-boxplot-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.plotting.plot_images">
-<span id="predict-plotting-plot-images-module"></span><h2>PREDICT.plotting.plot_images module<a class="headerlink" href="#module-PREDICT.plotting.plot_images" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="PREDICT.plotting.plot_images.bbox_2D">
-<code class="descclassname">PREDICT.plotting.plot_images.</code><code class="descname">bbox_2D</code><span class="sig-paren">(</span><em>img, mask, padding=[1, 1], img2=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.plotting.plot_images.bbox_2D" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.plotting.plot_images.plot_im_and_overlay">
-<code class="descclassname">PREDICT.plotting.plot_images.</code><code class="descname">plot_im_and_overlay</code><span class="sig-paren">(</span><em>image</em>, <em>mask</em>, <em>figsize=(3</em>, <em>3)</em>, <em>alpha=0.15</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.plotting.plot_images.plot_im_and_overlay" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot an image in a matplotlib figure and overlay with a mask.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.plotting.plot_images.slicer">
-<code class="descclassname">PREDICT.plotting.plot_images.</code><code class="descname">slicer</code><span class="sig-paren">(</span><em>image, mask, output_name, output_name_zoom, thresholds=[-240, 160], zoomfactor=4</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.plotting.plot_images.slicer" title="Permalink to this definition">¶</a></dt>
-<dd><p>image and mask should both be arrays</p>
-</dd></dl>
-
+<div class="section" id="predict-plotting-plot-images-module">
+<h2>PREDICT.plotting.plot_images module<a class="headerlink" href="#predict-plotting-plot-images-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.plotting.plot_ranked_scores">
-<span id="predict-plotting-plot-ranked-scores-module"></span><h2>PREDICT.plotting.plot_ranked_scores module<a class="headerlink" href="#module-PREDICT.plotting.plot_ranked_scores" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="PREDICT.plotting.plot_ranked_scores.example">
-<code class="descclassname">PREDICT.plotting.plot_ranked_scores.</code><code class="descname">example</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.plotting.plot_ranked_scores.example" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.plotting.plot_ranked_scores.main">
-<code class="descclassname">PREDICT.plotting.plot_ranked_scores.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.plotting.plot_ranked_scores.main" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.plotting.plot_ranked_scores.plot_ranked_images">
-<code class="descclassname">PREDICT.plotting.plot_ranked_scores.</code><code class="descname">plot_ranked_images</code><span class="sig-paren">(</span><em>pinfo</em>, <em>label_type</em>, <em>images</em>, <em>segmentations</em>, <em>ranked_truths</em>, <em>ranked_scores</em>, <em>ranked_PIDs</em>, <em>output_zip=None</em>, <em>output_itk=None</em>, <em>zoomfactor=4</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.plotting.plot_ranked_scores.plot_ranked_images" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.plotting.plot_ranked_scores.plot_ranked_percentages">
-<code class="descclassname">PREDICT.plotting.plot_ranked_scores.</code><code class="descname">plot_ranked_percentages</code><span class="sig-paren">(</span><em>estimator</em>, <em>pinfo</em>, <em>label_type=None</em>, <em>ensemble=50</em>, <em>output_csv=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.plotting.plot_ranked_scores.plot_ranked_percentages" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.plotting.plot_ranked_scores.plot_ranked_posteriors">
-<code class="descclassname">PREDICT.plotting.plot_ranked_scores.</code><code class="descname">plot_ranked_posteriors</code><span class="sig-paren">(</span><em>estimator</em>, <em>pinfo</em>, <em>label_type=None</em>, <em>ensemble=50</em>, <em>output_csv=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.plotting.plot_ranked_scores.plot_ranked_posteriors" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.plotting.plot_ranked_scores.plot_ranked_scores">
-<code class="descclassname">PREDICT.plotting.plot_ranked_scores.</code><code class="descname">plot_ranked_scores</code><span class="sig-paren">(</span><em>estimator</em>, <em>pinfo</em>, <em>label_type</em>, <em>scores='percentages'</em>, <em>images=[]</em>, <em>segmentations=[]</em>, <em>ensemble=50</em>, <em>output_csv=None</em>, <em>output_zip=None</em>, <em>output_itk=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.plotting.plot_ranked_scores.plot_ranked_scores" title="Permalink to this definition">¶</a></dt>
-<dd><p>Rank the patients according to their average score. The score can either
-be the average posterior or the percentage of times the patient was
-classified correctly in the cross validations. Additionally,
-the middle slice of each patient is plot and saved according to the ranking.</p>
-<dl class="docutils">
-<dt>estimator: filepath, mandatory</dt>
-<dd>Path pointing to the .hdf5 file which was is the output of the
-trainclassifier function.</dd>
-<dt>pinfo: filepath, mandatory</dt>
-<dd>Path pointint to the .txt file which contains the patient label
-information.</dd>
-<dt>label_type: string, default None</dt>
-<dd>The name of the label predicted by the estimator. If None,
-the first label from the prediction file will be used.</dd>
-<dt>scores: string, default percentages</dt>
-<dd>Type of scoring to be used. Either &#8216;posteriors&#8217; or &#8216;percentages&#8217;.</dd>
-<dt>images: list, optional</dt>
-<dd>List containing the filepaths to the ITKImage image files of the
-patients.</dd>
-<dt>segmentations: list, optional</dt>
-<dd>List containing the filepaths to the ITKImage segmentation files of
-the patients.</dd>
-<dt>ensemble: integer or string, optional</dt>
-<dd>Method to be used for ensembling. Either an integer for a fixed size
-or &#8216;Caruana&#8217; for the Caruana method, see the SearchCV function for more
-details.</dd>
-<dt>output_csv: filepath, optional</dt>
-<dd>If given, the scores will be written to this csv file.</dd>
-<dt>output_zip: filepath, optional</dt>
-<dd>If given, the images will be plotted and the pngs saved to this
-zip file.</dd>
-<dt>output_itk: filepath, optional</dt>
-<dd>WIP</dd>
-</dl>
-</dd></dl>
-
+<div class="section" id="predict-plotting-plot-ranked-scores-module">
+<h2>PREDICT.plotting.plot_ranked_scores module<a class="headerlink" href="#predict-plotting-plot-ranked-scores-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.plotting.plotminmaxresponse">
-<span id="predict-plotting-plotminmaxresponse-module"></span><h2>PREDICT.plotting.plotminmaxresponse module<a class="headerlink" href="#module-PREDICT.plotting.plotminmaxresponse" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="PREDICT.plotting.plotminmaxresponse.main">
-<code class="descclassname">PREDICT.plotting.plotminmaxresponse.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.plotting.plotminmaxresponse.main" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<div class="section" id="predict-plotting-plotminmaxresponse-module">
+<h2>PREDICT.plotting.plotminmaxresponse module<a class="headerlink" href="#predict-plotting-plotminmaxresponse-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.plotting.scatterplot">
-<span id="predict-plotting-scatterplot-module"></span><h2>PREDICT.plotting.scatterplot module<a class="headerlink" href="#module-PREDICT.plotting.scatterplot" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="PREDICT.plotting.scatterplot.main">
-<code class="descclassname">PREDICT.plotting.scatterplot.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.plotting.scatterplot.main" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<div class="section" id="predict-plotting-scatterplot-module">
+<h2>PREDICT.plotting.scatterplot module<a class="headerlink" href="#predict-plotting-scatterplot-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.plotting">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-PREDICT.plotting" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -412,19 +97,19 @@ zip file.</dd>
   <ul>
 <li><a class="reference internal" href="#">PREDICT.plotting package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-PREDICT.plotting.compute_CI">PREDICT.plotting.compute_CI module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.plotting.getfeatureimages">PREDICT.plotting.getfeatureimages module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.plotting.linstretch">PREDICT.plotting.linstretch module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.plotting.plot_ROC">PREDICT.plotting.plot_ROC module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.plotting.plot_SVM">PREDICT.plotting.plot_SVM module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.plotting.plot_SVR">PREDICT.plotting.plot_SVR module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.plotting.plot_barchart">PREDICT.plotting.plot_barchart module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.plotting.plot_boxplot">PREDICT.plotting.plot_boxplot module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.plotting.plot_images">PREDICT.plotting.plot_images module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.plotting.plot_ranked_scores">PREDICT.plotting.plot_ranked_scores module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.plotting.plotminmaxresponse">PREDICT.plotting.plotminmaxresponse module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.plotting.scatterplot">PREDICT.plotting.scatterplot module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.plotting">Module contents</a></li>
+<li><a class="reference internal" href="#predict-plotting-compute-ci-module">PREDICT.plotting.compute_CI module</a></li>
+<li><a class="reference internal" href="#predict-plotting-getfeatureimages-module">PREDICT.plotting.getfeatureimages module</a></li>
+<li><a class="reference internal" href="#predict-plotting-linstretch-module">PREDICT.plotting.linstretch module</a></li>
+<li><a class="reference internal" href="#predict-plotting-plot-roc-module">PREDICT.plotting.plot_ROC module</a></li>
+<li><a class="reference internal" href="#predict-plotting-plot-svm-module">PREDICT.plotting.plot_SVM module</a></li>
+<li><a class="reference internal" href="#predict-plotting-plot-svr-module">PREDICT.plotting.plot_SVR module</a></li>
+<li><a class="reference internal" href="#predict-plotting-plot-barchart-module">PREDICT.plotting.plot_barchart module</a></li>
+<li><a class="reference internal" href="#predict-plotting-plot-boxplot-module">PREDICT.plotting.plot_boxplot module</a></li>
+<li><a class="reference internal" href="#predict-plotting-plot-images-module">PREDICT.plotting.plot_images module</a></li>
+<li><a class="reference internal" href="#predict-plotting-plot-ranked-scores-module">PREDICT.plotting.plot_ranked_scores module</a></li>
+<li><a class="reference internal" href="#predict-plotting-plotminmaxresponse-module">PREDICT.plotting.plotminmaxresponse module</a></li>
+<li><a class="reference internal" href="#predict-plotting-scatterplot-module">PREDICT.plotting.scatterplot module</a></li>
+<li><a class="reference internal" href="#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>

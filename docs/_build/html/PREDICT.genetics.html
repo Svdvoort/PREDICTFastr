@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>PREDICT.genetics package &#8212; PREDICT 2.1.1 documentation</title>
+    <title>PREDICT.genetics package &#8212; PREDICT 2.1.2 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '2.1.1',
+        VERSION:     '2.1.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -46,92 +46,11 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.genetics.genetic_processing">
-<span id="predict-genetics-genetic-processing-module"></span><h2>PREDICT.genetics.genetic_processing module<a class="headerlink" href="#module-PREDICT.genetics.genetic_processing" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="PREDICT.genetics.genetic_processing.findmutationdata">
-<code class="descclassname">PREDICT.genetics.genetic_processing.</code><code class="descname">findmutationdata</code><span class="sig-paren">(</span><em>patientinfo</em>, <em>mutation_type</em>, <em>filenames</em>, <em>image_features_temp=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.genetics.genetic_processing.findmutationdata" title="Permalink to this definition">¶</a></dt>
-<dd><p>Load the label data and match to the unage features.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>patientinfo (string): file with patient label data
-mutation_type (string): name of the label read out from patientinfo
-filenames (list): names of the patient feature files, used for matching
-image_features (np.array or list): array of the features</dd>
-<dt>Returns:</dt>
-<dd>mutation_data (dict): contains patient ids, their labels and the mutation name</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.genetics.genetic_processing.load_config_XNAT">
-<code class="descclassname">PREDICT.genetics.genetic_processing.</code><code class="descname">load_config_XNAT</code><span class="sig-paren">(</span><em>config_file_path</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.genetics.genetic_processing.load_config_XNAT" title="Permalink to this definition">¶</a></dt>
-<dd><p>Configparser for retreiving patient data from XNAT.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.genetics.genetic_processing.load_genetic_XNAT">
-<code class="descclassname">PREDICT.genetics.genetic_processing.</code><code class="descname">load_genetic_XNAT</code><span class="sig-paren">(</span><em>genetic_info</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.genetics.genetic_processing.load_genetic_XNAT" title="Permalink to this definition">¶</a></dt>
-<dd><p>Load the patient IDs and genetic data from XNAT, Only works if you have a
-file /resources/GENETICS/files/genetics.json for each patient containing
-a single dictionary of all labels.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>url (string): XNAT URL
-project: XNAT project ID</dd>
-<dt>Returns:</dt>
-<dd><p class="first">mutation_names (numpy array): Names of the different genetic mutations
-patient_ID (numpy array): IDs of patients for which genetic data is</p>
-<blockquote>
-<div>loaded</div></blockquote>
-<dl class="last docutils">
-<dt>mutation_status (numpy array): The status of the different mutations</dt>
-<dd>for each patient</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.genetics.genetic_processing.load_genetic_file">
-<code class="descclassname">PREDICT.genetics.genetic_processing.</code><code class="descname">load_genetic_file</code><span class="sig-paren">(</span><em>input_file</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.genetics.genetic_processing.load_genetic_file" title="Permalink to this definition">¶</a></dt>
-<dd><p>Load the patient IDs and genetic data from the genetic file</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>input_file (string): Path of the genetic file</dd>
-<dt>Returns:</dt>
-<dd><p class="first">mutation_names (numpy array): Names of the different genetic mutations
-patient_ID (numpy array): IDs of patients for which genetic data is</p>
-<blockquote>
-<div>loaded</div></blockquote>
-<dl class="last docutils">
-<dt>mutation_status (numpy array): The status of the different mutations</dt>
-<dd>for each patient</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.genetics.genetic_processing.load_mutation_status">
-<code class="descclassname">PREDICT.genetics.genetic_processing.</code><code class="descname">load_mutation_status</code><span class="sig-paren">(</span><em>genetic_file</em>, <em>mutation_type</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.genetics.genetic_processing.load_mutation_status" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads the mutation data from a genetic file</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>genetic_file (string): The path to the genetic file
-mutation_type (list): List of the genetic mutations to load</dd>
-<dt>Returns:</dt>
-<dd><dl class="first last docutils">
-<dt>dict: A dict containing &#8216;patient_IDs&#8217;, &#8216;mutation_label&#8217; and</dt>
-<dd>&#8216;mutation_type&#8217;</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
+<div class="section" id="predict-genetics-genetic-processing-module">
+<h2>PREDICT.genetics.genetic_processing module<a class="headerlink" href="#predict-genetics-genetic-processing-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.genetics">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-PREDICT.genetics" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -145,8 +64,8 @@ mutation_type (list): List of the genetic mutations to load</dd>
   <ul>
 <li><a class="reference internal" href="#">PREDICT.genetics package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-PREDICT.genetics.genetic_processing">PREDICT.genetics.genetic_processing module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.genetics">Module contents</a></li>
+<li><a class="reference internal" href="#predict-genetics-genetic-processing-module">PREDICT.genetics.genetic_processing module</a></li>
+<li><a class="reference internal" href="#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>
