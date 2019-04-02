@@ -24,7 +24,7 @@ import os
 import PREDICT.genetics.genetic_processing as gp
 from PREDICT.classification import metrics
 import PREDICT.addexceptions as ae
-from sklearn import svm
+from sklearn.base import is_regressor
 
 
 def plot_SVM(prediction, label_data, label_type, show_plots=False,
@@ -128,7 +128,7 @@ def plot_SVM(prediction, label_data, label_type, show_plots=False,
 
     # Extract the estimators, features and labels
     SVMs = prediction[label_type]['classifiers']
-    regression = type(SVMs[0].best_estimator_) == svm.classes.SVR
+    regression = is_regressor(SVMs[0].best_estimator_)
     Y_test = prediction[label_type]['Y_test']
     X_test = prediction[label_type]['X_test']
     X_train = prediction[label_type]['X_train']
@@ -196,6 +196,8 @@ def plot_SVM(prediction, label_data, label_type, show_plots=False,
                                     scoring=ensemble_scoring)
 
         # Create prediction
+        y_prediction = SVMs[i].predict(X_test_temp)
+
         if regression:
             y_score = y_prediction
         else:
@@ -237,7 +239,7 @@ def plot_SVM(prediction, label_data, label_type, show_plots=False,
             # Compute confusion matrix and use for sensitivity/specificity
             if modus == 'singlelabel':
                 # Compute singlelabel performance metrics
-                if regression:
+                if not regression:
                     accuracy_temp, sensitivity_temp, specificity_temp,\
                         precision_temp, f1_score_temp, auc_temp =\
                         metrics.performance_singlelabel(y_truth,

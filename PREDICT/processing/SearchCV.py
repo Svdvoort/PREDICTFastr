@@ -21,7 +21,7 @@ from sklearn.base import MetaEstimatorMixin
 from sklearn.exceptions import NotFittedError
 from sklearn.utils.metaestimators import if_delegate_has_method
 from sklearn.utils.validation import indexable, check_is_fitted
-from sklearn.metrics.scorer import check_scoring
+from PREDICT.classification.metrics import check_scoring
 from sklearn.model_selection._split import check_cv
 from scipy.stats import rankdata
 from sklearn.externals import six
@@ -41,7 +41,8 @@ import random
 import string
 import fastr
 from joblib import Parallel, delayed
-from PREDICT.processing.fitandscore import fit_and_score, replacenan, delete_nonestimator_parameters
+from PREDICT.processing.fitandscore import fit_and_score
+from PREDICT.processing.fitandscore import delete_nonestimator_parameters
 import PREDICT.addexceptions as PREDICTexceptions
 import pandas as pd
 import json
@@ -52,7 +53,7 @@ from sklearn.metrics import f1_score, roc_auc_score, mean_squared_error
 from sklearn.metrics import accuracy_score
 from sklearn.multiclass import OneVsRestClassifier
 from PREDICT.classification.estimators import RankedSVM
-from sklearn import svm
+from PREDICT.classification import construct_classifier as cc
 
 
 def rms_score(truth, prediction):
@@ -120,7 +121,9 @@ class Ensemble(six.with_metaclass(ABCMeta, BaseEstimator,
             outcome = np.zeros((self.n_estimators, len(X), nlabels))
             for num, est in enumerate(self.estimators):
                 if hasattr(est, 'predict_proba'):
-                    est.best_estimator_.kernel = str(est.best_estimator_.kernel)
+                    # BUG: SVM kernel can be wrong type
+                    if hasattr(est.best_estimator_, 'kernel'):
+                        est.best_estimator_.kernel = str(est.best_estimator_.kernel)
                     outcome[num, :, :] = est.predict_proba(X)[:, 1]
                 else:
                     outcome[num, :, :] = est.predict(X)
@@ -138,7 +141,9 @@ class Ensemble(six.with_metaclass(ABCMeta, BaseEstimator,
             outcome = np.zeros((self.n_estimators, len(X)))
             for num, est in enumerate(self.estimators):
                 if hasattr(est, 'predict_proba'):
-                    est.best_estimator_.kernel = str(est.best_estimator_.kernel)
+                    # BUG: SVM kernel can be wrong type
+                    if hasattr(est.best_estimator_, 'kernel'):
+                        est.best_estimator_.kernel = str(est.best_estimator_.kernel)
                     outcome[num, :] = est.predict_proba(X)[:, 1]
                 else:
                     outcome[num, :] = est.predict(X)
@@ -146,7 +151,9 @@ class Ensemble(six.with_metaclass(ABCMeta, BaseEstimator,
             outcome = np.squeeze(np.mean(outcome, axis=0))
 
             # Binarize
-            if type(est.best_estimator_) != svm.classes.SVR:
+            isclassifier = is_classifier(est.best_estimator_)
+
+            if isclassifier:
                 outcome[outcome >= 0.5] = 1
                 outcome[outcome < 0.5] = 0
 
@@ -172,7 +179,9 @@ class Ensemble(six.with_metaclass(ABCMeta, BaseEstimator,
         outcome_class1 = np.zeros((self.n_estimators, len(X)))
         outcome_class2 = np.zeros((self.n_estimators, len(X)))
         for num, est in enumerate(self.estimators):
-            est.best_estimator_.kernel = str(est.best_estimator_.kernel)
+            # BUG: SVM kernel can be wrong type
+            if hasattr(est.best_estimator_, 'kernel'):
+                est.best_estimator_.kernel = str(est.best_estimator_.kernel)
             outcome_class1[num, :] = est.predict_proba(X)[:, 0]
             outcome_class2[num, :] = est.predict_proba(X)[:, 1]
 
@@ -286,7 +295,7 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
                                       MetaEstimatorMixin)):
     """Base class for hyper parameter search with cross-validation."""
     @abstractmethod
-    def __init__(self, estimator, param_distributions={}, n_iter=10, scoring=None,
+    def __init__(self, param_distributions={}, n_iter=10, scoring=None,
                  fit_params=None, n_jobs=1, iid=True,
                  refit=True, cv=None, verbose=0, pre_dispatch='2*n_jobs',
                  random_state=None, error_score='raise', return_train_score=True,
@@ -302,7 +311,6 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
 
         # Below are the defaults from sklearn
         self.scoring = scoring
-        self.estimator = estimator
         self.n_jobs = n_jobs
         self.fit_params = fit_params if fit_params is not None else {}
         self.iid = iid
@@ -343,7 +351,7 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
                              "and the estimator doesn't provide one %s"
                              % self.best_estimator_)
 
-        X = self.preprocess(X)
+        X, y = self.preprocess(X, y)
 
         return self.scorer_(self.best_estimator_, X, y)
 
@@ -375,7 +383,7 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
         if self.ensemble:
             return self.ensemble.predict(X)
         else:
-            X = self.preprocess(X)
+            X, _ = self.preprocess(X)
             return self.best_estimator_.predict(X)
 
     @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
@@ -395,11 +403,13 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
         self._check_is_fitted('predict_proba')
 
         # BUG: kernel sometimes saved as unicode
-        self.best_estimator_.kernel = str(self.best_estimator_.kernel)
+        # BUG: SVM kernel can be wrong type
+        if hasattr(self.best_estimator_, 'kernel'):
+            self.best_estimator_.kernel = str(self.best_estimator_.kernel)
         if self.ensemble:
             return self.ensemble.predict_proba(X)
         else:
-            X = self.preprocess(X)
+            X, _ = self.preprocess(X)
             return self.best_estimator_.predict_proba(X)
 
     @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
@@ -418,12 +428,14 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
         """
         self._check_is_fitted('predict_log_proba')
 
-        # BUG: kernel sometimes saved as unicode
-        self.best_estimator_.kernel = str(self.best_estimator_.kernel)
+        # BUG: SVM kernel can be wrong type
+        if hasattr(self.est.best_estimator_, 'kernel'):
+            self.best_estimator_.kernel = str(self.best_estimator_.kernel)
+
         if self.ensemble:
             return self.ensemble.predict_log_proba(X)
         else:
-            X = self.preprocess(X)
+            X, _ = self.preprocess(X)
             return self.best_estimator_.predict_log_proba(X)
 
     @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
@@ -445,7 +457,7 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
         if self.ensemble:
             return self.ensemble.decision_function(X)
         else:
-            X = self.preprocess(X)
+            X, _ = self.preprocess(X)
             return self.best_estimator_.decision_function(X)
 
     @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
@@ -489,33 +501,44 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
         if self.ensemble:
             return self.ensemble.transform(Xt)
         else:
-            Xt = self.preprocess(Xt)
+            Xt, _ = self.preprocess(Xt)
             return self.best_estimator_.transform(Xt)
 
-    def preprocess(self, X):
+    def preprocess(self, X, y=None):
         '''Apply the available preprocssing methods to the features'''
-        if self.best_groupsel is not None:
-            X = self.best_groupsel.transform(X)
         if self.best_imputer is not None:
             X = self.best_imputer.transform(X)
 
-        # Replace NaNs if they are still left at this stage, see also fit_and_score
-        X = replacenan(X, self.verbose)
+        # Only oversample in training phase, i.e. if we have the labels
+        if y is not None:
+            if self.best_SMOTE is not None:
+                X, y = self.best_SMOTE.fit_sample(X, y)
+
+            if self.best_RandomOverSampler is not None:
+                X, y = self.best_RandomOverSampler.fit_sample(X, y)
+
+        if self.best_groupsel is not None:
+            X = self.best_groupsel.transform(X)
 
         if self.best_varsel is not None:
             X = self.best_varsel.transform(X)
+
         if self.best_statisticalsel is not None:
             X = self.best_statisticalsel.transform(X)
+
         if self.best_scaler is not None:
             X = self.best_scaler.transform(X)
+
         if self.best_reliefsel is not None:
             X = self.best_reliefsel.transform(X)
+
         if self.best_pca is not None:
             X = self.best_pca.transform(X)
+
         if self.best_modelsel is not None:
             X = self.best_modelsel.transform(X)
 
-        return X
+        return X, y
 
     @property
     def best_params_(self):
@@ -553,7 +576,7 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
     def process_fit(self, n_splits, parameters_est, parameters_all,
                     test_sample_counts, test_scores,
                     train_scores, fit_time, score_time, cv_iter,
-                    base_estimator, X, y):
+                    X, y):
 
         """
         Process the outcomes of a SearchCV fit and find the best settings
@@ -691,12 +714,8 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
         if verbose is None:
             verbose = self.verbose
 
-        # Clone the base estimator
-        base_estimator = clone(self.estimator)
-        self.scorer_ = check_scoring(self.estimator, scoring=self.scoring)
-
         # Refit all preprocessing functions
-        out = fit_and_score(clone(base_estimator), X, y, self.scorer_,
+        out = fit_and_score(X, y, self.scoring,
                             train, test, parameters_all,
                             fit_params=self.fit_params,
                             return_train_score=self.return_train_score,
@@ -708,7 +727,7 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
 
         # Associate best options with new fits
         (save_data, GroupSel, VarSel, SelectModel, feature_labels, scalers,\
-            Imputers, PCAs, StatisticalSel, ReliefSel) = out
+            Imputers, PCAs, StatisticalSel, ReliefSel, sm, ros) = out
         self.best_groupsel = GroupSel
         self.best_scaler = scalers
         self.best_varsel = VarSel
@@ -718,14 +737,15 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
         self.best_featlab = feature_labels
         self.best_statisticalsel = StatisticalSel
         self.best_reliefsel = ReliefSel
+        self.best_SMOTE = sm
+        self.best_RandomOverSampler = ros
 
         # Fit the estimator using the preprocessed features
         X = [x[0] for x in X]
-        X = self.preprocess(X)
+        X, y = self.preprocess(X, y)
 
         parameters_est = delete_nonestimator_parameters(parameters_est)
-        best_estimator = clone(base_estimator).set_params(
-            **parameters_est)
+        best_estimator = cc.construct_classifier(parameters_all)
 
         # NOTE: This just has to go to the construct classifier function,
         # although it is more convenient here due to the hyperparameter search
@@ -810,9 +830,9 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
 
         # Create a new base object for the ensemble components
         if type(self) == RandomizedSearchCVfastr:
-            base_estimator = RandomizedSearchCVfastr(self.estimator)
+            base_estimator = RandomizedSearchCVfastr()
         elif type(self) == RandomizedSearchCVJoblib:
-            base_estimator = RandomizedSearchCVJoblib(self.estimator)
+            base_estimator = RandomizedSearchCVJoblib()
 
         if type(method) is int:
             # Simply take the top50 best hyperparameters
@@ -822,13 +842,6 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
 
         elif method == 'FitNumber':
             # Use optimum number of models
-            # BUG: kernel parameter is sometimes saved in unicode
-            for i in range(0, len(parameters_est)):
-                kernel = str(parameters_est[i][u'kernel'])
-                del parameters_est[i][u'kernel']
-                del parameters_all[i][u'kernel']
-                parameters_est[i]['kernel'] = kernel
-                parameters_all[i]['kernel'] = kernel
 
             # In order to speed up the process, we precompute all scores of the possible
             # classifiers in all cross validation estimatons
@@ -1189,9 +1202,11 @@ class BaseSearchCVfastr(BaseSearchCV):
     def _fit(self, X, y, groups, parameter_iterable):
         """Actual fitting,  performing the search over parameters."""
 
-        base_estimator = clone(self.estimator)
-        cv = check_cv(self.cv, y, classifier=is_classifier(base_estimator))
-        self.scorer_ = check_scoring(self.estimator, scoring=self.scoring)
+        regressors = ['SVR', 'RFR', 'SGDR', 'Lasso', 'ElasticNet']
+        isclassifier =\
+            not any(clf in regressors for clf in self.param_distributions['classifiers'])
+
+        cv = check_cv(self.cv, y, classifier=isclassifier)
 
         X, y, groups = indexable(X, y, groups)
         n_splits = cv.get_n_splits(X, y, groups)
@@ -1209,10 +1224,28 @@ class BaseSearchCVfastr(BaseSearchCV):
 
         # Create the parameter files
         parameters_temp = dict()
-        for num, parameters in enumerate(parameter_iterable):
+        try:
+            for num, parameters in enumerate(parameter_iterable):
 
-            parameters["Number"] = str(num)
-            parameters_temp[str(num)] = parameters
+                parameters["Number"] = str(num)
+                parameters_temp[str(num)] = parameters
+        except ValueError:
+            # One of the parameters gives an error. Find out which one.
+            param_grid = dict()
+            for k, v in parameter_iterable.param_distributions.iteritems():
+                param_grid[k] = v
+                sampled_params = ParameterSampler(param_grid, 5)
+                try:
+                    for num, parameters in enumerate(sampled_params):
+                        a = 1
+                except ValueError:
+                    break
+
+            message = 'One or more of the values in your parameter sampler ' +\
+                      'is either not iterable, or the distribution cannot ' +\
+                      'generate valid samples. Please check your  ' +\
+                      (' parameters. At least {} gives an error.').format(k)
+            raise PREDICTexceptions.PREDICTValueError(message)
 
         # Split the parameters files in equal parts
         keys = parameters_temp.keys()
@@ -1262,13 +1295,13 @@ class BaseSearchCVfastr(BaseSearchCV):
             num += 1
 
         # Create the files containing the estimator and settings
-        estimator_labels = ['base_estimator', 'X', 'y', 'scorer',
+        estimator_labels = ['X', 'y', 'scoring',
                             'verbose', 'fit_params', 'return_train_score',
                             'return_n_test_samples',
                             'return_times', 'return_parameters',
                             'error_score']
 
-        estimator_data = pd.Series([clone(base_estimator), X, y, self.scorer_,
+        estimator_data = pd.Series([X, y, self.scoring,
                                     self.verbose,
                                     self.fit_params, self.return_train_score,
                                     True, True, True,
@@ -1326,7 +1359,7 @@ class BaseSearchCVfastr(BaseSearchCV):
                  fit_time, score_time, parameters_est, parameters_all) =\
                   zip(*save_data)
         except ValueError as e:
-            print e
+            print(e)
             message = ('Fitting classifiers has failed. The temporary ' +
                        'results where not deleted and can be found in {}. ' +
                        'Probably your fitting and scoring failed: check out ' +
@@ -1347,7 +1380,6 @@ class BaseSearchCVfastr(BaseSearchCV):
                          fit_time=fit_time,
                          score_time=score_time,
                          cv_iter=cv_iter,
-                         base_estimator=base_estimator,
                          X=X, y=y)
 
 
@@ -1560,13 +1592,13 @@ class RandomizedSearchCVfastr(BaseSearchCVfastr):
 
     """
 
-    def __init__(self, estimator, param_distributions={}, n_iter=10, scoring=None,
+    def __init__(self, param_distributions={}, n_iter=10, scoring=None,
                  fit_params=None, n_jobs=1, iid=True, refit=True, cv=None,
                  verbose=0, pre_dispatch='2*n_jobs', random_state=None,
                  error_score='raise', return_train_score=True,
                  n_jobspercore=100, fastr_plugin=None):
         super(RandomizedSearchCVfastr, self).__init__(
-             estimator=estimator, param_distributions=param_distributions, scoring=scoring, fit_params=fit_params,
+             param_distributions=param_distributions, scoring=scoring, fit_params=fit_params,
              n_iter=n_iter, random_state=random_state, n_jobs=n_jobs, iid=iid, refit=refit, cv=cv, verbose=verbose,
              pre_dispatch=pre_dispatch, error_score=error_score,
              return_train_score=return_train_score,
@@ -1602,9 +1634,11 @@ class BaseSearchCVJoblib(BaseSearchCV):
     def _fit(self, X, y, groups, parameter_iterable):
         """Actual fitting,  performing the search over parameters."""
 
-        base_estimator = clone(self.estimator)
-        cv = check_cv(self.cv, y, classifier=is_classifier(base_estimator))
-        self.scorer_ = check_scoring(self.estimator, scoring=self.scoring)
+        regressors = ['SVR', 'RFR', 'SGDR', 'Lasso', 'ElasticNet']
+        isclassifier =\
+            not any(clf in regressors for clf in self.param_distributions['classifiers'])
+
+        cv = check_cv(self.cv, y, classifier=isclassifier)
 
         X, y, groups = indexable(X, y, groups)
         n_splits = cv.get_n_splits(X, y, groups)
@@ -1620,7 +1654,7 @@ class BaseSearchCVJoblib(BaseSearchCV):
         out = Parallel(
             n_jobs=self.n_jobs, verbose=self.verbose,
             pre_dispatch=pre_dispatch
-        )(delayed(fit_and_score)(clone(base_estimator), X, y, self.scorer_,
+        )(delayed(fit_and_score)(X, y, self.scoring,
                                  train, test, parameters,
                                  fit_params=self.fit_params,
                                  return_train_score=self.return_train_score,
@@ -1652,7 +1686,6 @@ class BaseSearchCVJoblib(BaseSearchCV):
                          fit_time=fit_time,
                          score_time=score_time,
                          cv_iter=cv_iter,
-                         base_estimator=base_estimator,
                          X=X, y=y)
 
         return self

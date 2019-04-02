@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright 2011-2017 Biomedical Imaging Group Rotterdam, Departments of
+# Copyright 2017-2019 Biomedical Imaging Group Rotterdam, Departments of
 # Medical Informatics and Radiology, Erasmus MC, Rotterdam, The Netherlands
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,20 +19,14 @@ import numpy as np
 import pandas as pd
 import logging
 import os
-from imblearn.over_sampling import SMOTE
 from sklearn.model_selection import train_test_split
-from sklearn.utils import check_random_state
-import sklearn
 import xlrd
-import natsort
-import PREDICT.classification.parameter_optimization as po
+import parameter_optimization as po
 import PREDICT.addexceptions as ae
-from imblearn.over_sampling import RandomOverSampler
-import random
 
 
 def crossval(config, label_data, image_features,
-             classifier, param_grid={}, use_fastr=False,
+             param_grid=None, use_fastr=False,
              fastr_plugin=None, tempsave=False,
              fixedsplits=None, ensemble={'Use': False}, outputfolder=None,
              modus='singlelabel'):
@@ -58,9 +52,6 @@ def crossval(config, label_data, image_features,
     image_features: numpy array, mandatory
             Consists of a tuple of two lists for each patient:
             (feature_values, feature_labels)
-
-    classifier: sklearn classifier
-            The untrained classifier used for training.
 
     param_grid: dictionary, optional
             Contains the parameters and their values wich are used in the
@@ -112,6 +103,11 @@ def crossval(config, label_data, image_features,
     if tempsave:
         import fastr
 
+
+    # Define all possible regressors
+    regressors = ['SVR', 'RFR', 'SGDR', 'Lasso', 'ElasticNet']
+
+    # Process input data
     patient_IDs = label_data['patient_IDs']
     label_value = label_data['mutation_label']
     label_name = label_data['mutation_name']
@@ -130,10 +126,7 @@ def crossval(config, label_data, image_features,
     test_size = config['CrossValidation']['test_size']
 
     classifier_labelss = dict()
-
-    print('features')
     logging.debug('Starting classifier')
-    print(len(image_features))
 
     # We only need one label instance, assuming they are all the sample
     feature_labels = image_features[0][1]
@@ -167,11 +160,10 @@ def crossval(config, label_data, image_features,
             print(('Cross validation iteration {} / {} .').format(str(i + 1), str(N_iterations)))
             logging.debug(('Cross validation iteration {} / {} .').format(str(i + 1), str(N_iterations)))
             random_seed = np.random.randint(5000)
-            random_state = check_random_state(random_seed)
 
             # Split into test and training set, where the percentage of each
             # label is maintained
-            if type(classifier) == sklearn.svm.classes.SVR:
+            if any(clf in regressors for clf in param_grid['classifiers']):
                 # We cannot do a stratified shuffle split with regression
                 stratify = None
             else:
@@ -203,7 +195,7 @@ def crossval(config, label_data, image_features,
                 # Use Random Split. Split per patient, not per sample
                 unique_patient_IDs, unique_indices =\
                     np.unique(np.asarray(patient_IDs), return_index=True)
-                if type(classifier) == sklearn.svm.classes.SVR:
+                if any(clf in regressors for clf in param_grid['classifiers']):
                     unique_stratify = None
                 else:
                     unique_stratify = [stratify[i] for i in unique_indices]
@@ -273,7 +265,6 @@ def crossval(config, label_data, image_features,
                             ind_train.append(num)
                             success = True
                     if not success:
-                        print natsort.natsorted(patient_IDs)
                         raise ae.PREDICTIOError("Patient " + str(j).zfill(3) + " is not included!")
 
                 ind_test = list()
@@ -284,7 +275,6 @@ def crossval(config, label_data, image_features,
                             ind_test.append(num)
                             success = True
                     if not success:
-                        print natsort.natsorted(patient_IDs)
                         raise ae.PREDICTIOError("Patient " + str(j).zfill(3) + " is not included!")
 
                 X_train = np.asarray(image_features)[ind_train].tolist()
@@ -294,24 +284,19 @@ def crossval(config, label_data, image_features,
                 Y_test = np.asarray(i_class_temp)[ind_test].tolist()
                 patient_ID_test = patient_IDs[ind_test]
 
-            X_train, Y_train, trained_classifier =\
-                singleiteration(X_train=X_train,
-                                Y_train=Y_train,
-                                PID_train=patient_ID_train,
-                                feature_labels=feature_labels,
-                                classifier=classifier,
-                                param_grid=param_grid,
-                                config_hyperopt=config['HyperOptimization'],
-                                use_SMOTE=config['SampleProcessing']['SMOTE'],
-                                SMOTE_ratio=config['SampleProcessing']['SMOTE_ratio'],
-                                SMOTE_neighbors=config['SampleProcessing']['SMOTE_neighbors'],
-                                n_cores=config['General']['Joblib_ncores'],
-                                N_jobs=config['General']['Joblib_ncores'],
-                                random_state=random_state,
-                                use_fastr=use_fastr,
-                                fastr_plugin=fastr_plugin,
-                                use_ensemble=ensemble['Use'],
-                                use_oversampling=config['SampleProcessing']['Oversampling'])
+            # Find best hyperparameters and construct classifier
+            config['HyperOptimization']['use_fastr'] = use_fastr
+            config['HyperOptimization']['fastr_plugin'] = fastr_plugin
+            n_cores = config['General']['Joblib_ncores']
+            trained_classifier = po.random_search_parameters(features=X_train,
+                                                             labels=Y_train,
+                                                             param_grid=param_grid,
+                                                             n_cores=n_cores,
+                                                             **config['HyperOptimization'])
+
+            # Create an ensemble if required
+            if ensemble['Use']:
+                trained_classifier.create_ensemble(X_train, Y_train)
 
             # We only want to save the feature values and one label array
             X_train = [x[0] for x in X_train]
@@ -376,7 +361,7 @@ def crossval(config, label_data, image_features,
 
 
 def nocrossval(config, label_data_train, label_data_test, image_features_train,
-               image_features_test, classifier, param_grid, use_fastr=False,
+               image_features_test, param_grid=None, use_fastr=False,
                fastr_plugin=None, ensemble={'Use': False},
                modus='singlelabel'):
     """
@@ -446,7 +431,6 @@ def nocrossval(config, label_data_train, label_data_test, image_features_train,
         save_data = list()
 
         random_seed = np.random.randint(5000)
-        random_state = check_random_state(random_seed)
 
         # Split into test and training set, where the percentage of each
         # label is maintained
@@ -471,24 +455,19 @@ def nocrossval(config, label_data_train, label_data_test, image_features_train,
                     Y_test_temp[n_patient, n_label] = Y_test[n_label, n_patient]
             Y_test = Y_test_temp
 
-        X_train, Y_train, trained_classifier =\
-            singleiteration(X_train=X_train,
-                            Y_train=Y_train,
-                            PID_train=patient_IDs_train,
-                            feature_labels=feature_labels,
-                            classifier=classifier,
-                            param_grid=param_grid,
-                            config_hyperopt=config['HyperOptimization'],
-                            use_SMOTE=config['SampleProcessing']['SMOTE'],
-                            SMOTE_ratio=config['SampleProcessing']['SMOTE_ratio'],
-                            SMOTE_neighbors=config['SampleProcessing']['SMOTE_neighbors'],
-                            n_cores=config['General']['Joblib_ncores'],
-                            N_jobs=config['General']['Joblib_ncores'],
-                            random_state=random_state,
-                            use_fastr=use_fastr,
-                            fastr_plugin=fastr_plugin,
-                            use_ensemble=ensemble['Use'],
-                            use_oversampling=config['SampleProcessing']['Oversampling'])
+        # Find best hyperparameters and construct classifier
+        config['HyperOptimization']['use_fastr'] = use_fastr
+        config['HyperOptimization']['fastr_plugin'] = fastr_plugin
+        n_cores = config['General']['Joblib_ncores']
+        trained_classifier = po.random_search_parameters(features=X_train,
+                                                         labels=Y_train,
+                                                         param_grid=param_grid,
+                                                         n_cores=n_cores,
+                                                         **config['HyperOptimization'])
+
+        # Create an ensemble if required
+        if ensemble['Use']:
+            trained_classifier.create_ensemble(X_train, Y_train)
 
         # Extract the feature values
         X_train = np.asarray([x[0] for x in X_train])
@@ -520,106 +499,3 @@ def nocrossval(config, label_data_train, label_data_test, image_features_train,
     panda_data = pd.DataFrame(classifier_labelss)
 
     return panda_data
-
-
-def singleiteration(X_train, Y_train, PID_train, feature_labels,
-                    classifier, param_grid, config_hyperopt, use_SMOTE=False,
-                    SMOTE_ratio=1, SMOTE_neighbors=10, n_cores=4,
-                    N_jobs=4, random_state=None, use_fastr=False,
-                    fastr_plugin='LinearExecution',
-                    use_ensemble=False, use_oversampling=True):
-    '''
-    Perform a single iteration of a cross validation.
-    '''
-
-    if random_state is None:
-        random_seed = np.random.randint(5000)
-        random_state = check_random_state(random_seed)
-
-    if use_SMOTE:
-        pos_initial = int(np.sum(Y_train))
-        neg_initial = int(len(Y_train) - pos_initial)
-        len_in = len(Y_train)
-        for num, x in enumerate(X_train):
-            if num == 0:
-                X_train_temp = np.zeros((len(x[0]), 1))
-                X_train_temp[:, 0] = np.asarray(x[0])
-            else:
-                xt = np.zeros((len(x[0]), 1))
-                xt[:, 0] = np.asarray(x[0])
-                X_train_temp = np.column_stack((X_train_temp, xt))
-
-        X_train_temp = np.transpose(X_train_temp)
-        sm = SMOTE(random_state=random_state,
-                   ratio=SMOTE_ratio,
-                   m_neighbors=SMOTE_neighbors,
-                   kind='borderline1',
-                   n_jobs=N_jobs)
-
-        # First, replace the NaNs:
-        for pnum, (pid, X) in enumerate(zip(PID_train, X_train_temp)):
-            for fnum, (f, l) in enumerate(zip(X, feature_labels)):
-                if np.isnan(f):
-                    print("[PREDICT WARNING] NaN found, patient {}, label {}. Replacing with zero.").format(pid, l)
-                    X_train_temp[pnum, fnum] = 0
-
-        X_train, Y_train = sm.fit_sample(X_train_temp, Y_train)
-        X_train = [(x.tolist(), feature_labels) for x in X_train]
-        pos = int(np.sum(Y_train))
-        neg = int(len(Y_train) - pos)
-        message = ("Sampling with SMOTE from {} ({} pos, {} neg) to {} ({} pos, {} neg) patients.").format(str(len_in),
-                                                                                                           str(pos_initial),
-                                                                                                           str(neg_initial),
-                                                                                                           str(len(Y_train)),
-                                                                                                           str(pos),
-                                                                                                           str(neg))
-        print(message)
-
-    if use_oversampling:
-        print('Oversample underrepresented classes in training.')
-        # Oversample underrepresented classes in training
-        # We always use a factor 1, e.g. all classes end up with an
-        # equal number of samples
-        if len(Y_train.shape) == 1:
-            # Single Class, use imblearn oversampling
-
-            # Create another random state
-            random_seed2 = np.random.randint(5000)
-            random_state2 = check_random_state(random_seed2)
-
-            ros = RandomOverSampler(random_state=random_state2)
-            X_train, Y_train = ros.fit_sample(X_train, Y_train)
-
-        else:
-            # Multi class, use own method as imblearn cannot do this
-            sumclass = [np.sum(Y_train[:, i]) for i in range(Y_train.shape[1])]
-            maxclass = np.argmax(sumclass)
-            for i in range(Y_train.shape[1]):
-                if i != maxclass:
-                    # Oversample
-                    nz = np.nonzero(Y_train[:, i])[0]
-                    noversample = sumclass[maxclass] - sumclass[i]
-                    while noversample > 0:
-                        n_sample = random.randint(0, len(nz) - 1)
-                        n_sample = nz[n_sample]
-                        i_sample = Y_train[n_sample, :]
-                        x_sample = X_train[n_sample]
-                        Y_train = np.vstack((Y_train, i_sample))
-                        X_train.append(x_sample)
-                        noversample -= 1
-
-    # Find best hyperparameters and construct classifier
-    config_hyperopt['use_fastr'] = use_fastr
-    config_hyperopt['fastr_plugin'] = fastr_plugin
-    trained_classifier = po.random_search_parameters(features=X_train,
-                                                     labels=Y_train,
-                                                     classifier=classifier,
-                                                     param_grid=param_grid,
-                                                     n_cores=n_cores,
-                                                     **config_hyperopt)
-
-    # Create an ensemble if required
-    if use_ensemble:
-        trained_classifier.create_ensemble(X_train, Y_train)
-
-    return X_train, Y_train, trained_classifier

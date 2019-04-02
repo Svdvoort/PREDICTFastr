@@ -20,12 +20,10 @@ import matplotlib.pyplot as plt
 from matplotlib2tikz import save as tikz_save
 import pandas as pd
 import argparse
-from compute_CI import compute_confidence as CI
+from PREDICT.plotting.compute_CI import compute_confidence as CI
 import numpy as np
 from sklearn.metrics import roc_auc_score, auc
 import csv
-
-
 from PREDICT.plotting.plot_SVM import plot_SVM
 
 
@@ -203,8 +201,8 @@ def plot_ROC_CIc(y_truth, y_score, N_1, N_2, plot='default', alpha=0.95,
             xmean = 1
 
         if DEBUG:
-            print xmin, xmax, ymean
-            print ymin, ymax, xmean
+            print(xmin, xmax, ymean)
+            print(ymin, ymax, xmean)
 
         subplot.plot([xmin, xmax],
                      [ymean, ymean],

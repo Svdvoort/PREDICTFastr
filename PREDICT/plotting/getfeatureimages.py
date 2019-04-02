@@ -60,7 +60,7 @@ def getfeatureimages(image, segmentation, gabor_settings=None, image_type=None,
     szs = contours[0].GetSize()
     if szi != szs:
         message = ('Shapes of image({}) and mask ({}) do not match!').format(str(szi), str(szs))
-        print message
+        print(message)
         # FIXME: Now excluding last slice
         c = contours[0]
         c = sitk.GetArrayFromImage(c)

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright 2011-2017 Biomedical Imaging Group Rotterdam, Departments of
+# Copyright 2017-2019 Biomedical Imaging Group Rotterdam, Departments of
 # Medical Informatics and Radiology, Erasmus MC, Rotterdam, The Netherlands
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,14 +20,9 @@ from sklearn.utils import check_random_state
 from sklearn.model_selection import StratifiedShuffleSplit, ShuffleSplit
 from PREDICT.processing.SearchCV import RandomizedSearchCVfastr, RandomizedSearchCVJoblib
 
-from sklearn.svm import SVR
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.linear_model import ElasticNet, SGDRegressor
-from sklearn.linear_model import Lasso
-
 
 def random_search_parameters(features, labels, N_iter, test_size,
-                             classifier, param_grid, scoring_method,
+                             param_grid, scoring_method,
                              n_jobspercore=200, use_fastr=False,
                              n_cores=1, fastr_plugin=None):
     """
@@ -60,8 +55,8 @@ def random_search_parameters(features, labels, N_iter, test_size,
     random_seed = np.random.randint(1, 5000)
     random_state = check_random_state(random_seed)
 
-    if type(classifier) in [SVR, RandomForestRegressor, ElasticNet,
-                            SGDRegressor, Lasso]:
+    regressors = ['SVR', 'RFR', 'SGDR', 'Lasso', 'ElasticNet']
+    if any(clf in regressors for clf in param_grid['classifiers']):
         # We cannot do a stratified shuffle split with regression
         cv = ShuffleSplit(n_splits=5, test_size=test_size,
                           random_state=random_state)
@@ -70,8 +65,7 @@ def random_search_parameters(features, labels, N_iter, test_size,
                                     random_state=random_state)
 
     if use_fastr:
-        random_search = RandomizedSearchCVfastr(classifier,
-                                                param_distributions=param_grid,
+        random_search = RandomizedSearchCVfastr(param_distributions=param_grid,
                                                 n_iter=N_iter,
                                                 scoring=scoring_method,
                                                 n_jobs=n_cores,
@@ -79,8 +73,7 @@ def random_search_parameters(features, labels, N_iter, test_size,
                                                 verbose=1, cv=cv,
                                                 fastr_plugin=fastr_plugin)
     else:
-        random_search = RandomizedSearchCVJoblib(classifier,
-                                                 param_distributions=param_grid,
+        random_search = RandomizedSearchCVJoblib(param_distributions=param_grid,
                                                  n_iter=N_iter,
                                                  scoring=scoring_method,
                                                  n_jobs=n_cores,

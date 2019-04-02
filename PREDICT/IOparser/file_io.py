@@ -51,7 +51,10 @@ def load_data(featurefiles, patientinfo=None, label_names=None, modnames=[]):
                 the patientinfo file.
 
     '''
-    image_features = list()
+
+    # Read out all feature values and labels
+    image_features_temp = list()
+    feature_labels_all = list()
     for i_patient in range(0, len(featurefiles[0])):
         feature_values_temp = list()
         feature_labels_temp = list()
@@ -65,7 +68,28 @@ def load_data(featurefiles, patientinfo=None, label_names=None, modnames=[]):
                 # Use the provides modality names
                 feature_labels_temp += [f + '_' + str(modnames[i_mod]) for f in feat_temp.feature_labels]
 
-        image_features.append((feature_values_temp, feature_labels_temp))
+        image_features_temp.append((feature_values_temp, feature_labels_temp))
+
+        # Also make a list of all unique label names
+        feature_labels_all = feature_labels_all + list(set(feature_labels_temp) - set(feature_labels_all))
+
+    # If some objects miss certain features, we will identify these with NaN values
+    feature_labels_all.sort()
+    image_features = list()
+    for patient in image_features_temp:
+        feat_temp = patient[0]
+        label_temp = patient[1]
+
+        feat = list()
+        for f in feature_labels_all:
+            if f in label_temp:
+                index = label_temp.index(f)
+                fv = feat_temp[index]
+            else:
+                fv = np.NaN
+            feat.append(fv)
+
+        image_features.append((feat, feature_labels_all))
 
     # Get the mutation labels and patient IDs
     if patientinfo is not None:

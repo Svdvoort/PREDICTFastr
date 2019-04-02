@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright 2011-2017 Biomedical Imaging Group Rotterdam, Departments of
+# Copyright 2016-2019 Biomedical Imaging Group Rotterdam, Departments of
 # Medical Informatics and Radiology, Erasmus MC, Rotterdam, The Netherlands
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -58,8 +58,9 @@ def main():
     ret = Parallel(
         n_jobs=n_cores, verbose=data['verbose'],
         pre_dispatch=2*n_cores
-    )(delayed(fit_and_score)(estimator=data['base_estimator'], X=data['X'], y=data['y'],
-                             scorer=data['scorer'], train=traintest['train'],
+    )(delayed(fit_and_score)(X=data['X'], y=data['y'],
+                             scoring=data['scoring'],
+                             train=traintest['train'],
                              test=traintest['test'], verbose=data['verbose'],
                              para=parameters, fit_params=data['fit_params'],
                              return_train_score=data['return_train_score'],

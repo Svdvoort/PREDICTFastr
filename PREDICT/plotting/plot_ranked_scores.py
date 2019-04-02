@@ -150,7 +150,7 @@ def plot_ranked_images(pinfo, label_type, images, segmentations, ranked_truths,
                        output_itk=None, zoomfactor=4):
     # Match the images to the label data
     print('Matching image and segmentation data to labels.')
-    print images
+    print(images)
     label_data, images =\
         gp.findmutationdata(pinfo,
                             [[label_type]],
@@ -223,7 +223,7 @@ def plot_ranked_images(pinfo, label_type, images, segmentations, ranked_truths,
 
         if output_itk is not None:
             # Combine slices in 3D image
-            print 'WIP'
+            print('WIP')
 
         del im, seg, imslice, maskslice
 

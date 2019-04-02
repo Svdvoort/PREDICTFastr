@@ -25,14 +25,20 @@ import numpy as np
 from sklearn.linear_model import Lasso
 from sklearn.feature_selection import SelectFromModel
 import scipy
-from sklearn.preprocessing import Imputer
+from PREDICT.processing.Imputer import Imputer
 from sklearn.decomposition import PCA
 from PREDICT.featureselection.Relief import SelectMulticlassRelief
 from sklearn.multiclass import OneVsRestClassifier
 from PREDICT.classification.estimators import RankedSVM
+from PREDICT.classification import construct_classifier as cc
+from PREDICT.classification.metrics import check_scoring
+from imblearn.over_sampling import SMOTE, RandomOverSampler
+from sklearn.utils import check_random_state
+import random
+from sklearn.metrics import make_scorer, average_precision_score
 
 
-def fit_and_score(estimator, X, y, scorer,
+def fit_and_score(X, y, scoring,
                   train, test, para,
                   fit_params=None,
                   return_train_score=True,
@@ -154,10 +160,141 @@ def fit_and_score(estimator, X, y, scorer,
     '''
     # We copy the parameter object so we can alter it and keep the original
     para_estimator = para.copy()
+    estimator = cc.construct_classifier(para_estimator)
+    if scoring != 'average_precision_weighted':
+        scorer = check_scoring(estimator, scoring=scoring)
+    else:
+        scorer = make_scorer(average_precision_score, average='weighted')
+
+    para_estimator = delete_cc_para(para_estimator)
 
     # X is a tuple: split in two arrays
     feature_values = np.asarray([x[0] for x in X])
     feature_labels = np.asarray([x[1] for x in X])
+
+    # ------------------------------------------------------------------------
+    # Feature imputation
+    if 'Imputation' in para_estimator.keys():
+        if para_estimator['Imputation'] == 'True':
+            imp_type = para_estimator['ImputationMethod']
+            if verbose:
+                message = ('Imputing NaN with {}.').format(imp_type)
+                print(message)
+            imp_nn = para_estimator['ImputationNeighbours']
+
+            imputer = Imputer(missing_values=np.nan, strategy=imp_type,
+                              n_neighbors=imp_nn)
+            imputer.fit(feature_values)
+            feature_values = imputer.transform(feature_values)
+        else:
+            imputer = None
+    else:
+        imputer = None
+
+    if 'Imputation' in para_estimator.keys():
+        del para_estimator['Imputation']
+        del para_estimator['ImputationMethod']
+        del para_estimator['ImputationNeighbours']
+
+    # Delete the object if we do not need to return it
+    if not return_all:
+        del imputer
+
+    # ------------------------------------------------------------------------
+    # Use SMOTE oversampling
+    if 'SampleProcessing_SMOTE' in para_estimator.keys():
+        if para_estimator['SampleProcessing_SMOTE'] == 'True':
+
+            # Determine our starting balance
+            pos_initial = int(np.sum(y))
+            neg_initial = int(len(y) - pos_initial)
+            len_in = len(y)
+
+            # Fit SMOTE object and transform dataset
+            # NOTE: need to save random state for this one as well!
+            sm = SMOTE(random_state=None,
+                       ratio=para_estimator['SampleProcessing_SMOTE_ratio'],
+                       m_neighbors=para_estimator['SampleProcessing_SMOTE_neighbors'],
+                       kind='borderline1',
+                       n_jobs=para_estimator['SampleProcessing_SMOTE_n_cores'])
+
+            feature_values, y = sm.fit_sample(feature_values, y)
+
+            # Also make sure our feature label object has the same size
+            # NOTE: Not sure if this is the best implementation
+            feature_labels = np.asarray([feature_labels[0] for x in X])
+
+            # Note the user what SMOTE did
+            pos = int(np.sum(y))
+            neg = int(len(y) - pos)
+            if verbose:
+                message = ("Sampling with SMOTE from {} ({} pos, {} neg) to {} ({} pos, {} neg) patients.").format(str(len_in),
+                                                                                                                   str(pos_initial),
+                                                                                                                   str(neg_initial),
+                                                                                                                   str(len(y)),
+                                                                                                                   str(pos),
+                                                                                                                   str(neg))
+                print(message)
+        else:
+            sm = None
+
+    if 'SampleProcessing_SMOTE' in para_estimator.keys():
+        del para_estimator['SampleProcessing_SMOTE']
+        del para_estimator['SampleProcessing_SMOTE_ratio']
+        del para_estimator['SampleProcessing_SMOTE_neighbors']
+        del para_estimator['SampleProcessing_SMOTE_n_cores']
+
+    # Delete the object if we do not need to return it
+    if not return_all:
+        del sm
+
+    # ------------------------------------------------------------------------
+    # Full Oversampling: To Do
+    if 'SampleProcessing_Oversampling' in para_estimator.keys():
+        if para_estimator['SampleProcessing_Oversampling'] == 'True':
+            if verbose:
+                print('Oversample underrepresented classes in training.')
+
+            # Oversample underrepresented classes in training
+            # We always use a factor 1, e.g. all classes end up with an
+            # equal number of samples
+            if len(y.shape) == 1:
+                # Single Class, use imblearn oversampling
+
+                # Create another random state
+                # NOTE: Also need to save this random seed. Can be same as SMOTE
+                random_seed2 = np.random.randint(5000)
+                random_state2 = check_random_state(random_seed2)
+
+                ros = RandomOverSampler(random_state=random_state2)
+                feature_values, y = ros.fit_sample(feature_values, y)
+
+            else:
+                # Multi class, use own method as imblearn cannot do this
+                sumclass = [np.sum(y[:, i]) for i in range(y.shape[1])]
+                maxclass = np.argmax(sumclass)
+                for i in range(y.shape[1]):
+                    if i != maxclass:
+                        # Oversample
+                        nz = np.nonzero(y[:, i])[0]
+                        noversample = sumclass[maxclass] - sumclass[i]
+                        while noversample > 0:
+                            n_sample = random.randint(0, len(nz) - 1)
+                            n_sample = nz[n_sample]
+                            i_sample = y[n_sample, :]
+                            x_sample = feature_values[n_sample]
+                            y = np.vstack((y, i_sample))
+                            feature_values.append(x_sample)
+                            noversample -= 1
+        else:
+            ros = None
+
+    if 'SampleProcessing_Oversampling' in para_estimator.keys():
+        del para_estimator['SampleProcessing_Oversampling']
+
+    # Delete the object if we do not need to return it
+    if not return_all:
+        del ros
 
     # ------------------------------------------------------------------------
     # Groupwise feature selection
@@ -215,7 +352,7 @@ def fit_and_score(estimator, X, y, scorer,
         # TODO: Make a specific PREDICT exception for this warning.
         if verbose:
             print('[WARNING]: No features are selected! Probably all feature groups were set to False. Parameters:')
-            print para
+            print(para)
 
         # Return a zero performance dummy
         VarSel = None
@@ -223,7 +360,6 @@ def fit_and_score(estimator, X, y, scorer,
         SelectModel = None
         pca = None
         StatisticalSel = None
-        imputer = None
         ReliefSel = None
 
         # Delete the non-used fields
@@ -231,34 +367,9 @@ def fit_and_score(estimator, X, y, scorer,
 
         ret = [0, 0, 0, 0, 0, para_estimator, para]
         if return_all:
-            return ret, GroupSel, VarSel, SelectModel, feature_labels[0], scaler, imputer, pca, StatisticalSel, ReliefSel
+            return ret, GroupSel, VarSel, SelectModel, feature_labels[0], scaler, imputer, pca, StatisticalSel, ReliefSel, sm, ros
         else:
             return ret
-
-    # ------------------------------------------------------------------------
-    # Feature imputation
-    if 'Imputation' in para_estimator.keys():
-        if para_estimator['Imputation'] == 'True':
-            imp_type = para_estimator['ImputationMethod']
-            imp_nn = para_estimator['ImputationNeighbours']
-
-            imputer = Imputer(missing_values='NaN', strategy=imp_type,
-                              n_neighbors=imp_nn, axis=0)
-            imputer.fit(feature_values)
-            feature_values = imputer.transform(feature_values)
-        else:
-            imputer = None
-    else:
-        imputer = None
-
-    if 'Imputation' in para_estimator.keys():
-        del para_estimator['Imputation']
-        del para_estimator['ImputationMethod']
-        del para_estimator['ImputationNeighbours']
-
-    # Delete the object if we do not need to return it
-    if not return_all:
-        del imputer
 
     # ------------------------------------------------------------------------
     # FIXME: When only using LBP feature, X is 3 dimensional with 3rd dimension length 1
@@ -299,7 +410,7 @@ def fit_and_score(estimator, X, y, scorer,
         # TODO: Make a specific PREDICT exception for this warning.
         if verbose:
             print('[WARNING]: No features are selected! Probably you selected a feature group that is not in your feature file. Parameters:')
-            print para
+            print(para)
         para_estimator = delete_nonestimator_parameters(para_estimator)
 
         # Return a zero performance dummy
@@ -309,7 +420,7 @@ def fit_and_score(estimator, X, y, scorer,
         StatisticalSel = None
         ret = [0, 0, 0, 0, 0, para_estimator, para]
         if return_all:
-            return ret, GroupSel, VarSel, SelectModel, feature_labels[0], scaler, imputer, pca, StatisticalSel, ReliefSel
+            return ret, GroupSel, VarSel, SelectModel, feature_labels[0], scaler, imputer, pca, StatisticalSel, ReliefSel, sm, ros
         else:
             return ret
 
@@ -349,7 +460,8 @@ def fit_and_score(estimator, X, y, scorer,
         # TODO: Make a specific PREDICT exception for this warning.
         if verbose:
             print('[WARNING]: No features are selected! Probably you selected a feature group that is not in your feature file. Parameters:')
-            print para
+            print(para)
+
         para_estimator = delete_nonestimator_parameters(para_estimator)
 
         # Return a zero performance dummy
@@ -358,7 +470,7 @@ def fit_and_score(estimator, X, y, scorer,
         pca = None
         ret = [0, 0, 0, 0, 0, para_estimator, para]
         if return_all:
-            return ret, GroupSel, VarSel, SelectModel, feature_labels[0], scaler, imputer, pca, StatisticalSel, ReliefSel
+            return ret, GroupSel, VarSel, SelectModel, feature_labels[0], scaler, imputer, pca, StatisticalSel, ReliefSel, sm, ros
         else:
             return ret
 
@@ -549,7 +661,7 @@ def fit_and_score(estimator, X, y, scorer,
     ret.append(para)
 
     if return_all:
-        return ret, GroupSel, VarSel, SelectModel, feature_labels[0], scaler, imputer, pca, StatisticalSel, ReliefSel
+        return ret, GroupSel, VarSel, SelectModel, feature_labels[0], scaler, imputer, pca, StatisticalSel, ReliefSel, sm, ros
     else:
         return ret
 
@@ -585,6 +697,15 @@ def delete_nonestimator_parameters(parameters):
         del parameters['StatisticalTestMetric']
         del parameters['StatisticalTestThreshold']
 
+    if 'SampleProcessing_SMOTE' in parameters.keys():
+        del parameters['SampleProcessing_SMOTE']
+        del parameters['SampleProcessing_SMOTE_ratio']
+        del parameters['SampleProcessing_SMOTE_neighbors']
+        del parameters['SampleProcessing_SMOTE_n_cores']
+
+    if 'SampleProcessing_Oversampling' in parameters.keys():
+        del parameters['SampleProcessing_Oversampling']
+
     return parameters
 
 
@@ -605,3 +726,37 @@ def replacenan(image_features, verbose=True, feature_labels=None):
                 image_features_temp[pnum, fnum] = 0
 
     return image_features_temp
+
+
+def delete_cc_para(para):
+    '''
+    Delete all parameters that are involved in classifier construction.
+    '''
+    deletekeys = ['classifiers',
+                  'max_iter',
+                  'SVMKernel',
+                  'SVMC',
+                  'SVMdegree',
+                  'SVMcoef0',
+                  'SVMgamma',
+                  'RFn_estimators',
+                  'RFmin_samples_split',
+                  'RFmax_depth',
+                  'LRpenalty',
+                  'LRC',
+                  'LDA_solver',
+                  'LDA_shrinkage',
+                  'QDA_reg_param',
+                  'ElasticNet_alpha',
+                  'ElasticNet_l1_ratio',
+                  'SGD_alpha',
+                  'SGD_l1_ratio',
+                  'SGD_loss',
+                  'SGD_penalty',
+                  'CNB_alpha']
+
+    for k in deletekeys:
+        if k in para.keys():
+            del para[k]
+
+    return para

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>PREDICT.imagefeatures package &#8212; PREDICT 2.1.1 documentation</title>
+    <title>PREDICT.imagefeatures package &#8212; PREDICT 2.1.2 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '2.1.1',
+        VERSION:     '2.1.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -46,572 +46,53 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.imagefeatures.coliage_features">
-<span id="predict-imagefeatures-coliage-features-module"></span><h2>PREDICT.imagefeatures.coliage_features module<a class="headerlink" href="#module-PREDICT.imagefeatures.coliage_features" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="PREDICT.imagefeatures.coliage_features.get_coliage_features">
-<code class="descclassname">PREDICT.imagefeatures.coliage_features.</code><code class="descname">get_coliage_features</code><span class="sig-paren">(</span><em>image</em>, <em>mask</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.coliage_features.get_coliage_features" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute coliage features, based on:</p>
-<p>Prasanna et al. 2016, Co-occurrence of Local Anisotropic
-Gradient Orientations (CoLlAGe): A
-new radiomics descriptor, Nature Scientific Reports.</p>
-</dd></dl>
-
+<div class="section" id="predict-imagefeatures-coliage-features-module">
+<h2>PREDICT.imagefeatures.coliage_features module<a class="headerlink" href="#predict-imagefeatures-coliage-features-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.imagefeatures.contour_functions">
-<span id="predict-imagefeatures-contour-functions-module"></span><h2>PREDICT.imagefeatures.contour_functions module<a class="headerlink" href="#module-PREDICT.imagefeatures.contour_functions" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="PREDICT.imagefeatures.contour_functions.cmp">
-<code class="descclassname">PREDICT.imagefeatures.contour_functions.</code><code class="descname">cmp</code><span class="sig-paren">(</span><em>a</em>, <em>b</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.contour_functions.cmp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Built in in python 2, but defined for python 3</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.contour_functions.convex_hull">
-<code class="descclassname">PREDICT.imagefeatures.contour_functions.</code><code class="descname">convex_hull</code><span class="sig-paren">(</span><em>contour</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.contour_functions.convex_hull" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns points on convex hull for contour, uses Graham Scan</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.contour_functions.convex_hull_points">
-<code class="descclassname">PREDICT.imagefeatures.contour_functions.</code><code class="descname">convex_hull_points</code><span class="sig-paren">(</span><em>points</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.contour_functions.convex_hull_points" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns points on convex hull of an array of points in CCW order.
-Uses Graham Scan</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.contour_functions.get_contour_boundary">
-<code class="descclassname">PREDICT.imagefeatures.contour_functions.</code><code class="descname">get_contour_boundary</code><span class="sig-paren">(</span><em>contour</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.contour_functions.get_contour_boundary" title="Permalink to this definition">¶</a></dt>
-<dd><p>Labels pixels on edge of boundary</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.contour_functions.get_contour_boundary_points">
-<code class="descclassname">PREDICT.imagefeatures.contour_functions.</code><code class="descname">get_contour_boundary_points</code><span class="sig-paren">(</span><em>contour</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.contour_functions.get_contour_boundary_points" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get boundary coordinates from contour</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.contour_functions.get_not_voi_voxels">
-<code class="descclassname">PREDICT.imagefeatures.contour_functions.</code><code class="descname">get_not_voi_voxels</code><span class="sig-paren">(</span><em>contour</em>, <em>image</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.contour_functions.get_not_voi_voxels" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets all voxels within VOI to 0</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.contour_functions.get_smooth_contour">
-<code class="descclassname">PREDICT.imagefeatures.contour_functions.</code><code class="descname">get_smooth_contour</code><span class="sig-paren">(</span><em>mask</em>, <em>N_min</em>, <em>N_max</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.contour_functions.get_smooth_contour" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find local convex hull for given contour</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.contour_functions.get_voi_voxels">
-<code class="descclassname">PREDICT.imagefeatures.contour_functions.</code><code class="descname">get_voi_voxels</code><span class="sig-paren">(</span><em>contour</em>, <em>image</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.contour_functions.get_voi_voxels" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gives back VOI (non-zero slices),  and indices of slices</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.contour_functions.local_convex_hull">
-<code class="descclassname">PREDICT.imagefeatures.contour_functions.</code><code class="descname">local_convex_hull</code><span class="sig-paren">(</span><em>contour</em>, <em>N_min</em>, <em>N_max</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.contour_functions.local_convex_hull" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find local convex hull for given contour</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.contour_functions.local_convex_hull_points">
-<code class="descclassname">PREDICT.imagefeatures.contour_functions.</code><code class="descname">local_convex_hull_points</code><span class="sig-paren">(</span><em>points</em>, <em>N_min</em>, <em>N_max</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.contour_functions.local_convex_hull_points" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find local convex points, can be used for smoothing boundary</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.contour_functions.sort_points">
-<code class="descclassname">PREDICT.imagefeatures.contour_functions.</code><code class="descname">sort_points</code><span class="sig-paren">(</span><em>points</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.contour_functions.sort_points" title="Permalink to this definition">¶</a></dt>
-<dd><p>Order supplied points in clockwise order</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.contour_functions.turn">
-<code class="descclassname">PREDICT.imagefeatures.contour_functions.</code><code class="descname">turn</code><span class="sig-paren">(</span><em>p</em>, <em>q</em>, <em>r</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.contour_functions.turn" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<div class="section" id="predict-imagefeatures-contour-functions-module">
+<h2>PREDICT.imagefeatures.contour_functions module<a class="headerlink" href="#predict-imagefeatures-contour-functions-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.imagefeatures.dti_features">
-<span id="predict-imagefeatures-dti-features-module"></span><h2>PREDICT.imagefeatures.dti_features module<a class="headerlink" href="#module-PREDICT.imagefeatures.dti_features" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="PREDICT.imagefeatures.dti_features.get_dti_features">
-<code class="descclassname">PREDICT.imagefeatures.dti_features.</code><code class="descname">get_dti_features</code><span class="sig-paren">(</span><em>image</em>, <em>mask</em>, <em>meta_data</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.dti_features.get_dti_features" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.dti_features.get_dti_post_features">
-<code class="descclassname">PREDICT.imagefeatures.dti_features.</code><code class="descname">get_dti_post_features</code><span class="sig-paren">(</span><em>image</em>, <em>mask</em>, <em>meta_data</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.dti_features.get_dti_post_features" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.dti_features.get_statistical_moments">
-<code class="descclassname">PREDICT.imagefeatures.dti_features.</code><code class="descname">get_statistical_moments</code><span class="sig-paren">(</span><em>tumor_map</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.dti_features.get_statistical_moments" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<div class="section" id="predict-imagefeatures-dti-features-module">
+<h2>PREDICT.imagefeatures.dti_features module<a class="headerlink" href="#predict-imagefeatures-dti-features-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.imagefeatures.get_features">
-<span id="predict-imagefeatures-get-features-module"></span><h2>PREDICT.imagefeatures.get_features module<a class="headerlink" href="#module-PREDICT.imagefeatures.get_features" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="PREDICT.imagefeatures.get_features.get_image_features">
-<code class="descclassname">PREDICT.imagefeatures.get_features.</code><code class="descname">get_image_features</code><span class="sig-paren">(</span><em>image_data</em>, <em>mask</em>, <em>parameters</em>, <em>config=None</em>, <em>config_general=None</em>, <em>output=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.get_features.get_image_features" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate features from a ROI of an image.</p>
-<dl class="docutils">
-<dt>image_data: Pandas DataFrame or dictionary, mandatory</dt>
-<dd><p class="first">Contains the image, image type, metadata and semantics for
-the feature extraction. These have to be indexed by these keys.</p>
-<p>Should either be a Pandas DataFrame, in which the image type is
-he key of the images, or a dictionary, in which image type is a
-a separate field.</p>
-<p class="last">The image should be a SimpleITK Image, the image type a string,
-the metadata a pydicom dicom type and the semantics a dictionary.</p>
-</dd>
-<dt>mask: ITK Image, mandatory</dt>
-<dd>ROI to be used for feature extraction.</dd>
-<dt>parameters: dictionary, mandatory,</dt>
-<dd>Parameters for feature calculation. See the Github Wiki for the possible
-fields and their description.</dd>
-<dt>config: dictionary, mandatory</dt>
-<dd>Configuration for feature calculation. Mostly configures which
-features are calculated or not. See the Github Wiki for the possible
-fields and their description.</dd>
-<dt>config_general: dictionary, mandatory</dt>
-<dd>Configuration for general settings. Currently only configures
-settings for the Joblib Parallel function. See the Github Wiki
-for the possible fields and their description.</dd>
-<dt>output: string, mandatory</dt>
-<dd>path referring to the .hdf5 file to which the output should be
-written for the CalcFeatures function. This field is used to match
-the patient ID of the semantic features to this filename.</dd>
-</dl>
-<dl class="docutils">
-<dt>feature_values: list</dt>
-<dd>Contains the values for all extracted features.</dd>
-<dt>feature_labels: list</dt>
-<dd>Contains the labels for all extracted features. Each entry
-corresponds to the element with the same index from the
-feature_values object.</dd>
-</dl>
-</dd></dl>
-
+<div class="section" id="predict-imagefeatures-get-features-module">
+<h2>PREDICT.imagefeatures.get_features module<a class="headerlink" href="#predict-imagefeatures-get-features-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.imagefeatures.histogram_features">
-<span id="predict-imagefeatures-histogram-features-module"></span><h2>PREDICT.imagefeatures.histogram_features module<a class="headerlink" href="#module-PREDICT.imagefeatures.histogram_features" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="PREDICT.imagefeatures.histogram_features.create_histogram">
-<code class="descclassname">PREDICT.imagefeatures.histogram_features.</code><code class="descname">create_histogram</code><span class="sig-paren">(</span><em>data</em>, <em>bins</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.histogram_features.create_histogram" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.histogram_features.get_diff_in_out">
-<code class="descclassname">PREDICT.imagefeatures.histogram_features.</code><code class="descname">get_diff_in_out</code><span class="sig-paren">(</span><em>image</em>, <em>contour</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.histogram_features.get_diff_in_out" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.histogram_features.get_energy">
-<code class="descclassname">PREDICT.imagefeatures.histogram_features.</code><code class="descname">get_energy</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.histogram_features.get_energy" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.histogram_features.get_entropy">
-<code class="descclassname">PREDICT.imagefeatures.histogram_features.</code><code class="descname">get_entropy</code><span class="sig-paren">(</span><em>hist</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.histogram_features.get_entropy" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.histogram_features.get_histogram_features">
-<code class="descclassname">PREDICT.imagefeatures.histogram_features.</code><code class="descname">get_histogram_features</code><span class="sig-paren">(</span><em>data</em>, <em>N_bins</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.histogram_features.get_histogram_features" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute histogram or first order features.</p>
-<dl class="docutils">
-<dt>data: numpy array, mandatory</dt>
-<dd>1D array from which the features are extracted.</dd>
-<dt>N_bins: integer, mandatory</dt>
-<dd>Number of bins to be used in histogram creation.</dd>
-</dl>
-<dl class="docutils">
-<dt>histogram_features: list</dt>
-<dd>Contains the values for all extracted features.</dd>
-<dt>histogram_labels: list</dt>
-<dd>Contains the labels for all extracted features. Each entry
-corresponds to the element with the same index from the
-histogram_features object.</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.histogram_features.get_kurtosis">
-<code class="descclassname">PREDICT.imagefeatures.histogram_features.</code><code class="descname">get_kurtosis</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.histogram_features.get_kurtosis" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.histogram_features.get_max">
-<code class="descclassname">PREDICT.imagefeatures.histogram_features.</code><code class="descname">get_max</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.histogram_features.get_max" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.histogram_features.get_mean">
-<code class="descclassname">PREDICT.imagefeatures.histogram_features.</code><code class="descname">get_mean</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.histogram_features.get_mean" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.histogram_features.get_median">
-<code class="descclassname">PREDICT.imagefeatures.histogram_features.</code><code class="descname">get_median</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.histogram_features.get_median" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.histogram_features.get_min">
-<code class="descclassname">PREDICT.imagefeatures.histogram_features.</code><code class="descname">get_min</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.histogram_features.get_min" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.histogram_features.get_peak_position">
-<code class="descclassname">PREDICT.imagefeatures.histogram_features.</code><code class="descname">get_peak_position</code><span class="sig-paren">(</span><em>histogram</em>, <em>bins</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.histogram_features.get_peak_position" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.histogram_features.get_quartile_range">
-<code class="descclassname">PREDICT.imagefeatures.histogram_features.</code><code class="descname">get_quartile_range</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.histogram_features.get_quartile_range" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.histogram_features.get_range">
-<code class="descclassname">PREDICT.imagefeatures.histogram_features.</code><code class="descname">get_range</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.histogram_features.get_range" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.histogram_features.get_skewness">
-<code class="descclassname">PREDICT.imagefeatures.histogram_features.</code><code class="descname">get_skewness</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.histogram_features.get_skewness" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.histogram_features.get_std">
-<code class="descclassname">PREDICT.imagefeatures.histogram_features.</code><code class="descname">get_std</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.histogram_features.get_std" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<div class="section" id="predict-imagefeatures-histogram-features-module">
+<h2>PREDICT.imagefeatures.histogram_features module<a class="headerlink" href="#predict-imagefeatures-histogram-features-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.imagefeatures.image_helper">
-<span id="predict-imagefeatures-image-helper-module"></span><h2>PREDICT.imagefeatures.image_helper module<a class="headerlink" href="#module-PREDICT.imagefeatures.image_helper" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="PREDICT.imagefeatures.image_helper.get_masked_slices_image">
-<code class="descclassname">PREDICT.imagefeatures.image_helper.</code><code class="descname">get_masked_slices_image</code><span class="sig-paren">(</span><em>image_array</em>, <em>mask_array</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.image_helper.get_masked_slices_image" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.image_helper.get_masked_slices_mask">
-<code class="descclassname">PREDICT.imagefeatures.image_helper.</code><code class="descname">get_masked_slices_mask</code><span class="sig-paren">(</span><em>mask_image</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.image_helper.get_masked_slices_mask" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.image_helper.get_masked_voxels">
-<code class="descclassname">PREDICT.imagefeatures.image_helper.</code><code class="descname">get_masked_voxels</code><span class="sig-paren">(</span><em>image_array</em>, <em>mask_array</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.image_helper.get_masked_voxels" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<div class="section" id="predict-imagefeatures-image-helper-module">
+<h2>PREDICT.imagefeatures.image_helper module<a class="headerlink" href="#predict-imagefeatures-image-helper-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.imagefeatures.log_features">
-<span id="predict-imagefeatures-log-features-module"></span><h2>PREDICT.imagefeatures.log_features module<a class="headerlink" href="#module-PREDICT.imagefeatures.log_features" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="PREDICT.imagefeatures.log_features.get_log_features">
-<code class="descclassname">PREDICT.imagefeatures.log_features.</code><code class="descname">get_log_features</code><span class="sig-paren">(</span><em>image</em>, <em>mask</em>, <em>parameters={}</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.log_features.get_log_features" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute features by filtering an image with a Laplacian of Gaussian (LoG)
-filter, after which histogram features are extracted.</p>
-<dl class="docutils">
-<dt>image: numpy array, mandatory</dt>
-<dd>Image array from which the features are extracted.</dd>
-<dt>mask: numpy array, mandatory</dt>
-<dd>ROI to be used for feature extraction.</dd>
-<dt>parameters: dictionary, optional</dt>
-<dd>Contains the parameters for feature computation. Currently can only
-include a list of sigma values to be used for the LoG filter.
-Default values for sigma are [1, 5, 10].</dd>
-</dl>
-<dl class="docutils">
-<dt>LoG_features: list</dt>
-<dd>Contains the values for all extracted features.</dd>
-<dt>LoG_labels: list</dt>
-<dd>Contains the labels for all extracted features. Each entry
-corresponds to the element with the same index from the
-LoG_features object.</dd>
-</dl>
-</dd></dl>
-
+<div class="section" id="predict-imagefeatures-log-features-module">
+<h2>PREDICT.imagefeatures.log_features module<a class="headerlink" href="#predict-imagefeatures-log-features-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.imagefeatures.orientation_features">
-<span id="predict-imagefeatures-orientation-features-module"></span><h2>PREDICT.imagefeatures.orientation_features module<a class="headerlink" href="#module-PREDICT.imagefeatures.orientation_features" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="PREDICT.imagefeatures.orientation_features.get_orientation_features">
-<code class="descclassname">PREDICT.imagefeatures.orientation_features.</code><code class="descname">get_orientation_features</code><span class="sig-paren">(</span><em>mask</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.orientation_features.get_orientation_features" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<div class="section" id="predict-imagefeatures-orientation-features-module">
+<h2>PREDICT.imagefeatures.orientation_features module<a class="headerlink" href="#predict-imagefeatures-orientation-features-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.imagefeatures.patient_features">
-<span id="predict-imagefeatures-patient-features-module"></span><h2>PREDICT.imagefeatures.patient_features module<a class="headerlink" href="#module-PREDICT.imagefeatures.patient_features" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="PREDICT.imagefeatures.patient_features.get_patient_features">
-<code class="descclassname">PREDICT.imagefeatures.patient_features.</code><code class="descname">get_patient_features</code><span class="sig-paren">(</span><em>metadata</em>, <em>image_type</em>, <em>protocol_feat=False</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.patient_features.get_patient_features" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<div class="section" id="predict-imagefeatures-patient-features-module">
+<h2>PREDICT.imagefeatures.patient_features module<a class="headerlink" href="#predict-imagefeatures-patient-features-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.imagefeatures.phase_features">
-<span id="predict-imagefeatures-phase-features-module"></span><h2>PREDICT.imagefeatures.phase_features module<a class="headerlink" href="#module-PREDICT.imagefeatures.phase_features" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="PREDICT.imagefeatures.phase_features.get_phase_features">
-<code class="descclassname">PREDICT.imagefeatures.phase_features.</code><code class="descname">get_phase_features</code><span class="sig-paren">(</span><em>image</em>, <em>mask</em>, <em>parameters={}</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.phase_features.get_phase_features" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.phase_features.replacenan">
-<code class="descclassname">PREDICT.imagefeatures.phase_features.</code><code class="descname">replacenan</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.phase_features.replacenan" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<div class="section" id="predict-imagefeatures-phase-features-module">
+<h2>PREDICT.imagefeatures.phase_features module<a class="headerlink" href="#predict-imagefeatures-phase-features-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.imagefeatures.semantic_features">
-<span id="predict-imagefeatures-semantic-features-module"></span><h2>PREDICT.imagefeatures.semantic_features module<a class="headerlink" href="#module-PREDICT.imagefeatures.semantic_features" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="PREDICT.imagefeatures.semantic_features.get_semantic_features">
-<code class="descclassname">PREDICT.imagefeatures.semantic_features.</code><code class="descname">get_semantic_features</code><span class="sig-paren">(</span><em>data</em>, <em>patientID</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.semantic_features.get_semantic_features" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<div class="section" id="predict-imagefeatures-semantic-features-module">
+<h2>PREDICT.imagefeatures.semantic_features module<a class="headerlink" href="#predict-imagefeatures-semantic-features-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.imagefeatures.shape_features">
-<span id="predict-imagefeatures-shape-features-module"></span><h2>PREDICT.imagefeatures.shape_features module<a class="headerlink" href="#module-PREDICT.imagefeatures.shape_features" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="PREDICT.imagefeatures.shape_features.compute_abs_dist_to_center">
-<code class="descclassname">PREDICT.imagefeatures.shape_features.</code><code class="descname">compute_abs_dist_to_center</code><span class="sig-paren">(</span><em>points</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.shape_features.compute_abs_dist_to_center" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the absolute distance to center for given boundary points</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.shape_features.compute_area">
-<code class="descclassname">PREDICT.imagefeatures.shape_features.</code><code class="descname">compute_area</code><span class="sig-paren">(</span><em>points</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.shape_features.compute_area" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the area of the given boundary points using shoelace formula</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.shape_features.compute_compactness">
-<code class="descclassname">PREDICT.imagefeatures.shape_features.</code><code class="descname">compute_compactness</code><span class="sig-paren">(</span><em>points</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.shape_features.compute_compactness" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes compactness of the given boundary points, 1 for circle</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.shape_features.compute_covariance_matrix">
-<code class="descclassname">PREDICT.imagefeatures.shape_features.</code><code class="descname">compute_covariance_matrix</code><span class="sig-paren">(</span><em>points</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.shape_features.compute_covariance_matrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes covariance matrix for giving boundary points, according to
-Peura et al. 1997, &#8220;Efficiency of Simple Shape Descriptors&#8221;</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.shape_features.compute_cvar">
-<code class="descclassname">PREDICT.imagefeatures.shape_features.</code><code class="descname">compute_cvar</code><span class="sig-paren">(</span><em>points</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.shape_features.compute_cvar" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes circular variance for giving boundary points, according to
-Peura et al. 1997, &#8220;Efficiency of Simple Shape Descriptors&#8221;</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.shape_features.compute_dist_to_center">
-<code class="descclassname">PREDICT.imagefeatures.shape_features.</code><code class="descname">compute_dist_to_center</code><span class="sig-paren">(</span><em>points</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.shape_features.compute_dist_to_center" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the distance to the center for the given boundary points</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.shape_features.compute_evar">
-<code class="descclassname">PREDICT.imagefeatures.shape_features.</code><code class="descname">compute_evar</code><span class="sig-paren">(</span><em>points</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.shape_features.compute_evar" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes eliptic variance for giving boundary points, according to
-Peura et al. 1997, &#8220;Efficiency of Simple Shape Descriptors&#8221;</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.shape_features.compute_mean_radius">
-<code class="descclassname">PREDICT.imagefeatures.shape_features.</code><code class="descname">compute_mean_radius</code><span class="sig-paren">(</span><em>points</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.shape_features.compute_mean_radius" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes mean radius for giving boundary points, according to Peura et al.
-1997, &#8220;Efficiency of Simple Shape Descriptors&#8221;</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.shape_features.compute_perimeter">
-<code class="descclassname">PREDICT.imagefeatures.shape_features.</code><code class="descname">compute_perimeter</code><span class="sig-paren">(</span><em>points</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.shape_features.compute_perimeter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the perimeter of the given boundary points</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.shape_features.compute_prax">
-<code class="descclassname">PREDICT.imagefeatures.shape_features.</code><code class="descname">compute_prax</code><span class="sig-paren">(</span><em>points</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.shape_features.compute_prax" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes ratio of principal axes for giving boundary points, according to
-Peura et al. 1997, &#8220;Efficiency of Simple Shape Descriptors&#8221;</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.shape_features.compute_radial_distance">
-<code class="descclassname">PREDICT.imagefeatures.shape_features.</code><code class="descname">compute_radial_distance</code><span class="sig-paren">(</span><em>points</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.shape_features.compute_radial_distance" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the radial distance for the given boundary points, according to
-Xu et al 2012, &#8220;A comprehensive descriptor of shape&#8221;</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.shape_features.compute_roughness">
-<code class="descclassname">PREDICT.imagefeatures.shape_features.</code><code class="descname">compute_roughness</code><span class="sig-paren">(</span><em>points</em>, <em>rad_distance=None</em>, <em>min_points=3</em>, <em>max_points=15</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.shape_features.compute_roughness" title="Permalink to this definition">¶</a></dt>
-<dd><p>compute_roughness computes the roughness according to &#8220;Xu et al. 2012,
-A comprehensive descriptor of shape&#8221;</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>points ([Nx2] numpy array): array of boundary points</dd>
-<dt>Kwargs:</dt>
-<dd><dl class="first last docutils">
-<dt>rad_distance (numpy array): Radial distance if already computed</dt>
-<dd>[default: None]</dd>
-<dt>min_points (int): Minimum number of points in a segment</dt>
-<dd>[default: 3]</dd>
-<dt>max_points (int): Maximum number of points in a segment</dt>
-<dd>[default: 15]</dd>
-</dl>
-</dd>
-<dt>Returns:</dt>
-<dd>roughness (numpy array): The roughness in the different segments
-roughness_avg (float): The average roughness</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.shape_features.get_center">
-<code class="descclassname">PREDICT.imagefeatures.shape_features.</code><code class="descname">get_center</code><span class="sig-paren">(</span><em>points</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.shape_features.get_center" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the center of the given boundary points</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.shape_features.get_shape_features">
-<code class="descclassname">PREDICT.imagefeatures.shape_features.</code><code class="descname">get_shape_features</code><span class="sig-paren">(</span><em>mask</em>, <em>metadata=None</em>, <em>mode='2D'</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.shape_features.get_shape_features" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute all shape features on a mask. Returns two lists: the feature values
-and the feature labels.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.shape_features.get_shape_features_2D">
-<code class="descclassname">PREDICT.imagefeatures.shape_features.</code><code class="descname">get_shape_features_2D</code><span class="sig-paren">(</span><em>mask_ITKim</em>, <em>metadata=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.shape_features.get_shape_features_2D" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.shape_features.get_shape_features_3D">
-<code class="descclassname">PREDICT.imagefeatures.shape_features.</code><code class="descname">get_shape_features_3D</code><span class="sig-paren">(</span><em>mask_ITKim</em>, <em>metadata=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.shape_features.get_shape_features_3D" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<div class="section" id="predict-imagefeatures-shape-features-module">
+<h2>PREDICT.imagefeatures.shape_features module<a class="headerlink" href="#predict-imagefeatures-shape-features-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.imagefeatures.sitk_helper">
-<span id="predict-imagefeatures-sitk-helper-module"></span><h2>PREDICT.imagefeatures.sitk_helper module<a class="headerlink" href="#module-PREDICT.imagefeatures.sitk_helper" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="PREDICT.imagefeatures.sitk_helper.GetArrayFromImage">
-<code class="descclassname">PREDICT.imagefeatures.sitk_helper.</code><code class="descname">GetArrayFromImage</code><span class="sig-paren">(</span><em>image</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.sitk_helper.GetArrayFromImage" title="Permalink to this definition">¶</a></dt>
-<dd><p>GetArrayFromImage converts an ITK image to a numpy array, while ensuring
-the orientation is kept the same.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>image (ITK image): 2D or 3D ITK image</dd>
-<dt>Returns:</dt>
-<dd>numpy array</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.sitk_helper.GetImageFromArray">
-<code class="descclassname">PREDICT.imagefeatures.sitk_helper.</code><code class="descname">GetImageFromArray</code><span class="sig-paren">(</span><em>array</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.sitk_helper.GetImageFromArray" title="Permalink to this definition">¶</a></dt>
-<dd><p>GetImageFromArray converts a numpy array to an ITK image, while ensuring
-the orientation is kept the same.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>array (numpy array): 2D or 3D array of image</dd>
-<dt>Returns:</dt>
-<dd>ITK image</dd>
-</dl>
-</dd></dl>
-
+<div class="section" id="predict-imagefeatures-sitk-helper-module">
+<h2>PREDICT.imagefeatures.sitk_helper module<a class="headerlink" href="#predict-imagefeatures-sitk-helper-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.imagefeatures.texture_features">
-<span id="predict-imagefeatures-texture-features-module"></span><h2>PREDICT.imagefeatures.texture_features module<a class="headerlink" href="#module-PREDICT.imagefeatures.texture_features" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="PREDICT.imagefeatures.texture_features.bbox_2D">
-<code class="descclassname">PREDICT.imagefeatures.texture_features.</code><code class="descname">bbox_2D</code><span class="sig-paren">(</span><em>img</em>, <em>mask</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.texture_features.bbox_2D" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.texture_features.bbox_3D">
-<code class="descclassname">PREDICT.imagefeatures.texture_features.</code><code class="descname">bbox_3D</code><span class="sig-paren">(</span><em>img</em>, <em>mask</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.texture_features.bbox_3D" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.texture_features.gabor_filter">
-<code class="descclassname">PREDICT.imagefeatures.texture_features.</code><code class="descname">gabor_filter</code><span class="sig-paren">(</span><em>image</em>, <em>mask</em>, <em>kernel</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.texture_features.gabor_filter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Filter an image with a Gabor kernel. The kernel should be a list containing
-the frequency and the angle. After filtering, the image is flattened and
-masked by the mask.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.texture_features.gabor_filter_parallel">
-<code class="descclassname">PREDICT.imagefeatures.texture_features.</code><code class="descname">gabor_filter_parallel</code><span class="sig-paren">(</span><em>image</em>, <em>mask</em>, <em>parameters={}</em>, <em>n_jobs=1</em>, <em>backend='threading'</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.texture_features.gabor_filter_parallel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Apply gabor filters to image, done in parallel.
-Note: on a cluster, where parallelisation of the gabor filters
-is not possible, use backend=&#8221;threading&#8221;</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.texture_features.get_GLCM_features">
-<code class="descclassname">PREDICT.imagefeatures.texture_features.</code><code class="descname">get_GLCM_features</code><span class="sig-paren">(</span><em>image</em>, <em>mask</em>, <em>parameters={}</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.texture_features.get_GLCM_features" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute Gray Level Co-occurence Matrix (GLCM) features. The image is first
-discretized to a set number of greyscale values. The GLCM will be computed
-at multiple distances and angles. The pixels outside the mask will always
-be set to zero.</p>
-<p>As the GLCM is defined in 2D, the GLCM for a 3D image will be computed
-by computing statistics over all the GLCM for all 2D axial slices, such
-as the mean and std.</p>
-<p>The output are two lists: the feature values and the labels.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.texture_features.get_GLCM_features_multislice">
-<code class="descclassname">PREDICT.imagefeatures.texture_features.</code><code class="descname">get_GLCM_features_multislice</code><span class="sig-paren">(</span><em>image</em>, <em>mask</em>, <em>parameters={}</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.texture_features.get_GLCM_features_multislice" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.texture_features.get_GLRLM_features">
-<code class="descclassname">PREDICT.imagefeatures.texture_features.</code><code class="descname">get_GLRLM_features</code><span class="sig-paren">(</span><em>image</em>, <em>mask</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.texture_features.get_GLRLM_features" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.texture_features.get_GLSZM_features">
-<code class="descclassname">PREDICT.imagefeatures.texture_features.</code><code class="descname">get_GLSZM_features</code><span class="sig-paren">(</span><em>image</em>, <em>mask</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.texture_features.get_GLSZM_features" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.texture_features.get_LBP_features">
-<code class="descclassname">PREDICT.imagefeatures.texture_features.</code><code class="descname">get_LBP_features</code><span class="sig-paren">(</span><em>image</em>, <em>mask</em>, <em>parameters={}</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.texture_features.get_LBP_features" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute features by applying a Local Binary Pattern (LBP) filter to an image.
-The LBP will be constructed with a radius and neighboorhood defined by N_points.
-These must be provided as lists of integers.</p>
-<p>As LBP are defined in 2D, the LBP for a 3D image will be computed
-by computing statistics over all the LBP for all 2D axial slices, such
-as the mean and std.</p>
-<p>The output are two lists: the feature values and the labels.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.texture_features.get_NGTDM_features">
-<code class="descclassname">PREDICT.imagefeatures.texture_features.</code><code class="descname">get_NGTDM_features</code><span class="sig-paren">(</span><em>image</em>, <em>mask</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.texture_features.get_NGTDM_features" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="PREDICT.imagefeatures.texture_features.get_texture_features">
-<code class="descclassname">PREDICT.imagefeatures.texture_features.</code><code class="descname">get_texture_features</code><span class="sig-paren">(</span><em>image</em>, <em>mask</em>, <em>parameters=None</em>, <em>config='LBP'</em>, <em>config_general={}</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.texture_features.get_texture_features" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<div class="section" id="predict-imagefeatures-texture-features-module">
+<h2>PREDICT.imagefeatures.texture_features module<a class="headerlink" href="#predict-imagefeatures-texture-features-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.imagefeatures.vessel_features">
-<span id="predict-imagefeatures-vessel-features-module"></span><h2>PREDICT.imagefeatures.vessel_features module<a class="headerlink" href="#module-PREDICT.imagefeatures.vessel_features" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="PREDICT.imagefeatures.vessel_features.get_vessel_features">
-<code class="descclassname">PREDICT.imagefeatures.vessel_features.</code><code class="descname">get_vessel_features</code><span class="sig-paren">(</span><em>image</em>, <em>mask</em>, <em>parameters={}</em><span class="sig-paren">)</span><a class="headerlink" href="#PREDICT.imagefeatures.vessel_features.get_vessel_features" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<div class="section" id="predict-imagefeatures-vessel-features-module">
+<h2>PREDICT.imagefeatures.vessel_features module<a class="headerlink" href="#predict-imagefeatures-vessel-features-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PREDICT.imagefeatures">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-PREDICT.imagefeatures" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -625,22 +106,22 @@ as the mean and std.</p>
   <ul>
 <li><a class="reference internal" href="#">PREDICT.imagefeatures package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-PREDICT.imagefeatures.coliage_features">PREDICT.imagefeatures.coliage_features module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.imagefeatures.contour_functions">PREDICT.imagefeatures.contour_functions module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.imagefeatures.dti_features">PREDICT.imagefeatures.dti_features module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.imagefeatures.get_features">PREDICT.imagefeatures.get_features module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.imagefeatures.histogram_features">PREDICT.imagefeatures.histogram_features module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.imagefeatures.image_helper">PREDICT.imagefeatures.image_helper module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.imagefeatures.log_features">PREDICT.imagefeatures.log_features module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.imagefeatures.orientation_features">PREDICT.imagefeatures.orientation_features module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.imagefeatures.patient_features">PREDICT.imagefeatures.patient_features module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.imagefeatures.phase_features">PREDICT.imagefeatures.phase_features module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.imagefeatures.semantic_features">PREDICT.imagefeatures.semantic_features module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.imagefeatures.shape_features">PREDICT.imagefeatures.shape_features module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.imagefeatures.sitk_helper">PREDICT.imagefeatures.sitk_helper module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.imagefeatures.texture_features">PREDICT.imagefeatures.texture_features module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.imagefeatures.vessel_features">PREDICT.imagefeatures.vessel_features module</a></li>
-<li><a class="reference internal" href="#module-PREDICT.imagefeatures">Module contents</a></li>
+<li><a class="reference internal" href="#predict-imagefeatures-coliage-features-module">PREDICT.imagefeatures.coliage_features module</a></li>
+<li><a class="reference internal" href="#predict-imagefeatures-contour-functions-module">PREDICT.imagefeatures.contour_functions module</a></li>
+<li><a class="reference internal" href="#predict-imagefeatures-dti-features-module">PREDICT.imagefeatures.dti_features module</a></li>
+<li><a class="reference internal" href="#predict-imagefeatures-get-features-module">PREDICT.imagefeatures.get_features module</a></li>
+<li><a class="reference internal" href="#predict-imagefeatures-histogram-features-module">PREDICT.imagefeatures.histogram_features module</a></li>
+<li><a class="reference internal" href="#predict-imagefeatures-image-helper-module">PREDICT.imagefeatures.image_helper module</a></li>
+<li><a class="reference internal" href="#predict-imagefeatures-log-features-module">PREDICT.imagefeatures.log_features module</a></li>
+<li><a class="reference internal" href="#predict-imagefeatures-orientation-features-module">PREDICT.imagefeatures.orientation_features module</a></li>
+<li><a class="reference internal" href="#predict-imagefeatures-patient-features-module">PREDICT.imagefeatures.patient_features module</a></li>
+<li><a class="reference internal" href="#predict-imagefeatures-phase-features-module">PREDICT.imagefeatures.phase_features module</a></li>
+<li><a class="reference internal" href="#predict-imagefeatures-semantic-features-module">PREDICT.imagefeatures.semantic_features module</a></li>
+<li><a class="reference internal" href="#predict-imagefeatures-shape-features-module">PREDICT.imagefeatures.shape_features module</a></li>
+<li><a class="reference internal" href="#predict-imagefeatures-sitk-helper-module">PREDICT.imagefeatures.sitk_helper module</a></li>
+<li><a class="reference internal" href="#predict-imagefeatures-texture-features-module">PREDICT.imagefeatures.texture_features module</a></li>
+<li><a class="reference internal" href="#predict-imagefeatures-vessel-features-module">PREDICT.imagefeatures.vessel_features module</a></li>
+<li><a class="reference internal" href="#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>
