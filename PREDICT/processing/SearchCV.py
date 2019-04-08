@@ -608,15 +608,23 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
             try:
                 array_means = np.average(array, axis=1, weights=weights)
             except ZeroDivisionError as e:
-                e = ('[PREDICT Warning] {}. Setting {} }to zeros.').format(e, key_name)
+                e = ('[PREDICT Warning] {}. Setting {} to unweighted.').format(e, key_name)
                 print(e)
-                array_means = [0] * array.shape[1]
+                array_means = np.average(array, axis=1)
 
             results['mean_%s' % key_name] = array_means
             # Weighted std is not directly available in numpy
-            array_stds = np.sqrt(np.average((array -
-                                             array_means[:, np.newaxis]) ** 2,
-                                            axis=1, weights=weights))
+            try:
+                array_stds = np.sqrt(np.average((array -
+                                                 array_means[:, np.newaxis]) ** 2,
+                                                axis=1, weights=weights))
+            except ZeroDivisionError as e:
+                e = ('[PREDICT Warning] {}. Setting {} to unweighted.').format(e, key_name)
+                print(e)
+                array_stds = np.sqrt(np.average((array -
+                                                 array_means[:, np.newaxis]) ** 2,
+                                                axis=1))
+
             results['std_%s' % key_name] = array_stds
 
             if rank:
@@ -1926,7 +1934,7 @@ class GridSearchCVfastr(BaseSearchCVfastr):
                  pre_dispatch='2*n_jobs', error_score='raise',
                  return_train_score=True):
         super(GridSearchCVfastr, self).__init__(
-            estimator=estimator, scoring=scoring, fit_params=fit_params,
+            scoring=scoring, fit_params=fit_params,
             n_jobs=n_jobs, iid=iid, refit=refit, cv=cv, verbose=verbose,
             pre_dispatch=pre_dispatch, error_score=error_score,
             return_train_score=return_train_score, fastr_plugin=None)
@@ -2163,13 +2171,13 @@ class RandomizedSearchCVJoblib(BaseSearchCVJoblib):
 
     """
 
-    def __init__(self, estimator, param_distributions={}, n_iter=10, scoring=None,
+    def __init__(self, param_distributions={}, n_iter=10, scoring=None,
                  fit_params=None, n_jobs=1, iid=True, refit=True, cv=None,
                  verbose=0, pre_dispatch='2*n_jobs', random_state=None,
                  error_score='raise', return_train_score=True,
                  n_jobspercore=100):
         super(RandomizedSearchCVJoblib, self).__init__(
-             estimator=estimator, param_distributions=param_distributions,
+             param_distributions=param_distributions,
              n_iter=n_iter, scoring=scoring, fit_params=fit_params,
              n_jobs=n_jobs, iid=iid, refit=refit, cv=cv, verbose=verbose,
              pre_dispatch=pre_dispatch, error_score=error_score,
@@ -2434,7 +2442,7 @@ class GridSearchCVJoblib(BaseSearchCVJoblib):
                  pre_dispatch='2*n_jobs', error_score='raise',
                  return_train_score=True):
         super(GridSearchCVJoblib, self).__init__(
-            estimator=estimator, scoring=scoring, fit_params=fit_params,
+            scoring=scoring, fit_params=fit_params,
             n_jobs=n_jobs, iid=iid, refit=refit, cv=cv, verbose=verbose,
             pre_dispatch=pre_dispatch, error_score=error_score,
             return_train_score=return_train_score)

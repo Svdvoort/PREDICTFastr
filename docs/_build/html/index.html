@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Welcome to PREDICT’s documentation! &#8212; PREDICT 2.1.2 documentation</title>
+    <title>Welcome to PREDICT’s documentation! &#8212; PREDICT 2.1.3 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '2.1.2',
+        VERSION:     '2.1.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -43,7 +43,78 @@
             
   <div class="section" id="welcome-to-predict-s-documentation">
 <h1>Welcome to PREDICT&#8217;s documentation!<a class="headerlink" href="#welcome-to-predict-s-documentation" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="predict-v2-1-3">
+<h1>PREDICT v2.1.3<a class="headerlink" href="#predict-v2-1-3" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="predict-a-radiomics-extensive-digital-interchangable-classification-toolkit">
+<h2>PREDICT: a Radiomics Extensive Digital Interchangable Classification Toolkit<a class="headerlink" href="#predict-a-radiomics-extensive-digital-interchangable-classification-toolkit" title="Permalink to this headline">¶</a></h2>
+<p>This is an open-source python package supporting Radiomics medical image
+feature extraction and classification.</p>
+<p>We aim to add a wide variety of features and classifiers to address a
+wide variety classification problems. Through a modular setup, these can
+easily be interchanged and compared.</p>
+<div class="section" id="documentation">
+<h3>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h3>
+<p>For more information, see the sphinx generated documentation available
+<a class="reference external" href="http://predict.readthedocs.io/">here (WIP)</a>.</p>
+<p>Alternatively, you can generate the documentation by checking out the
+master branch and running from the root directory:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">build_sphinx</span>
+</pre></div>
+</div>
+<p>The documentation can then be viewed in a browser by opening
+<code class="docutils literal"><span class="pre">PACKAGE_ROOT\build\sphinx\html\index.html</span></code>.</p>
+</div>
+<div class="section" id="installation">
+<h3>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h3>
+<p>PREDICT has currently only been tested on Unix with Python 2.7.6 and
+higher. We plan to merge towards Python 3 before may 2019.</p>
+<p>The package can be installed through pip :</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">PREDICT</span>
+</pre></div>
+</div>
+<p>Alternatively, you can use the provided setup.py file:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
+</pre></div>
+</div>
+<p>Make sure you first install the required packages:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="preprocessing">
+<h3>Preprocessing<a class="headerlink" href="#preprocessing" title="Permalink to this headline">¶</a></h3>
+<p>From version 1.0.2 and on, preprocessing has been removed from PREDICT.
+It is now available as a separate tool in the <a class="reference external" href="https://github.com/MStarmans91/WORC">WORC
+package</a>, as it&#8217;s also a
+separate step in the radiomics workflow. We do advice to use the
+preprocessing function and thus also WORC.</p>
+</div>
+<div class="section" id="rd-party-packages-used-in-predict">
+<h3>3rd-party packages used in PREDICT:<a class="headerlink" href="#rd-party-packages-used-in-predict" title="Permalink to this headline">¶</a></h3>
+<p>We mainly rely on the following packages:</p>
+<ul class="simple">
+<li>SimpleITK (Image loading and preprocessing)</li>
+<li>numpy (Feature computation)</li>
+<li>sklearn, scipy (Classification)</li>
+<li>FASTR (Fast and parallel workflow execution)</li>
+<li>pandas (Storage)</li>
+<li>PyRadiomics</li>
+</ul>
+<p>See also the <a class="reference external" href="requirements.txt">requirements file</a>.</p>
+</div>
+<div class="section" id="license">
+<h3>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h3>
+<p>This package is covered by the open source <a class="reference external" href="APACHE-LICENSE-2.0">APACHE 2.0
+License</a>.</p>
+</div>
+<div class="section" id="contact">
+<h3>Contact<a class="headerlink" href="#contact" title="Permalink to this headline">¶</a></h3>
+<p>We are happy to help you with any questions: please send us a message or
+create an issue on Github.</p>
 <div class="toctree-wrapper compound">
+</div>
+</div>
 </div>
 </div>
 <div class="section" id="indices-and-tables">
@@ -64,6 +135,18 @@
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Welcome to PREDICT&#8217;s documentation!</a></li>
+<li><a class="reference internal" href="#predict-v2-1-3">PREDICT v2.1.3</a><ul>
+<li><a class="reference internal" href="#predict-a-radiomics-extensive-digital-interchangable-classification-toolkit">PREDICT: a Radiomics Extensive Digital Interchangable Classification Toolkit</a><ul>
+<li><a class="reference internal" href="#documentation">Documentation</a></li>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#preprocessing">Preprocessing</a></li>
+<li><a class="reference internal" href="#rd-party-packages-used-in-predict">3rd-party packages used in PREDICT:</a></li>
+<li><a class="reference internal" href="#license">License</a></li>
+<li><a class="reference internal" href="#contact">Contact</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
 <div class="relations">
