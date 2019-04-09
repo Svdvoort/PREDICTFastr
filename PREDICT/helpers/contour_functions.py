@@ -49,6 +49,9 @@ def get_contour_boundary_points(contour):
 
     boundary_points = list()
     for i in range(boundary_index.shape[1]):
+        # Convert to required double type, otherwise gives bug on Windows
+        boundary_points = boundary_points.astype(np.double)
+
         # Convert index to actual coordinates
         boundary_points.append(
             contour_boundary.TransformContinuousIndexToPhysicalPoint(
