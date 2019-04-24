@@ -15,15 +15,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import PREDICT.addexceptions as ae
-import imagefeatures.get_features as gf
-import IOparser.config_io_CalcFeatures as config_io
-import IOparser.file_io as IO
 import pandas as pd
 import SimpleITK as sitk
 import numpy as np
 import os
 import dicom as pydicom
+import PREDICT.addexceptions as ae
+import PREDICT.imagefeatures.get_features as gf
+import PREDICT.IOparser.config_io_CalcFeatures as config_io
+import PREDICT.IOparser.file_io as IO
 
 # There is a small difference between the contour and image origin and spacing
 # Fix this by setting a slightly larger, but still reasonable tolerance

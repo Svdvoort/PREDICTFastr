@@ -16,7 +16,7 @@
 # limitations under the License.
 
 import numpy as np
-import sitk_helper as sitkh
+import PREDICT.helpers.sitk_helper as sitkh
 
 
 def get_masked_slices_image(image_array, mask_array):

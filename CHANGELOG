@@ -15,11 +15,17 @@ Added
 
 Changed
 ~~~~~~~
+- Major: moved everything except the feature extraction to WORC.
 - Scikit-image version, as older version was not compatible with numpy > 1.16
+- Merge to Python3: Reduce function removed, imported from functools.
+- Merge to Python3: repeat names of package when importing from same folder.
+- Merge to numpy16: change in contour functions due to behavior of np.vstack.
+-
 
 Fixed
 ~~~~~
-- Bug in shape features that specifically occured on Windows.
+- Bug in shape features or rather contour functions that specifically occured
+  on Windows.
 
 
 2.1.3 - 2019-04-08

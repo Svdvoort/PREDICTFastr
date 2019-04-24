@@ -16,8 +16,9 @@
 # limitations under the License.
 
 import SimpleITK as sitk
-import sitk_helper as sitkh
+import PREDICT.helpers.sitk_helper as sitkh
 import numpy as np
+from functools import reduce
 
 # CONSTANTS
 TURN_LEFT, TURN_RIGHT, TURN_NONE = (1, -1, 0)
@@ -50,7 +51,7 @@ def get_contour_boundary_points(contour):
     boundary_points = list()
     for i in range(boundary_index.shape[1]):
         # Convert to required double type, otherwise gives bug on Windows
-        boundary_points = boundary_points.astype(np.double)
+        boundary_index = boundary_index.astype(np.double)
 
         # Convert index to actual coordinates
         boundary_points.append(
@@ -124,9 +125,10 @@ def convex_hull_points(points):
     points = sorted(points.tolist())
     l = reduce(_keep_left, points, [])
     u = reduce(_keep_left, reversed(points), [])
-    total = l.extend(u[i] for i in xrange(1, len(u) - 1)) or l
+    total = l.extend(u[i] for i in range(1, len(u) - 1)) or l
     total = np.asarray(total)
-    total = np.vstack({tuple(row) for row in total})
+    total = [tuple(row) for row in total]
+    total = np.vstack(total)
     total = sort_points(total)
     total = np.append(total, total[0:1], 0)
     return total
@@ -171,10 +173,11 @@ def local_convex_hull_points(points, N_min, N_max):
             temp_points = points[i*N_points_segment:(i+1)*N_points_segment]
         l = reduce(_keep_left, temp_points, [])
         u = reduce(_keep_left, reversed(temp_points), [])
-        l.extend(u[i] for i in xrange(1, len(u) - 1)) or l
+        l.extend(u[i] for i in range(1, len(u) - 1)) or l
         total.extend(l)
     total = np.asarray(total)
-    total = np.vstack({tuple(row) for row in total})
+    total = [tuple(row) for row in total]
+    total = np.vstack(total)
     total = sort_points(total)
     total = np.append(total, total[0:1], 0)
 

@@ -56,6 +56,7 @@ def gabor_filter_parallel(image, mask, parameters=dict(), n_jobs=1,
     gabor_features = np.zeros([N_kernels, 2, N_slices])
     full_filtered = list()
     for i_slice in range(0, N_slices):
+        print(('-- Filtering slice {} / {}.').format(str(i_slice + 1), N_slices))
         filtered = Parallel(n_jobs=n_jobs, backend=backend)(delayed(gabor_filter)
                                                             (image=image[:, :, i_slice],
                                                             mask=mask[:, :, i_slice],

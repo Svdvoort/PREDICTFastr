@@ -28,10 +28,10 @@ def load_config(config_file_path):
 
     # Extract some general settings
     settings_dict['General']['Joblib_ncores'] =\
-        settings['PREDICTGeneral'].getint('Joblib_ncores')
+        settings['General'].getint('Joblib_ncores')
 
     settings_dict['General']['Joblib_backend'] =\
-        str(settings['PREDICTGeneral']['Joblib_backend'])
+        str(settings['General']['Joblib_backend'])
 
     # Extract image feature specific settings
     settings_dict['ImageFeatures']['image_type'] =\
