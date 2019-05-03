@@ -20,7 +20,7 @@ def get_patient_features(metadata, image_type, protocol_feat=False):
     patient_labels = list()
     patient_features = list()
 
-    if [0x10, 0x1010] in metadata.keys():
+    if [0x10, 0x1010] in list(metadata.keys()):
         patient_age = int(metadata[0x10, 0x1010].value[0:3])
     else:
         print("[PREDICT Warning] No patient age in metadata, using zero.")
@@ -29,7 +29,7 @@ def get_patient_features(metadata, image_type, protocol_feat=False):
     patient_labels.append('pf_age')
     patient_features.append(patient_age)
 
-    if [0x10, 0x40] in metadata.keys():
+    if [0x10, 0x40] in list(metadata.keys()):
         patient_sex = metadata[0x10, 0x40].value
 
         if patient_sex == 'M':

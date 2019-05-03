@@ -19,7 +19,7 @@ import pandas as pd
 import SimpleITK as sitk
 import numpy as np
 import os
-import dicom as pydicom
+import pydicom
 import PREDICT.addexceptions as ae
 import PREDICT.imagefeatures.get_features as gf
 import PREDICT.IOparser.config_io_CalcFeatures as config_io
@@ -131,9 +131,11 @@ def CalcFeatures(image, segmentation, parameters, output,
 
     # If required, print output feature values
     if verbose:
-        print('Feature Values:')
+        print('Features extracted:')
         for v, k in zip(feature_values, feature_labels):
             print(k, v)
+
+    return panda_data
 
 
 def load_images(image_file, image_type, metadata_file=None,
@@ -203,7 +205,7 @@ def load_images(image_file, image_type, metadata_file=None,
 
         if metadata_file is not None:
             metadata = pydicom.read_file(metadata_file)
-            metadata.pixel_array = None  # save memory
+            metadata.PixelArray = None  # save memory
 
     # Read the semantics CSV and match values to the image file
     print('Load semantics file.')
@@ -213,26 +215,12 @@ def load_images(image_file, image_type, metadata_file=None,
             # TODO: fix that this readout converges to list types per sem
             semantics = np.loadtxt(semantics_file, np.str)
         elif file_extension == '.csv':
-            import csv
-            semantics = dict()
-            with open(semantics_file, 'rb') as f:
-                reader = csv.reader(f)
-                for num, row in enumerate(reader):
-                    if num == 0:
-                        header = row
-                        if header[0] != 'Patient':
-                            raise ae.PREDICTAssertionError('First column of the semantics file should be patient ID!')
+            data = pd.read_csv(semantics_file, header=0)
+            header = data.keys()
+            if header[0] != 'Patient':
+                raise ae.PREDICTAssertionError('First column of the semantics file should be patient ID!')
 
-                        keys = list()
-                        for key in header:
-                            semantics[key] = list()
-                            keys.append(key)
-                    else:
-                        for column in range(len(row)):
-                            if column > 0:
-                                semantics[keys[column]].append(float(row[column]))
-                            else:
-                                semantics[keys[column]].append(row[column])
+            semantics = {k: data[k].values.tolist() for k in data.keys()}
     else:
         semantics = None
 

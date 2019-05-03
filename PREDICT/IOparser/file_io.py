@@ -17,7 +17,7 @@
 
 import numpy as np
 import glob
-import dicom as pydicom
+import pydicom
 import re
 import pandas as pd
 from natsort import natsorted, ns

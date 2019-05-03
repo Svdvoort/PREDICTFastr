@@ -38,14 +38,38 @@ def load_config(config_file_path):
         [str(item).strip() for item in
          settings['ImageFeatures']['image_type'].split(',')]
 
-    settings_dict['ImageFeatures']['texture'] =\
-        str(settings['ImageFeatures']['texture'])
+    settings_dict['ImageFeatures']['shape'] =\
+        settings['ImageFeatures'].getboolean('shape')
 
-    settings_dict['ImageFeatures']['coliage'] =\
-        settings['ImageFeatures'].getboolean('coliage')
+    settings_dict['ImageFeatures']['histogram'] =\
+        settings['ImageFeatures'].getboolean('shape')
 
     settings_dict['ImageFeatures']['orientation'] =\
         settings['ImageFeatures'].getboolean('orientation')
+
+    settings_dict['ImageFeatures']['texture_Gabor'] =\
+        settings['ImageFeatures'].getboolean('texture_Gabor')
+
+    settings_dict['ImageFeatures']['texture_GLCM'] =\
+        settings['ImageFeatures'].getboolean('texture_GLCM')
+
+    settings_dict['ImageFeatures']['texture_GLCMMS'] =\
+        settings['ImageFeatures'].getboolean('texture_GLCMMS')
+
+    settings_dict['ImageFeatures']['texture_GLRLM'] =\
+        settings['ImageFeatures'].getboolean('texture_GLRLM')
+
+    settings_dict['ImageFeatures']['texture_GLSZM'] =\
+        settings['ImageFeatures'].getboolean('texture_GLSZM')
+
+    settings_dict['ImageFeatures']['texture_NGTDM'] =\
+        settings['ImageFeatures'].getboolean('texture_NGTDM')
+
+    settings_dict['ImageFeatures']['texture_LBP'] =\
+        settings['ImageFeatures'].getboolean('texture_LBP')
+
+    settings_dict['ImageFeatures']['coliage'] =\
+        settings['ImageFeatures'].getboolean('coliage')
 
     settings_dict['ImageFeatures']['vessel'] =\
         settings['ImageFeatures'].getboolean('vessel')

@@ -32,9 +32,9 @@ def data_regularize(data, type="spheric", divs = 10):
         Y = np.linspace(*limits[1], num = divs)
         Z = np.linspace(*limits[2], num = divs)
 
-        for i in xrange(divs-1):
-            for j in xrange(divs-1):
-                for k in xrange(divs-1):
+        for i in range(divs-1):
+            for j in range(divs-1):
+                for k in range(divs-1):
                     points_in_sector = []
                     for point in data:
                         if (point[0] >= X[i] and point[0] < X[i+1] and
@@ -65,8 +65,8 @@ def data_regularize(data, type="spheric", divs = 10):
         u = np.linspace(0, np.pi, num = divs_u)
         v = np.linspace(-np.pi, np.pi, num = divs_v)
 
-        for i in xrange(divs_u - 1):
-            for j in xrange(divs_v - 1):
+        for i in range(divs_u - 1):
+            for j in range(divs_v - 1):
                 points_in_sector = []
                 for k , point in enumerate(d_s):
                     if (point[1] >= u[i] and point[1] < u[i+1] and
@@ -92,8 +92,8 @@ def ellipsoid_plot(center, radii, rotation, ax, plotAxes=False, cageColor='b', c
     y = radii[1] * np.outer(np.sin(u), np.sin(v))
     z = radii[2] * np.outer(np.ones_like(u), np.cos(v))
     # rotate accordingly
-    for i in xrange(len(x)):
-        for j in xrange(len(x)):
+    for i in range(len(x)):
+        for j in range(len(x)):
             [x[i,j],y[i,j],z[i,j]] = np.dot([x[i,j],y[i,j],z[i,j]], rotation) + center
 
     if plotAxes:

@@ -114,11 +114,12 @@ def get_image_features(image_data, mask, parameters,
     # Extract shape features
     shape_mask = ih.get_masked_slices_mask(mask)
 
-    print("Computing shape features.")
-    shape_features, shape_labels = sf.get_shape_features(shape_mask,
-                                                         meta_data)
-    feature_values += shape_features
-    feature_labels += shape_labels
+    if config["shape"]:
+        print("Computing shape features.")
+        shape_features, shape_labels = sf.get_shape_features(shape_mask,
+                                                             meta_data)
+        feature_values += shape_features
+        feature_labels += shape_labels
 
     if config["orientation"]:
         print("Computing orientation features.")
@@ -160,10 +161,11 @@ def get_image_features(image_data, mask, parameters,
 
         masked_voxels = ih.get_masked_voxels(image_data_array, mask_array)
 
-        print("Computing histogram features.")
-        histogram_features, histogram_labels =\
-            hf.get_histogram_features(masked_voxels,
-                                      N_BINS)
+        if config["histogram"]:
+            print("Computing histogram features.")
+            histogram_features, histogram_labels =\
+                hf.get_histogram_features(masked_voxels,
+                                          N_BINS)
 
         # NOTE: As a minimum of 4 voxels in each dimension is needed
         # for the SimpleITK log filter, we compute these features
@@ -180,12 +182,11 @@ def get_image_features(image_data, mask, parameters,
         image_data_array, mask_array = ih.get_masked_slices_image(
             image_data_array, mask_array)
 
-        print("Computing texture features.")
         texture_features, texture_labels =\
             tf.get_texture_features(image_data_array,
                                     mask_array,
                                     parameters,
-                                    config['texture'],
+                                    config,
                                     config_general)
 
         feature_values += histogram_features + texture_features

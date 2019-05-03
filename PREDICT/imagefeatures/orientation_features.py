@@ -46,7 +46,14 @@ def get_orientation_features(mask):
                 data = np.transpose(np.nonzero(mask))
                 points = sp.ConvexHull(data).points
                 points = of.data_regularize(points, divs=8)
-
+            except MemoryError:
+                print("MemoryError, segmentation too large, eroding.")
+                elem = morphology.ball(2)
+                mask = morphology.binary_erosion(mask, elem)
+                data = np.transpose(np.nonzero(mask))
+                points = sp.ConvexHull(data).points
+                points = of.data_regularize(points, divs=8)
+                
         # Convert evecs to angles
         X = evecs[:, 0]
         Y = evecs[:, 1]
