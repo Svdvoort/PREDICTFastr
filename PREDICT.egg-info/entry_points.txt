@@ -1,0 +1,3 @@
+[console_scripts]
+PREDICT = PREDICT.PREDICT:main
+

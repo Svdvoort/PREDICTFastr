@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 The format is based on `Keep a Changelog <http://keepachangelog.com/>`_
 and this project adheres to `Semantic Versioning <http://semver.org/>`_
 
-Unreleased
+3.0.0 - 2019-05-08
 ------------------
 
 Added
@@ -29,6 +29,7 @@ Changed
 - Use pydicom instead of dicom due to python3 merge.
 - csv reader works different and impractical in python3. Use pandas instead
   to read csv.
+- Require PyRadiomics 2.1.2, as 2.2.0 seems to have a bug.
 
 Fixed
 ~~~~~
