@@ -7,13 +7,8 @@ Subpackages
 .. toctree::
 
     PREDICT.IOparser
-    PREDICT.classification
-    PREDICT.featureselection
-    PREDICT.genetics
     PREDICT.helpers
     PREDICT.imagefeatures
-    PREDICT.plotting
-    PREDICT.processing
 
 Submodules
 ----------
@@ -26,26 +21,10 @@ PREDICT.CalcFeatures module
     :undoc-members:
     :show-inheritance:
 
-PREDICT.StatisticalTestFeatures module
---------------------------------------
-
-.. automodule:: PREDICT.StatisticalTestFeatures
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 PREDICT.addexceptions module
 ----------------------------
 
 .. automodule:: PREDICT.addexceptions
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-PREDICT.trainclassifier module
-------------------------------
-
-.. automodule:: PREDICT.trainclassifier
     :members:
     :undoc-members:
     :show-inheritance:

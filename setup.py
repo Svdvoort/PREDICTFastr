@@ -18,6 +18,11 @@ import sys
 from setuptools.command.test import test as TestCommand
 from setuptools import setup, find_packages
 
+
+if sys.version_info < (3, 6):
+    sys.exit('Sorry, Python < 3.6 is not supported')
+
+
 with open('requirements.txt', 'r') as fh:
     _requires = fh.read().splitlines()
 
@@ -90,7 +95,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 
 setup(
     name='PREDICT',
-    version='2.1.3',
+    version='3.0.0',
     description='Predict: a Radiomics Extensive Digital Interchangable Classification Toolkit.',
     long_description=_description,
     url='https://github.com/Svdvoort/PREDICTFastr',
@@ -107,7 +112,9 @@ setup(
         'License :: OSI Approved :: Apache Software License',
         'Natural Language :: English',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3 :: Only',
         'Topic :: Scientific/Engineering :: Information Analysis',
         'Topic :: System :: Distributed Computing',
         'Topic :: System :: Logging',
@@ -121,7 +128,6 @@ setup(
     tests_require=_tests_require,
     test_suite='nose.collector',
     cmdclass={'test': NoseTestCommand},
-    entry_points=entry_points,
-    data_files=[(config_d, ['PREDICT/fastrconfig/PREDICT_config.py'])]
+    entry_points=entry_points
     # setup_requires=_requires
 )

@@ -1,15 +1,11 @@
-PREDICT v2.1.3
+PREDICT v3.0.0
 ==============
 
 PREDICT: a Radiomics Extensive Digital Interchangable Classification Toolkit
 ----------------------------------------------------------------------------
 
-This is an open-source python package supporting Radiomics medical image
-feature extraction and classification.
-
-We aim to add a wide variety of features and classifiers to address a
-wide variety classification problems. Through a modular setup, these can
-easily be interchanged and compared.
+This is an open-source python package supporting radiomics medical image
+feature extraction.
 
 Documentation
 ~~~~~~~~~~~~~
@@ -30,8 +26,8 @@ The documentation can then be viewed in a browser by opening
 Installation
 ~~~~~~~~~~~~
 
-PREDICT has currently only been tested on Unix with Python 2.7.6 and
-higher. We plan to merge towards Python 3 before may 2019.
+PREDICT has currently been tested on Ubuntu 16.04 and 18.04, and Windows
+10 using Python 3.6.6 and higher.
 
 The package can be installed through pip :
 
@@ -51,15 +47,6 @@ Make sure you first install the required packages:
 
     pip install -r requirements.txt
 
-Preprocessing
-~~~~~~~~~~~~~
-
-From version 1.0.2 and on, preprocessing has been removed from PREDICT.
-It is now available as a separate tool in the `WORC
-package <https://github.com/MStarmans91/WORC>`__, as it's also a
-separate step in the radiomics workflow. We do advice to use the
-preprocessing function and thus also WORC.
-
 3rd-party packages used in PREDICT:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -67,10 +54,10 @@ We mainly rely on the following packages:
 
 -  SimpleITK (Image loading and preprocessing)
 -  numpy (Feature computation)
--  sklearn, scipy (Classification)
--  FASTR (Fast and parallel workflow execution)
+-  scikit-image
 -  pandas (Storage)
 -  PyRadiomics
+-  pydicom
 
 See also the `requirements file <requirements.txt>`__.
 
