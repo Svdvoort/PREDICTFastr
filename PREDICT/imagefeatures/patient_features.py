@@ -40,7 +40,7 @@ def get_patient_features(metadata, image_type, protocol_feat=False):
             patient_sex = 2
     else:
         print("[PREDICT Warning] No patient sex in metadata, using 2.")
-        patient_age = 2
+        patient_sex = 2
 
     patient_labels.append('pf_sex')
     patient_features.append(patient_sex)
