@@ -21,7 +21,11 @@ def get_patient_features(metadata, image_type, protocol_feat=False):
     patient_features = list()
 
     if [0x10, 0x1010] in list(metadata.keys()):
-        patient_age = int(metadata[0x10, 0x1010].value[0:3])
+        try:
+            patient_age = int(metadata[0x10, 0x1010].value[0:3])
+        except ValueError:
+            print("[PREDICT Warning] Patient age is not an integer, using zero.")
+            patient_age = 0
     else:
         print("[PREDICT Warning] No patient age in metadata, using zero.")
         patient_age = 0

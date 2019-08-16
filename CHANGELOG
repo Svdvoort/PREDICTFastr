@@ -6,6 +6,26 @@ All notable changes to this project will be documented in this file.
 The format is based on `Keep a Changelog <http://keepachangelog.com/>`_
 and this project adheres to `Semantic Versioning <http://semver.org/>`_
 
+Unreleased
+------------------
+
+Added
+~~~~~~~
+-
+
+Changed
+~~~~~~~
+-
+
+Fixed
+~~~~~
+- Check in patient features to assign value "unknown" when DICOM tag is not
+  present.
+- Bug in GLCM and GLCMMS texture features: label name did not include the
+  angle, but the distance twice.
+- CalcFeatures used to look at the shape parameter in the
+  config['ImageFeatures']: fixed to look at histogram instead.
+
 3.0.0 - 2019-05-08
 ------------------
 

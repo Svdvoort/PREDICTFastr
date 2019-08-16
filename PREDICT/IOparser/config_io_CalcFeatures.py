@@ -42,7 +42,7 @@ def load_config(config_file_path):
         settings['ImageFeatures'].getboolean('shape')
 
     settings_dict['ImageFeatures']['histogram'] =\
-        settings['ImageFeatures'].getboolean('shape')
+        settings['ImageFeatures'].getboolean('histogram')
 
     settings_dict['ImageFeatures']['orientation'] =\
         settings['ImageFeatures'].getboolean('orientation')
