@@ -25,6 +25,8 @@ Fixed
   angle, but the distance twice.
 - CalcFeatures used to look at the shape parameter in the
   config['ImageFeatures']: fixed to look at histogram instead.
+- Major bug in image helper that took omitted the last slice of the mask for
+  the shape feature computation.
 
 3.0.0 - 2019-05-08
 ------------------
