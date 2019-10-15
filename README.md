@@ -1,8 +1,8 @@
-# PREDICT v3.0.0
+# PREDICT v3.1.0
 
 ## PREDICT: a Radiomics Extensive Digital Interchangable Classification Toolkit
 
-This is an open-source python package supporting radiomics medical image feature extraction.
+This is an open-source python package supporting radiomics image feature extraction.
 
 ### Documentation
 

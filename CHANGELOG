@@ -6,16 +6,8 @@ All notable changes to this project will be documented in this file.
 The format is based on `Keep a Changelog <http://keepachangelog.com/>`_
 and this project adheres to `Semantic Versioning <http://semver.org/>`_
 
-Unreleased
+3.1.0 - 2019-10-15
 ------------------
-
-Added
-~~~~~~~
--
-
-Changed
-~~~~~~~
--
 
 Fixed
 ~~~~~
@@ -27,6 +19,8 @@ Fixed
   config['ImageFeatures']: fixed to look at histogram instead.
 - Major bug in image helper that took omitted the last slice of the mask for
   the shape feature computation.
+- Proper python gitignore
+- Updated travis.yml.
 
 3.0.0 - 2019-05-08
 ------------------
