@@ -109,6 +109,6 @@ def get_masked_slices_mask(mask_image):
     if len(mask_slices) == 1:
         mask_sliced = mask_image[:, :, mask_slices[0]:(mask_slices[0] + 1)]
     else:
-        mask_sliced = mask_image[:, :, mask_slices[0]:mask_slices[-1]]
+        mask_sliced = mask_image[:, :, mask_slices[0]:mask_slices[-1] + 1]
 
     return mask_sliced

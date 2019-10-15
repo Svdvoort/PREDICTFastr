@@ -212,7 +212,7 @@ def get_GLCM_features_multislice(image, mask, parameters=dict()):
                                                      angles):
         # Round to reduce name length
         i_dist = round(i_dist, 2)
-        i_angle = round(i_dist, 2)
+        i_angle = round(i_angle, 2)
 
         label_mean = i_name + 'd' + str(i_dist) + 'A' + str(i_angle) + 'mean'
         label_std = i_name + 'd' + str(i_dist) + 'A' + str(i_angle) + 'std'
@@ -303,7 +303,7 @@ def get_GLCM_features(image, mask, parameters=dict()):
                                                      angles):
         # Round to reduce name length
         i_dist = round(i_dist, 2)
-        i_angle = round(i_dist, 2)
+        i_angle = round(i_angle, 2)
 
         label = i_name + 'd' + str(i_dist) + 'A' + str(i_angle)
         GLCM_labels.append(label)

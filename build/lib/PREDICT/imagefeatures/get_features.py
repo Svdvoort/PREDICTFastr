@@ -112,7 +112,10 @@ def get_image_features(image_data, mask, parameters,
     feature_labels = list()
 
     # Extract shape features
-    shape_mask = ih.get_masked_slices_mask(mask)
+    if len(mask.GetSize()) == 3:
+        shape_mask = ih.get_masked_slices_mask(mask)
+    else:
+        shape_mask = mask
 
     if config["shape"]:
         print("Computing shape features.")

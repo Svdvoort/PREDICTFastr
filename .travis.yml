@@ -1,17 +1,15 @@
+dist: xenial   # required for Python >= 3.7
 language: python
 python:
-- '2.7'
+  - "3.7"
+
 install:
-- python --version
-- python -m pip install --disable-pip-version-check --upgrade pip
-- pip install wheel>=0.29.0
-- pip install setuptools>=28.0.0
-- pip install --trusted-host www.itk.org -f https://itk.org/SimpleITKDoxygen/html/PyDownloadPage.html
-  SimpleITK>=0.9.1
 - pip install -r requirements.txt
 - python setup.py -q install
+
 script:
 - python ./tests/tests.py
+
 notifications:
   slack:
     secure: VN1XKOaUH8zqwsjQ8kl5+GwmLQ7Y6H+c+axwbvL0aJGSsmlRTtrL/MsE9KE5is0pOc622NhvtTQy1kycq/KNKMq6Jby9PITS8UmJJ8I2VTT25MBAWpQZue2kUwak/veZgq788BvzPV6TOJElwvFwF4BdbqXHF2d3bdzvUph/fYbPVMwGM9Vj0jcCsjtxkZKl9fQicgsIJJmeHK/2sdmpR48D/43R+iDGz4C9qPMtgpSHAyL8rOQSLLDC9asAJ/DpQ+SHkjUl8sdONg9gnO/ZhqwmiPEL82BYFdxzNUyD8gG9rVD51lu3nXrNsyO9yEVPFQ9p19cY00n8dvgJEXBHBfdjJEQelE2JPGhxSFMfhWzc1UuSH/6Xl5Gy46KhISMDCsmY5IdRR8DdJgWJ0sDdPLklI8lBgkbM3IpZ1s/Ypqm/5fyd7hjxgiwZxeMdIW4mUW19CLY2mFovdd/+vC0cjHL4Lh+TTp4d92qp5lm0zTVSIsSKGvqYrUlZByuE5DyCZORBN5wRS9c2zlL5PZlYfk/UVFkRl2jqczplAiyYu+34vB4B4nF2WNLHiV5wzhBG5MNynO8X3tJTVaaA/aSv85U6yAUGKQKzFTfxmJMhSNADga61PDtOQLDuMmNfaP9Soev4I6pVVPaa7E4DIpQ+D+UsOREezfgbsznbWFnLDZs=
