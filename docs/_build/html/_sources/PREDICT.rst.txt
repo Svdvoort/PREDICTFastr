@@ -9,6 +9,7 @@ Subpackages
     PREDICT.IOparser
     PREDICT.helpers
     PREDICT.imagefeatures
+    PREDICT.plotting
 
 Submodules
 ----------
