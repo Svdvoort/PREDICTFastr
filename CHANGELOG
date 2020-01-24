@@ -6,6 +6,21 @@ All notable changes to this project will be documented in this file.
 The format is based on `Keep a Changelog <http://keepachangelog.com/>`_
 and this project adheres to `Semantic Versioning <http://semver.org/>`_
 
+3.1.2 - 2020-01-24
+------------------
+Added
+~~~~~
+- Error when config file cannot be found.
+- Support for 1D images.
+
+Fixed
+~~~~~
+- Catch error when image slice is too small for GLCM, give warning
+  and skip respective slice.
+- For large images, GLSZM gave an error. Increased bin width until error
+  resolves.
+
+
 3.1.1 - 2019-10-15
 ------------------
 

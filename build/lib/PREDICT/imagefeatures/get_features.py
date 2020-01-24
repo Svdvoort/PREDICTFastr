@@ -118,28 +118,28 @@ def get_image_features(image_data, mask, parameters,
         shape_mask = mask
 
     if config["shape"]:
-        print("Computing shape features.")
+        print("\t Computing shape features.")
         shape_features, shape_labels = sf.get_shape_features(shape_mask,
                                                              meta_data)
         feature_values += shape_features
         feature_labels += shape_labels
 
     if config["orientation"]:
-        print("Computing orientation features.")
+        print("\t Computing orientation features.")
         orientation_features, orientation_labels =\
             of.get_orientation_features(shape_mask)
         feature_values += orientation_features
         feature_labels += orientation_labels
 
     if meta_data is not None:
-        print("Extracting patient features.")
+        print("\t Extracting patient features.")
         patient_features, patient_labels =\
             pf.get_patient_features(meta_data, image_type)
         feature_values += patient_features
         feature_labels += patient_labels
 
     if sem_data is not None and output is not None:
-        print("Extracting semantic features.")
+        print("\t Extracting semantic features.")
         sem_features, sem_labels = semf.get_semantic_features(sem_data,
                                                               output)
         feature_values += sem_features
@@ -165,7 +165,7 @@ def get_image_features(image_data, mask, parameters,
         masked_voxels = ih.get_masked_voxels(image_data_array, mask_array)
 
         if config["histogram"]:
-            print("Computing histogram features.")
+            print("\t Computing histogram features.")
             histogram_features, histogram_labels =\
                 hf.get_histogram_features(masked_voxels,
                                           N_BINS)
@@ -174,7 +174,7 @@ def get_image_features(image_data, mask, parameters,
         # for the SimpleITK log filter, we compute these features
         # on the full image
         if config["log"]:
-            print("Computing log features.")
+            print("\t Computing log features.")
             log_features, log_labels =\
                 logf.get_log_features(image_data_array,
                                       mask_array,
@@ -196,7 +196,7 @@ def get_image_features(image_data, mask, parameters,
         feature_labels += histogram_labels + texture_labels
 
         if config["coliage"]:
-            print("Computing coliage features.")
+            print("\t Computing coliage features.")
             coliage_features, coliage_labels =\
                 cf.get_coliage_features(image_data_array,
                                         mask_array)
@@ -204,7 +204,7 @@ def get_image_features(image_data, mask, parameters,
             feature_labels += coliage_labels
 
         if config["vessel"]:
-            print("Computing vessel features.")
+            print("\t Computing vessel features.")
             vessel_features, vessel_labels =\
                 vesf.get_vessel_features(image_data_array,
                                          mask_array,
@@ -213,7 +213,7 @@ def get_image_features(image_data, mask, parameters,
             feature_labels += vessel_labels
 
         if config["phase"]:
-            print("Computing phase features.")
+            print("\t Computing phase features.")
             phase_features, phase_labels =\
                 phasef.get_phase_features(image_data_array,
                                           mask_array,

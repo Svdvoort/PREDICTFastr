@@ -167,8 +167,12 @@ def get_GLCM_features_multislice(image, mask, parameters=dict()):
 
         image_bounded = rescale_intensity(image_bounded, out_range=(0, 15))
 
-        GLCM_matrix = greycomatrix(image_bounded, distances, angles, levels=levels,
-                                   normed=True)
+        try:
+            GLCM_matrix = greycomatrix(image_bounded, distances, angles, levels=levels,
+                                       normed=True)
+        except ValueError:
+            print(f'[PREDICT WARNING] Slice {i_slice} to small to compute GLCM: {image_bounded.shape}.')
+            continue
 
         contrast.append(greycoprops(GLCM_matrix, 'contrast').flatten())
         dissimilarity.append(greycoprops(GLCM_matrix, 'dissimilarity').flatten())
@@ -277,8 +281,11 @@ def get_GLCM_features(image, mask, parameters=dict()):
 
         image_bounded = rescale_intensity(image_bounded, out_range=(0, 15))
 
-        GLCM_matrix += greycomatrix(image_bounded, distances, angles, levels=levels,
-                                    normed=True)
+        try:
+            GLCM_matrix += greycomatrix(image_bounded, distances, angles, levels=levels,
+                                        normed=True)
+        except ValueError:
+            print(f'[PREDICT WARNING] Slice {i_slice} to small to compute GLCM: {image_bounded.shape}.')
 
     contrast = greycoprops(GLCM_matrix, 'contrast').flatten()
     dissimilarity = greycoprops(GLCM_matrix, 'dissimilarity').flatten()
@@ -389,11 +396,17 @@ def get_GLSZM_features(image, mask):
               'verbose': True}
 
     # Initialize wrapperClass to generate signature
-    extractor = featureextractor.RadiomicsFeaturesExtractor(**kwargs)
-    extractor.disableAllFeatures()
-    extractor.enableFeatureClassByName('glszm')
-
-    featureVector = extractor.execute(image, mask)
+    success = False
+    while not success:
+        try:
+            extractor = featureextractor.RadiomicsFeaturesExtractor(**kwargs)
+            extractor.disableAllFeatures()
+            extractor.enableFeatureClassByName('glszm')
+            featureVector = extractor.execute(image, mask)
+            success = True
+        except RuntimeError as e:
+            print(f'[PREDICT WARNING] {e} : doubling bin width.')
+            kwargs['binWidth'] = 2 * kwargs['binWidth']
 
     # Assign features to corresponding groups
     GLSZM_labels_temp = list()

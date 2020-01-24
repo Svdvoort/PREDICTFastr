@@ -29,47 +29,60 @@ def get_orientation_features(mask):
     if type(mask) == sitk.SimpleITK.Image:
         mask = sitk.GetArrayFromImage(mask)
 
-    # Get nonzero point indices if convex hull for memory reduction
     data = np.transpose(np.nonzero(mask))
-    try:
+    if len(mask.shape) == 2:
         points = sp.ConvexHull(data).points
+        solution = of.ellipsoid_fit_2D(points)
+        A = solution[0]
+        B = solution[1]
+        C = solution[2]
+        D = solution[3]
+        E = solution[4]
 
-        success = False
-        while not success:
-            try:
-                center, radii, evecs, v = of.ellipsoid_fit(points)
-                success = True
-            except np.linalg.linalg.LinAlgError:
-                print("Encountered singular matrix, segmentation too small, dilating.")
-                elem = morphology.ball(2)
-                mask = morphology.binary_dilation(mask, elem)
-                data = np.transpose(np.nonzero(mask))
-                points = sp.ConvexHull(data).points
-                points = of.data_regularize(points, divs=8)
-            except MemoryError:
-                print("MemoryError, segmentation too large, eroding.")
-                elem = morphology.ball(2)
-                mask = morphology.binary_erosion(mask, elem)
-                data = np.transpose(np.nonzero(mask))
-                points = sp.ConvexHull(data).points
-                points = of.data_regularize(points, divs=8)
-                
-        # Convert evecs to angles
-        X = evecs[:, 0]
-        Y = evecs[:, 1]
-        Z = evecs[:, 2]
+        orientation_labels = ['of_2D_A', 'of_2D_B', 'of_2D_C', 'of_2D_D', 'of_2D_E']
+        orientation_features = [A, B, C, D, E]
 
-        alpha = np.arctan2(Z[0], Z[1])
-        beta = np.arccos(Z[2])
-        gamma = np.arctan2(X[2], Y[2])
+    else:
+        # Get nonzero point indices if convex hull for memory reduction
 
-    except sp.qhull.QhullError:
-        # TODO: 2D ellipse fit
-        alpha = 0
-        beta = 0
-        gamma = 0
+        try:
+            points = sp.ConvexHull(data).points
+            success = False
+            while not success:
+                try:
+                    center, radii, evecs, v = of.ellipsoid_fit(points)
+                    success = True
+                except np.linalg.linalg.LinAlgError:
+                    print("Encountered singular matrix, segmentation too small, dilating.")
+                    elem = morphology.ball(2)
+                    mask = morphology.binary_dilation(mask, elem)
+                    data = np.transpose(np.nonzero(mask))
+                    points = sp.ConvexHull(data).points
+                    points = of.data_regularize(points, divs=8)
+                except MemoryError:
+                    print("MemoryError, segmentation too large, eroding.")
+                    elem = morphology.ball(2)
+                    mask = morphology.binary_erosion(mask, elem)
+                    data = np.transpose(np.nonzero(mask))
+                    points = sp.ConvexHull(data).points
+                    points = of.data_regularize(points, divs=8)
 
-    orientation_labels = ['of_theta_x', 'of_theta_y', 'of_theta_z']
-    orientation_features = [alpha, beta, gamma]
+            # Convert evecs to angles
+            X = evecs[:, 0]
+            Y = evecs[:, 1]
+            Z = evecs[:, 2]
+
+            alpha = np.arctan2(Z[0], Z[1])
+            beta = np.arccos(Z[2])
+            gamma = np.arctan2(X[2], Y[2])
+
+        except sp.qhull.QhullError:
+            # TODO: 2D ellipse fit
+            alpha = 0
+            beta = 0
+            gamma = 0
+
+        orientation_labels = ['of_theta_x', 'of_theta_y', 'of_theta_z']
+        orientation_features = [alpha, beta, gamma]
 
     return orientation_features, orientation_labels
