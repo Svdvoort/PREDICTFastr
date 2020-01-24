@@ -17,9 +17,15 @@
 
 import configparser
 import numpy as np
+import os
+import PREDICT.addexceptions as ae
 
 
 def load_config(config_file_path):
+    if not os.path.exists(config_file_path):
+        e = f'File {config_file_path} does not exist!'
+        raise ae.PREDICTKeyError(e)
+
     settings = configparser.ConfigParser()
     settings.read(config_file_path)
 

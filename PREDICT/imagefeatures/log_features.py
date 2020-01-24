@@ -54,7 +54,6 @@ def get_log_features(image, mask, parameters=dict()):
             LoG_features object.
 
     '''
-
     # Convert image to array and get size
     image = sitk.GetImageFromArray(image)
     im_size = image.GetSize()

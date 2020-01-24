@@ -122,7 +122,10 @@ def ellipsoid_plot(center, radii, rotation, ax, plotAxes=False, cageColor='b', c
 def ellipsoid_fit(X):
     x=X[:,0]
     y=X[:,1]
-    z=X[:,2]
+    if X.shape[1] == 2:
+        z = np.ones(y.shape)
+    else:
+        z=X[:,2]
     D = np.array([x*x,
                  y*y,
                  z*z,
@@ -147,3 +150,19 @@ def ellipsoid_fit(X):
     radii = np.sqrt(1. / evals)
 
     return center, radii, evecs, v
+
+
+def ellipsoid_fit_2D(X):
+    # From https://stackoverflow.com/questions/47873759/how-to-fit-a-2d-ellipse-to-given-points
+    x = X[:, 0]
+    y = X[:, 1]
+
+    # Convert to 2D matrices
+    x = np.expand_dims(x, axis=1)
+    y = np.expand_dims(y, axis=1)
+
+    # Formulate and solve the least squares problem ||Ax - b ||^2
+    A = np.hstack([x**2, x * y, y**2, x, y])
+    b = np.ones_like(x)
+    solution = np.linalg.lstsq(A, b)[0].squeeze()
+    return solution
