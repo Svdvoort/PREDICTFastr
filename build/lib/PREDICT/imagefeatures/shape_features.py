@@ -35,10 +35,63 @@ def get_shape_features(mask, metadata=None, mode='2D'):
         features, labels = get_shape_features_3D(mask, metadata)
         labels = [l + '_3D' for l in labels]
     else:
-        features, labels = get_shape_features_2D(mask, metadata)
-        labels = [l + '_2D' for l in labels]
+        if len(mask.GetSize()) == 2:
+            features, labels = get_shape_features_1D(mask, metadata)
+            labels = [l + '_1D' for l in labels]
+        else:
+            features, labels = get_shape_features_2D(mask, metadata)
+            labels = [l + '_2D' for l in labels]
 
     return features, labels
+
+
+def get_shape_features_single_slice(maskArray, metadata=None):
+    for nblob in range(0, np.max(maskArray)):
+        blobimage = np.zeros(maskArray.shape)
+        blobimage[maskArray == nblob] = 1
+
+        if np.sum(blobimage) == 0:
+            # No points in volume, therefore we ignore it.
+            continue
+
+        blobimage = blobimage.astype(np.uint8)
+        blobimage = sitk.GetImageFromArray(blobimage)
+
+        # Iterate over all blobs in a slice
+        boundary_points = cf.get_smooth_contour(blobimage,
+                                                N_min_smooth,
+                                                N_max_smooth)
+        if boundary_points.shape[0] <= 3:
+            # Only 1 or 2 points in volume, which means it's not really a
+            # volume, therefore we ignore it.
+            continue
+
+        rad_dist_i, rad_dist_norm_i = compute_radial_distance(
+            boundary_points)
+        perimeter = compute_perimeter(boundary_points)
+
+        area = compute_area(boundary_points)
+        compactness = compute_compactness(boundary_points)
+        roughness_i, roughness_avg_temp = compute_roughness(
+            boundary_points, rad_dist_i)
+        roughness_avg = roughness_avg_temp
+
+        cvar = compute_cvar(boundary_points)
+        prax = compute_prax(boundary_points)
+        evar = compute_evar(boundary_points)
+
+        # TODO: Move computing convexity into esf
+        convex_hull = cf.convex_hull(blobimage)
+        convexity = compute_perimeter(convex_hull / perimeter)
+
+        solidity = compute_area(convex_hull)/area
+        rad_dist_avg = np.mean(np.asarray(rad_dist_i))
+        rad_dist_std = np.std(np.asarray(rad_dist_i))
+        roughness_std = np.std(np.asarray(roughness_i))
+
+        return convexity, area, rad_dist_avg, rad_dist_std,\
+            roughness_avg, roughness_std, cvar, prax, evar, solidity,\
+            compactness
 
 
 def get_shape_features_3D(mask_ITKim, metadata=None):
@@ -166,7 +219,6 @@ def get_shape_features_3D(mask_ITKim, metadata=None):
 
 def get_shape_features_2D(mask_ITKim, metadata=None):
     # Pre-allocation
-    perimeter = list()
     convexity = list()
     area = list()
     rad_dist_avg = list()
@@ -178,9 +230,23 @@ def get_shape_features_2D(mask_ITKim, metadata=None):
     evar = list()
     solidity = list()
     compactness = list()
-    rad_dist = list()
-    rad_dist_norm = list()
-    roughness = list()
+
+    # Determine Voxel Size
+    voxel_volume = voxel_area = None
+    if metadata is not None:
+        if (0x18, 0x50) in metadata.keys():
+            # import dicom as pydicom
+            # metadata = pydicom.read_file(metadata)
+            pixel_spacing = metadata[0x28, 0x30].value
+            slice_thickness = int(metadata[0x18, 0x50].value)
+            voxel_volume = pixel_spacing[0] * pixel_spacing[1] * slice_thickness
+            voxel_area = pixel_spacing[0] * pixel_spacing[1]
+    else:
+        # Check if we can use the pixel information from the Nifti
+        if hasattr(mask_ITKim, 'GetSpacing'):
+            spacing = mask_ITKim.GetSpacing()
+            voxel_volume = spacing[0] * spacing[1] * spacing[2]
+            voxel_area = spacing[0] * spacing[1]
 
     # Now calculate some of the edge shape features
     # NOTE: Due to conversion to array, first and third axis are switched
@@ -190,53 +256,23 @@ def get_shape_features_2D(mask_ITKim, metadata=None):
     for i_slice in range(0, N_mask_slices):
         # Iterate over all slices
         slicie = mask[:, :, i_slice]
-
-        for nblob in range(0, np.max(slicie)):
-            blobimage = np.zeros(slicie.shape)
-            blobimage[slicie == nblob] = 1
-
-            if np.sum(blobimage) == 0:
-                # No points in volume, therefore we ignore it.
-                continue
-
-            blobimage = blobimage.astype(np.uint8)
-            blobimage = sitk.GetImageFromArray(blobimage)
-
-            # Iterate over all blobs in a slice
-            boundary_points = cf.get_smooth_contour(blobimage,
-                                                    N_min_smooth,
-                                                    N_max_smooth)
-            if boundary_points.shape[0] <= 3:
-                # Only 1 or 2 points in volume, which means it's not really a
-                # volume, therefore we ignore it.
-                continue
-
-            rad_dist_i, rad_dist_norm_i = compute_radial_distance(
-                boundary_points)
-            rad_dist.append(rad_dist_i)
-            rad_dist_norm.append(rad_dist_norm_i)
-            perimeter.append(compute_perimeter(boundary_points))
-
-            area.append(compute_area(boundary_points))
-            compactness.append(compute_compactness(boundary_points))
-            roughness_i, roughness_avg_temp = compute_roughness(
-                boundary_points, rad_dist_i)
-            roughness_avg.append(roughness_avg_temp)
-            roughness.append(roughness_i)
-
-            cvar.append(compute_cvar(boundary_points))
-            prax.append(compute_prax(boundary_points))
-            evar.append(compute_evar(boundary_points))
-
-            # TODO: Move computing convexity into esf
-            convex_hull = cf.convex_hull(blobimage)
-            convexity.append(compute_perimeter(convex_hull)
-                / perimeter[-1])
-
-            solidity.append(compute_area(convex_hull)/area[-1])
-            rad_dist_avg.append(np.mean(np.asarray(rad_dist_i)))
-            rad_dist_std.append(np.std(np.asarray(rad_dist_i)))
-            roughness_std.append(np.std(np.asarray(roughness_i)))
+        convexity_temp, area_temp, rad_dist_avg_temp, rad_dist_std_temp,\
+            roughness_avg_temp, roughness_std_temp, cvar_temp, prax_temp,\
+            evar_temp, solidity_temp, compactness_temp =\
+            get_shape_features_single_slice(slicie, metadata)
+        convexity.append(convexity_temp)
+        if voxel_area is not None:
+            area_temp *= voxel_area
+        area.append(area_temp)
+        rad_dist_avg.append(rad_dist_avg_temp)
+        rad_dist_std.append(rad_dist_std_temp)
+        roughness_avg.append(roughness_avg_temp)
+        roughness_std.append(roughness_std_temp)
+        cvar.append(cvar_temp)
+        prax.append(prax_temp)
+        evar.append(evar_temp)
+        solidity.append(solidity_temp)
+        compactness.append(compactness_temp)
 
     compactness_avg = np.mean(compactness)
     compactness_std = np.std(compactness)
@@ -254,38 +290,67 @@ def get_shape_features_2D(mask_ITKim, metadata=None):
     evar_std = np.std(evar)
     solidity_avg = np.mean(solidity)
     solidity_std = np.std(solidity)
+    area_avg = np.mean(area)
+    area_std = np.std(area)
+    area_min = np.min(area)
+    area_max = np.max(area)
 
     shape_labels = ['sf_compactness_avg', 'sf_compactness_std', 'sf_rad_dist_avg',
                     'sf_rad_dist_std', 'sf_roughness_avg', 'sf_roughness_std',
                     'sf_convexity_avg', 'sf_convexity_std', 'sf_cvar_avg', 'sf_cvar_std',
                     'sf_prax_avg', 'sf_prax_std', 'sf_evar_avg', 'sf_evar_std',
-                    'sf_solidity_avg', 'sf_solidity_std']
+                    'sf_solidity_avg', 'sf_solidity_std', 'sf_area_avg',
+                    'sf_area_max', 'sf_area_min', 'sf_area_std']
 
     shape_features = [compactness_avg, compactness_std, rad_dist_avg,
                       rad_dist_std, roughness_avg, roughness_std,
                       convexity_avg, convexity_std, cvar_avg, cvar_std,
                       prax_avg, prax_std, evar_avg, evar_std, solidity_avg,
-                      solidity_std]
+                      solidity_std, area_avg, area_max, area_min, area_std]
 
+    if voxel_volume is not None:
+        volume = np.sum(mask) * voxel_volume
+        shape_labels.append('sf_volume')
+        shape_features.append(volume)
+
+    return shape_features, shape_labels
+
+
+def get_shape_features_1D(mask_ITKim, metadata=None):
+    # Determine Voxel Size
+    voxel_area = None
     if metadata is not None:
-        if (0x18, 0x50) in metadata.keys():
-            # import dicom as pydicom
-            # metadata = pydicom.read_file(metadata)
-            pixel_spacing = metadata[0x28, 0x30].value
-            slice_thickness = int(metadata[0x18, 0x50].value)
-            voxel_volume = pixel_spacing[0] * pixel_spacing[1] * slice_thickness
-            volume = np.sum(mask) * voxel_volume
-            shape_labels.append('sf_volume')
-            shape_features.append(volume)
+        pixel_spacing = metadata[0x28, 0x30].value
+        voxel_area = pixel_spacing[0] * pixel_spacing[1]
     else:
         # Check if we can use the pixel information from the Nifti
         if hasattr(mask_ITKim, 'GetSpacing'):
             spacing = mask_ITKim.GetSpacing()
-            voxel_volume = spacing[0] * spacing[1] * spacing[2]
-            volume = np.sum(mask) * voxel_volume
-            shape_labels.append('sf_volume')
-            shape_features.append(volume)
+            voxel_area = spacing[0] * spacing[1]
 
+    # Now calculate some of the edge shape features
+    # NOTE: Due to conversion to array, first and third axis are switched
+    mask = sitkh.GetArrayFromImage(mask_ITKim)
+    mask = label(mask, connectivity=2)
+    convexity, area, rad_dist_avg, rad_dist_std,\
+        roughness_avg, roughness_std, cvar, prax,\
+        evar, solidity, compactness =\
+        get_shape_features_single_slice(mask, metadata)
+
+    if voxel_area is not None:
+        area *= area
+
+    shape_labels = ['sf_compactness', 'sf_rad_dist_avg', 'sf_rad_dist_std',
+                    'sf_roughness', 'sf_roughness_std',
+                    'sf_convexity', 'sf_cvar',
+                    'sf_prax', 'sf_evar',
+                    'sf_solidity', 'sf_area']
+
+    shape_features = [compactness, rad_dist_avg,
+                      rad_dist_std, roughness_std,
+                      convexity, cvar,
+                      prax, evar, solidity, area]
+                      
     return shape_features, shape_labels
 
 

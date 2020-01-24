@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright 2017-2019 Biomedical Imaging Group Rotterdam, Departments of
+# Copyright 2017-2020 Biomedical Imaging Group Rotterdam, Departments of
 # Medical Informatics and Radiology, Erasmus MC, Rotterdam, The Netherlands
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -54,7 +54,6 @@ def get_log_features(image, mask, parameters=dict()):
             LoG_features object.
 
     '''
-
     # Convert image to array and get size
     image = sitk.GetImageFromArray(image)
     im_size = image.GetSize()
@@ -76,15 +75,22 @@ def get_log_features(image, mask, parameters=dict()):
     # Iterate over sigmas
     for i_index, i_sigma in enumerate(sigma):
         LoGFilter.SetSigma(i_sigma)
-        LoG_image = np.zeros([image.GetSize()[0], image.GetSize()[2], image.GetSize()[1]])
 
-        # LoG Feature needs a minimum of 4 voxels in each direction
-        if not any(t < 4 for t in im_size):
-            # Iterate over slices
-            for i_slice in range(0, image.GetSize()[0]):
-                # Compute LoG Filter image
-                LoG_image_temp = LoGFilter.Execute(image[i_slice, :, :])
-                LoG_image[i_slice, :, :] = sitk.GetArrayFromImage(LoG_image_temp)
+        if len(im_size) == 2:
+            # 2D Image
+            LoG_image = LoGFilter.Execute(image)
+            LoG_image = sitk.GetArrayFromImage(LoG_image)
+        else:
+            # 3D Image
+            LoG_image = np.zeros([image.GetSize()[0], image.GetSize()[2], image.GetSize()[1]])
+
+            # LoG Feature needs a minimum of 4 voxels in each direction
+            if not any(t < 4 for t in im_size):
+                # Iterate over slices
+                for i_slice in range(0, image.GetSize()[0]):
+                    # Compute LoG Filter image
+                    LoG_image_temp = LoGFilter.Execute(image[i_slice, :, :])
+                    LoG_image[i_slice, :, :] = sitk.GetArrayFromImage(LoG_image_temp)
 
         # Get histogram features of LoG image for full tumor
         masked_voxels = ih.get_masked_voxels(LoG_image, mask)
