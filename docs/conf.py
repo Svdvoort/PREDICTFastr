@@ -2,7 +2,7 @@
 #
 # This file only contains a selection of the most common options. For a full
 # list see the documentation:
-# http://www.sphinx-doc.org/en/master/config
+# https://www.sphinx-doc.org/en/master/usage/configuration.html
 
 # -- Path setup --------------------------------------------------------------
 
@@ -18,11 +18,11 @@
 # -- Project information -----------------------------------------------------
 
 project = 'PREDICT'
-copyright = '2020, Martijn Starmans & Sebastian van der Voort'
-author = 'Martijn Starmans & Sebastian van der Voort'
+copyright = '2020, Martijn Starmans, Sebastian van der Voort'
+author = 'Martijn Starmans, Sebastian van der Voort'
 
 # The full version, including alpha/beta/rc tags
-release = '3.1.2'
+release = '3.1.3'
 
 
 # -- General configuration ---------------------------------------------------

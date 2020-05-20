@@ -1,12 +1,10 @@
 .. PREDICT documentation master file, created by
-   sphinx-quickstart on Fri Jan 24 14:55:19 2020.
+   sphinx-quickstart on Wed May 20 14:26:42 2020.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
 Welcome to PREDICT's documentation!
 ===================================
-
-.. include:: ../README.rst
 
 .. toctree::
    :maxdepth: 2

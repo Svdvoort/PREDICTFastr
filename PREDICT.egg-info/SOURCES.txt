@@ -51,7 +51,6 @@ docs/_build/html/PREDICT.IOparser.html
 docs/_build/html/PREDICT.helpers.html
 docs/_build/html/PREDICT.html
 docs/_build/html/PREDICT.imagefeatures.html
-docs/_build/html/PREDICT.plotting.html
 docs/_build/html/genindex.html
 docs/_build/html/index.html
 docs/_build/html/modules.html
@@ -61,7 +60,6 @@ docs/_build/html/searchindex.js
 docs/_build/html/_sources/PREDICT.IOparser.rst.txt
 docs/_build/html/_sources/PREDICT.helpers.rst.txt
 docs/_build/html/_sources/PREDICT.imagefeatures.rst.txt
-docs/_build/html/_sources/PREDICT.plotting.rst.txt
 docs/_build/html/_sources/PREDICT.rst.txt
 docs/_build/html/_sources/index.rst.txt
 docs/_build/html/_sources/modules.rst.txt

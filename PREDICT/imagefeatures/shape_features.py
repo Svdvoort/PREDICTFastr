@@ -46,7 +46,25 @@ def get_shape_features(mask, metadata=None, mode='2D'):
 
 
 def get_shape_features_single_slice(maskArray, metadata=None):
-    for nblob in range(0, np.max(maskArray)):
+    """
+    Get shape features of a single 2D slice.
+
+    Can contain multiple blobs.
+    """
+    # Initialize lists of features which we compute per blob
+    convexity_temp = list()
+    rad_dist_temp = list()
+    roughness_temp = list()
+    roughness_avg_temp = list()
+    cvar_temp = list()
+    prax_temp = list()
+    evar_temp = list()
+    solidity_temp = list()
+    compactness_temp = list()
+    area = 0
+
+    # Loop over first blob, which has value 1, till last blob
+    for nblob in range(0 + 1, np.max(maskArray) + 2):
         blobimage = np.zeros(maskArray.shape)
         blobimage[maskArray == nblob] = 1
 
@@ -66,32 +84,43 @@ def get_shape_features_single_slice(maskArray, metadata=None):
             # volume, therefore we ignore it.
             continue
 
-        rad_dist_i, rad_dist_norm_i = compute_radial_distance(
+        rad_dist_i, _ = compute_radial_distance(
             boundary_points)
+        rad_dist_temp.extend(rad_dist_i)
         perimeter = compute_perimeter(boundary_points)
 
-        area = compute_area(boundary_points)
-        compactness = compute_compactness(boundary_points)
-        roughness_i, roughness_avg_temp = compute_roughness(
+        area += compute_area(boundary_points)
+        compactness_temp.append(compute_compactness(boundary_points))
+        roughness_i, roughness_avg = compute_roughness(
             boundary_points, rad_dist_i)
-        roughness_avg = roughness_avg_temp
+        roughness_avg_temp.append(roughness_avg)
+        roughness_temp.extend(roughness_i)
 
-        cvar = compute_cvar(boundary_points)
-        prax = compute_prax(boundary_points)
-        evar = compute_evar(boundary_points)
+        cvar_temp.append(compute_cvar(boundary_points))
+        prax_temp.append(compute_prax(boundary_points))
+        evar_temp.append(compute_evar(boundary_points))
 
         # TODO: Move computing convexity into esf
         convex_hull = cf.convex_hull(blobimage)
-        convexity = compute_perimeter(convex_hull / perimeter)
+        convexity_temp.append(compute_perimeter(convex_hull / perimeter))
 
-        solidity = compute_area(convex_hull)/area
-        rad_dist_avg = np.mean(np.asarray(rad_dist_i))
-        rad_dist_std = np.std(np.asarray(rad_dist_i))
-        roughness_std = np.std(np.asarray(roughness_i))
+        solidity_temp.append(compute_area(convex_hull)/area)
 
-        return convexity, area, rad_dist_avg, rad_dist_std,\
-            roughness_avg, roughness_std, cvar, prax, evar, solidity,\
-            compactness
+    # Take averages of some features
+    convexity = np.mean(convexity_temp)
+    rad_dist_avg = np.mean(np.asarray(rad_dist_temp))
+    rad_dist_std = np.std(np.asarray(rad_dist_temp))
+    roughness_avg = np.std(np.asarray(roughness_avg_temp))
+    roughness_std = np.std(np.asarray(roughness_temp))
+    cvar = np.mean(cvar_temp)
+    prax = np.mean(prax_temp)
+    evar = np.mean(evar_temp)
+    solidity = np.mean(solidity_temp)
+    compactness = np.mean(compactness_temp)
+
+    return convexity, area, rad_dist_avg, rad_dist_std,\
+        roughness_avg, roughness_std, cvar, prax, evar, solidity,\
+        compactness
 
 
 def get_shape_features_3D(mask_ITKim, metadata=None):
@@ -350,7 +379,7 @@ def get_shape_features_1D(mask_ITKim, metadata=None):
                       rad_dist_std, roughness_std,
                       convexity, cvar,
                       prax, evar, solidity, area]
-                      
+
     return shape_features, shape_labels
 
 
