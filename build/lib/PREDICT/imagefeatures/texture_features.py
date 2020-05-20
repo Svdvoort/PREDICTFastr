@@ -521,26 +521,26 @@ def get_texture_features(image, mask, parameters=None, config=None,
     texture_labels = []
     if config is None:
         print('Computing all texture features.')
-        print("-   Computing GLCM features.")
+        print("\t   Computing GLCM features.")
         GLCM_features, GLCM_labels = get_GLCM_features(image, mask,
                                                        parameters['GLCM'])
         GLCMMS_features, GLCMMS_labels =\
             get_GLCM_features_multislice(image, mask, parameters['GLCM'])
 
-        print("-   Computing GLRLM features.")
+        print("\t  Computing GLRLM features.")
         GLRLM_features, GLRLM_labels = get_GLRLM_features(image, mask)
 
-        print("-   Computing GLSZM features.")
+        print("\t  Computing GLSZM features.")
         GLSZM_features, GLSZM_labels = get_GLSZM_features(image, mask)
 
-        print("-   Computing LBP features.")
+        print("\t  Computing LBP features.")
         LBP_features, LBP_labels = get_LBP_features(image, mask,
                                                     parameters['LBP'])
 
-        print("-   Computing NGTDM features.")
+        print("\t  Computing NGTDM features.")
         NGTDM_features, NGTDM_labels = get_NGTDM_features(image, mask)
 
-        print("-   Computing Gabor features.")
+        print("\t   Computing Gabor features.")
         gabor_features, gabor_labels =\
             gabor_filter_parallel(image, mask, parameters['gabor_settings'],
                                   n_jobs=n_jobs, backend=backend)
@@ -552,7 +552,7 @@ def get_texture_features(image, mask, parameters=None, config=None,
             GLRLM_labels + GLSZM_labels + NGTDM_labels + LBP_labels
 
     if config['texture_LBP']:
-        print("-   Computing LBP features.")
+        print("\t  Computing LBP features.")
         texture_features_tmp, texture_labels_tmp = \
             get_LBP_features(image, mask, parameters['LBP'])
 
@@ -560,7 +560,7 @@ def get_texture_features(image, mask, parameters=None, config=None,
         texture_labels += texture_labels_tmp
 
     if config['texture_GLCM']:
-        print("-   Computing GLCM features.")
+        print("\t   Computing GLCM features.")
         texture_features_tmp, texture_labels_tmp =\
             get_GLCM_features(image, mask, parameters['GLCM'])
 
@@ -568,7 +568,7 @@ def get_texture_features(image, mask, parameters=None, config=None,
         texture_labels += texture_labels_tmp
 
     if config['texture_GLCMMS']:
-        print("-   Computing GLCMMS features.")
+        print("\t   Computing GLCMMS features.")
         texture_features_tmp, texture_labels_tmp =\
             get_GLCM_features_multislice(image, mask, parameters['GLCM'])
 
@@ -576,7 +576,7 @@ def get_texture_features(image, mask, parameters=None, config=None,
         texture_labels += texture_labels_tmp
 
     if config['texture_GLRLM']:
-        print("-   Computing GLRLM features.")
+        print("\t   Computing GLRLM features.")
         texture_features_tmp, texture_labels_tmp =\
             get_GLRLM_features(image, mask)
 
@@ -584,7 +584,7 @@ def get_texture_features(image, mask, parameters=None, config=None,
         texture_labels += texture_labels_tmp
 
     if config['texture_GLSZM']:
-        print("-   Computing GLSZM features.")
+        print("\t   Computing GLSZM features.")
         texture_features_tmp, texture_labels_tmp =\
             get_GLSZM_features(image, mask)
 
@@ -592,7 +592,7 @@ def get_texture_features(image, mask, parameters=None, config=None,
         texture_labels += texture_labels_tmp
 
     if config['texture_NGTDM']:
-        print("-   Computing NGTDM features.")
+        print("\t   Computing NGTDM features.")
         texture_features_tmp, texture_labels_tmp =\
             get_NGTDM_features(image, mask)
 
@@ -600,7 +600,7 @@ def get_texture_features(image, mask, parameters=None, config=None,
         texture_labels += texture_labels_tmp
 
     if config['texture_Gabor']:
-        print("-   Computing Gabor features.")
+        print("\t   Computing Gabor features.")
         texture_features_tmp, texture_labels_tmp =\
             gabor_filter_parallel(image, mask,  parameters['gabor_settings'],
                                   n_jobs=n_jobs, backend=backend)
