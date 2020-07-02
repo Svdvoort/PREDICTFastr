@@ -45,7 +45,7 @@ We mainly rely on the following packages:
 See also the [requirements file](requirements.txt).
 
 ### License
-This package is covered by the open source [APACHE 2.0 License](APACHE-LICENSE-2.0). When using PREDICT, please use the following DOI: [![DOI](https://zenodo.org/badge/92298822.svg)](https://zenodo.org/badge/latestdoi/92298822).
+This package is covered by the open source [APACHE 2.0 License](APACHE-LICENSE-2.0). When using PREDICT, please use the following DOI: [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.3854839.svg)](https://zenodo.org/badge/latestdoi/92298822).
 
 ### Contact
 We are happy to help you with any questions: please send us a message or create an issue on Github.
