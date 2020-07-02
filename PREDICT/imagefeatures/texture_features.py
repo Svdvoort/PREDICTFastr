@@ -26,6 +26,8 @@ import SimpleITK as sitk
 import scipy.stats
 from radiomics import featureextractor
 import PREDICT.addexceptions as ae
+import PREDICT.helpers.image_helper as ih
+import PREDICT.imagefeatures.histogram_features as hf
 
 
 def gabor_filter_parallel(image, mask, parameters=dict(), n_jobs=1,
@@ -53,10 +55,10 @@ def gabor_filter_parallel(image, mask, parameters=dict(), n_jobs=1,
     N_slices = image.shape[2]
     N_kernels = len(kernels)
 
-    gabor_features = np.zeros([N_kernels, 2, N_slices])
+    # Filter the images with all kernels in paralell
     full_filtered = list()
     for i_slice in range(0, N_slices):
-        print(('-- Filtering slice {} / {}.').format(str(i_slice + 1), N_slices))
+        print(('\t -- Filtering slice {} / {}.').format(str(i_slice + 1), N_slices))
         filtered = Parallel(n_jobs=n_jobs, backend=backend)(delayed(gabor_filter)
                                                             (image=image[:, :, i_slice],
                                                             mask=mask[:, :, i_slice],
@@ -72,42 +74,19 @@ def gabor_filter_parallel(image, mask, parameters=dict(), n_jobs=1,
             else:
                 full_filtered[i_index] = np.append(full_filtered[i_index], filtered[i_index])
 
-    mean_gabor = list()
-    std_gabor = list()
-    min_gabor = list()
-    max_gabor = list()
-    skew_gabor = list()
-    kurt_gabor = list()
-    for i_index, i_kernel in enumerate(kernels):
-        mean_gabor.append(np.mean(full_filtered[i_index]))
-        std_gabor.append(np.std(full_filtered[i_index]))
-        min_gabor.append(np.percentile(full_filtered[i_index], 2))
-        max_gabor.append(np.percentile(full_filtered[i_index], 98))
-        skew_gabor.append(scipy.stats.skew(full_filtered[i_index]))
-        kurt_gabor.append(scipy.stats.kurtosis(full_filtered[i_index]))
-    # features = np.mean(features, 2).flatten()
-    # features = features.tolist()
-
-    gabor_features = mean_gabor + std_gabor + min_gabor + max_gabor + skew_gabor + kurt_gabor
-
-    # Create labels
+    # Extract the features per kernel
+    gabor_features = list()
     gabor_labels = list()
-    for i_kernel in kernels:
-        # Round two to decimals to reduce name
-        i_kernel = [i_kernel[0], round(i_kernel[1], 2)]
+    for i_index, i_kernel in enumerate(kernels):
+        # Get histogram features of Gabor image for full tumor
+        histogram_features, histogram_labels = hf.get_histogram_features(full_filtered[i_index])
+        histogram_labels = [l.replace('hf_', 'tf_Gabor_') for l in histogram_labels]
+        gabor_features.extend(histogram_features)
 
-        label_mean = 'tf_Gabor_' + str(i_kernel[0]) + 'A' + str(i_kernel[1]) + 'mean'
-        label_std = 'tf_Gabor_' + str(i_kernel[0]) + 'A' + str(i_kernel[1]) + 'std'
-        label_min = 'tf_Gabor_' + str(i_kernel[0]) + 'A' + str(i_kernel[1]) + 'min'
-        label_max = 'tf_Gabor_' + str(i_kernel[0]) + 'A' + str(i_kernel[1]) + 'max'
-        label_skew = 'tf_Gabor_' + str(i_kernel[0]) + 'A' + str(i_kernel[1]) + 'skew'
-        label_kurt = 'tf_Gabor_' + str(i_kernel[0]) + 'A' + str(i_kernel[1]) + 'kurt'
-        gabor_labels.append(label_mean)
-        gabor_labels.append(label_std)
-        gabor_labels.append(label_min)
-        gabor_labels.append(label_max)
-        gabor_labels.append(label_skew)
-        gabor_labels.append(label_kurt)
+        # Adjust feature labels
+        i_kernel = [i_kernel[0], round(i_kernel[1], 2)]
+        final_feature_names = [feature_name + '_F' + str(i_kernel[0]) + '_A' + str(i_kernel[1]) for feature_name in histogram_labels]
+        gabor_labels.extend(final_feature_names)
 
     if len(gabor_features) != len(gabor_labels):
         raise ae.PREDICTValueError('Label length does not fit feature length')
@@ -224,9 +203,10 @@ def get_GLCM_features_multislice(image, mask, parameters=dict()):
         GLCM_labels.append(label_std)
 
     if len(GLCM_features) != len(GLCM_labels):
-        print(len(GLCM_features))
-        print(len(GLCM_labels))
-        raise ae.PREDICTValueError('Label length does not fit feature length')
+        l1 = len(GLCM_features)
+        l2 = len(GLCM_labels)
+        raise ae.PREDICTValueError(f'Label length ({l1}) does not fit ' +
+                                   f' feature length ({l2}).')
 
     return GLCM_features, GLCM_labels
 
@@ -316,9 +296,10 @@ def get_GLCM_features(image, mask, parameters=dict()):
         GLCM_labels.append(label)
 
     if len(GLCM_features) != len(GLCM_labels):
-        print(len(GLCM_features))
-        print(len(GLCM_labels))
-        raise ae.PREDICTValueError('Label length does not fit feature length')
+        l1 = len(GLCM_features)
+        l2 = len(GLCM_labels)
+        raise ae.PREDICTValueError(f'Label length ({l1}) does not fit ' +
+                                   f' feature length ({l2}).')
 
     return GLCM_features, GLCM_labels
 
@@ -347,10 +328,7 @@ def get_LBP_features(image, mask, parameters=dict()):
 
     method = 'uniform'
 
-    feature_names = ['tf_LBP_mean', 'tf_LBP_std', 'tf_LBP_median',
-                     'tf_LBP_kurtosis', 'tf_LBP_skew', 'tf_LBP_peak']
-
-    LBP_features = np.zeros([len(radius) * len(feature_names), 1])
+    LBP_features = list()
     LBP_labels = list()
 
     mask = mask.flatten()
@@ -358,30 +336,21 @@ def get_LBP_features(image, mask, parameters=dict()):
     for i_index, (i_radius, i_N_points) in enumerate(zip(radius, N_points)):
         LBP_image = np.zeros(image.shape)
         for i_slice in range(0, image.shape[2]):
-                LBP_image[:, :, i_slice] = local_binary_pattern(image[:, :, i_slice], P=i_N_points, R=i_radius, method=method)
-        LBP_image = LBP_image.flatten()
-        LBP_tumor = LBP_image[mask]
+            LBP_image[:, :, i_slice] = local_binary_pattern(image[:, :, i_slice], P=i_N_points, R=i_radius, method=method)
 
-        mean_val = np.mean(LBP_tumor)
-        std_val = np.std(LBP_tumor)
-        median_val = np.median(LBP_tumor)
-        kurtosis_val = scipy.stats.kurtosis(LBP_tumor)
-        skew_val = scipy.stats.skew(LBP_tumor)
-        # peak_val = max(set(LBP_tumor), key=LBP_tumor.count)
-        peak_val = np.bincount(LBP_tumor.astype(int)).argmax()
+        # Extract histogram features from LBP image
+        masked_voxels = ih.get_masked_voxels(LBP_image, mask)
+        if masked_voxels.size == 0:
+            print("[PREDICT Warning] LBP features, fully empty. Using zeros.")
+            masked_voxels = [0]
 
-        features = [mean_val, std_val, median_val, kurtosis_val, skew_val, peak_val]
+        feature_values, feature_names = hf.get_histogram_features(masked_voxels)
 
-        full_feature_start = i_index * len(feature_names)
-        full_feature_end = (i_index + 1) * len(feature_names)
-        LBP_features[full_feature_start:full_feature_end, 0] = np.asarray(features).ravel()
-
-        cur_feature_names = [feature_name + '_R' + str(i_radius) + '_P' + str(i_N_points) for feature_name in feature_names]
-
-        LBP_labels.extend(cur_feature_names)
-
-    # Convert to proper list
-    LBP_features = [x[0] for x in LBP_features.tolist()]
+        # Alter labels and add labels and values to respective lists
+        feature_names = [l.replace('hf_', 'tf_LBP_') for l in feature_names]
+        LBP_features.extend(feature_values)
+        final_feature_names = [feature_name + '_R' + str(i_radius) + '_P' + str(i_N_points) for feature_name in feature_names]
+        LBP_labels.extend(final_feature_names)
 
     return LBP_features, LBP_labels
 
@@ -521,26 +490,26 @@ def get_texture_features(image, mask, parameters=None, config=None,
     texture_labels = []
     if config is None:
         print('Computing all texture features.')
-        print("\t   Computing GLCM features.")
+        print("\t Computing GLCM features.")
         GLCM_features, GLCM_labels = get_GLCM_features(image, mask,
                                                        parameters['GLCM'])
         GLCMMS_features, GLCMMS_labels =\
             get_GLCM_features_multislice(image, mask, parameters['GLCM'])
 
-        print("\t  Computing GLRLM features.")
+        print("\t Computing GLRLM features.")
         GLRLM_features, GLRLM_labels = get_GLRLM_features(image, mask)
 
-        print("\t  Computing GLSZM features.")
+        print("\t Computing GLSZM features.")
         GLSZM_features, GLSZM_labels = get_GLSZM_features(image, mask)
 
-        print("\t  Computing LBP features.")
+        print("\t Computing LBP features.")
         LBP_features, LBP_labels = get_LBP_features(image, mask,
                                                     parameters['LBP'])
 
-        print("\t  Computing NGTDM features.")
+        print("\t Computing NGTDM features.")
         NGTDM_features, NGTDM_labels = get_NGTDM_features(image, mask)
 
-        print("\t   Computing Gabor features.")
+        print("\t Computing Gabor features.")
         gabor_features, gabor_labels =\
             gabor_filter_parallel(image, mask, parameters['gabor_settings'],
                                   n_jobs=n_jobs, backend=backend)
@@ -552,7 +521,7 @@ def get_texture_features(image, mask, parameters=None, config=None,
             GLRLM_labels + GLSZM_labels + NGTDM_labels + LBP_labels
 
     if config['texture_LBP']:
-        print("\t  Computing LBP features.")
+        print("\t Computing LBP features.")
         texture_features_tmp, texture_labels_tmp = \
             get_LBP_features(image, mask, parameters['LBP'])
 
@@ -560,7 +529,7 @@ def get_texture_features(image, mask, parameters=None, config=None,
         texture_labels += texture_labels_tmp
 
     if config['texture_GLCM']:
-        print("\t   Computing GLCM features.")
+        print("\t Computing GLCM features.")
         texture_features_tmp, texture_labels_tmp =\
             get_GLCM_features(image, mask, parameters['GLCM'])
 
@@ -568,7 +537,7 @@ def get_texture_features(image, mask, parameters=None, config=None,
         texture_labels += texture_labels_tmp
 
     if config['texture_GLCMMS']:
-        print("\t   Computing GLCMMS features.")
+        print("\t Computing GLCMMS features.")
         texture_features_tmp, texture_labels_tmp =\
             get_GLCM_features_multislice(image, mask, parameters['GLCM'])
 
@@ -576,7 +545,7 @@ def get_texture_features(image, mask, parameters=None, config=None,
         texture_labels += texture_labels_tmp
 
     if config['texture_GLRLM']:
-        print("\t   Computing GLRLM features.")
+        print("\t Computing GLRLM features.")
         texture_features_tmp, texture_labels_tmp =\
             get_GLRLM_features(image, mask)
 
@@ -584,7 +553,7 @@ def get_texture_features(image, mask, parameters=None, config=None,
         texture_labels += texture_labels_tmp
 
     if config['texture_GLSZM']:
-        print("\t   Computing GLSZM features.")
+        print("\t Computing GLSZM features.")
         texture_features_tmp, texture_labels_tmp =\
             get_GLSZM_features(image, mask)
 
@@ -592,7 +561,7 @@ def get_texture_features(image, mask, parameters=None, config=None,
         texture_labels += texture_labels_tmp
 
     if config['texture_NGTDM']:
-        print("\t   Computing NGTDM features.")
+        print("\t Computing NGTDM features.")
         texture_features_tmp, texture_labels_tmp =\
             get_NGTDM_features(image, mask)
 
@@ -600,7 +569,7 @@ def get_texture_features(image, mask, parameters=None, config=None,
         texture_labels += texture_labels_tmp
 
     if config['texture_Gabor']:
-        print("\t   Computing Gabor features.")
+        print("\t Computing Gabor features.")
         texture_features_tmp, texture_labels_tmp =\
             gabor_filter_parallel(image, mask,  parameters['gabor_settings'],
                                   n_jobs=n_jobs, backend=backend)

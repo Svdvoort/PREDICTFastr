@@ -170,6 +170,9 @@ def get_image_features(image_data, mask, parameters,
                 hf.get_histogram_features(masked_voxels,
                                           N_BINS)
 
+            feature_values += histogram_features
+            feature_labels += histogram_labels
+
         # NOTE: As a minimum of 4 voxels in each dimension is needed
         # for the SimpleITK log filter, we compute these features
         # on the full image
@@ -192,8 +195,8 @@ def get_image_features(image_data, mask, parameters,
                                     config,
                                     config_general)
 
-        feature_values += histogram_features + texture_features
-        feature_labels += histogram_labels + texture_labels
+        feature_values += texture_features
+        feature_labels += texture_labels
 
         if config["coliage"]:
             print("\t Computing coliage features.")

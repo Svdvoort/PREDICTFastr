@@ -6,6 +6,23 @@ All notable changes to this project will be documented in this file.
 The format is based on `Keep a Changelog <http://keepachangelog.com/>`_
 and this project adheres to `Semantic Versioning <http://semver.org/>`_
 
+3.1.5 - Unreleased
+------------------
+
+Fixed
+~~~~~
+- Catch type error in semantic file computation.
+- Several printing statements improved.
+
+Changed
+~~~~~~~
+- Histrogram features min, max, range and IQR are the only ones computed
+  on raw data. Others are computed on histogram to be more robust to outliers.
+- LBP features now extracted using the histogram features, in accordance
+  to other filter features.
+- Gabor features now extracted using the histogram features, in accordance
+  to other filter features.
+
 3.1.4 - 2020-05-20
 ------------------
 
