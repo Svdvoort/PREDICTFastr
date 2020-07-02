@@ -22,7 +22,7 @@ import scipy.stats
 import PREDICT.helpers.contour_functions as cf
 
 
-def get_histogram_features(data, N_bins):
+def get_histogram_features(data, N_bins=50):
     '''
     Compute histogram or first order features.
 
@@ -45,19 +45,23 @@ def get_histogram_features(data, N_bins):
             histogram_features object.
 
     '''
-    temp_histogram, temp_bins = create_histogram(data, N_bins)
+    # Features computed on raw data because histogram creation loses
+    # neccesary data:
     hist_min = get_min(data)
     hist_max = get_max(data)
-    hist_mean = get_mean(data)
-    hist_median = get_median(data)
-    hist_std = get_std(data)
-    hist_skewness = get_skewness(data)
-    hist_kurtosis = get_kurtosis(data)
     hist_range = get_range(data)
-    hist_peak = get_peak_position(temp_histogram, temp_bins)
-    energy = get_energy(data)
     quartile_range = get_quartile_range(data)
+
+    # Features computed on histogram to be more robust to outliers
+    temp_histogram, temp_bins = create_histogram(data, N_bins)
+    hist_std = get_std(temp_histogram)
+    hist_skewness = get_skewness(temp_histogram)
+    hist_kurtosis = get_kurtosis(temp_histogram)
+    hist_peak = get_peak_position(temp_histogram, temp_bins)
+    energy = get_energy(temp_histogram)
     entropy = get_entropy(temp_histogram)
+    hist_mean = get_mean(temp_histogram)
+    hist_median = get_median(temp_histogram)
 
     histogram_labels = ['hf_min', 'hf_max', 'hf_mean', 'hf_median',
                         'hf_std', 'hf_skewness', 'hf_kurtosis', 'hf_peak',

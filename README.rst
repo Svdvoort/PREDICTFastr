@@ -1,4 +1,4 @@
-PREDICT v3.1.4
+PREDICT v3.1.5
 ==============
 
 PREDICT: a Radiomics Extensive Digital Interchangable Classification Toolkit
@@ -65,10 +65,14 @@ License
 ~~~~~~~
 
 This package is covered by the open source `APACHE 2.0
-License <APACHE-LICENSE-2.0>`__.
+License <APACHE-LICENSE-2.0>`__. When using PREDICT, please use the
+following DOI: |DOI|.
 
 Contact
 ~~~~~~~
 
 We are happy to help you with any questions: please send us a message or
 create an issue on Github.
+
+.. |DOI| image:: https://zenodo.org/badge/doi/10.5281/zenodo.3854839.svg
+   :target: https://zenodo.org/badge/latestdoi/92298822

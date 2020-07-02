@@ -370,15 +370,16 @@ def get_shape_features_1D(mask_ITKim, metadata=None):
         area *= area
 
     shape_labels = ['sf_compactness', 'sf_rad_dist_avg', 'sf_rad_dist_std',
-                    'sf_roughness', 'sf_roughness_std',
+                    'sf_roughness_avg', 'sf_roughness_std',
                     'sf_convexity', 'sf_cvar',
                     'sf_prax', 'sf_evar',
                     'sf_solidity', 'sf_area']
 
-    shape_features = [compactness, rad_dist_avg,
-                      rad_dist_std, roughness_std,
+    shape_features = [compactness, rad_dist_avg, rad_dist_std,
+                      roughness_avg, roughness_std,
                       convexity, cvar,
-                      prax, evar, solidity, area]
+                      prax, evar,
+                      solidity, area]
 
     return shape_features, shape_labels
 

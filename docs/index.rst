@@ -1,5 +1,5 @@
 .. PREDICT documentation master file, created by
-   sphinx-quickstart on Wed May 20 14:33:43 2020.
+   sphinx-quickstart on Thu Jul  2 10:40:20 2020.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 

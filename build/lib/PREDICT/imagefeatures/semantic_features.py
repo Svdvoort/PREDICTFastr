@@ -24,9 +24,15 @@ def get_semantic_features(data, patientID):
 
     # Get index of current patient
     index = None
-    for i, s in enumerate(patient_ID):
-        if s in patientID:
-            index = i
+    try:
+        for i, s in enumerate(patient_ID):
+            if s in patientID:
+                index = i
+    except TypeError:
+        raise ae.PREDICTTypeError('Type error in semantic file computation. ' +
+                                  'Make sure your semantics file is properly' +
+                                  ' formatted, e.g. no empty patient names, ' +
+                                  'no empty feature values.')
 
     if index is None:
         raise ae.PREDICTValueError("No semantic features found for " + patientID)
