@@ -368,7 +368,7 @@ def get_GLSZM_features(image, mask):
     success = False
     while not success:
         try:
-            extractor = featureextractor.RadiomicsFeaturesExtractor(**kwargs)
+            extractor = featureextractor.RadiomicsFeatureExtractor(**kwargs)
             extractor.disableAllFeatures()
             extractor.enableFeatureClassByName('glszm')
             featureVector = extractor.execute(image, mask)
@@ -406,7 +406,7 @@ def get_GLRLM_features(image, mask):
               'verbose': True}
 
     # Initialize wrapperClass to generate signature
-    extractor = featureextractor.RadiomicsFeaturesExtractor(**kwargs)
+    extractor = featureextractor.RadiomicsFeatureExtractor(**kwargs)
     extractor.disableAllFeatures()
     extractor.enableFeatureClassByName('glrlm')
 
@@ -441,7 +441,7 @@ def get_NGTDM_features(image, mask):
               'verbose': True}
 
     # Initialize wrapperClass to generate signature
-    extractor = featureextractor.RadiomicsFeaturesExtractor(**kwargs)
+    extractor = featureextractor.RadiomicsFeatureExtractor(**kwargs)
     extractor.disableAllFeatures()
     extractor.enableFeatureClassByName('ngtdm')
     extractor.settings['distances'] = [1]

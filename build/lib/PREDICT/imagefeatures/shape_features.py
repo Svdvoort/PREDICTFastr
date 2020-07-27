@@ -234,7 +234,8 @@ def get_shape_features_3D(mask_ITKim, metadata=None):
             volume = np.sum(mask) * voxel_volume
             shape_labels.append('sf_volume')
             shape_features.append(volume)
-    else:
+
+    if voxel_volume is not None:
         # Check if we can use the pixel information from the Nifti
         if hasattr(mask_ITKim, 'GetSpacing'):
             spacing = mask_ITKim.GetSpacing()
@@ -270,7 +271,8 @@ def get_shape_features_2D(mask_ITKim, metadata=None):
             slice_thickness = int(metadata[0x18, 0x50].value)
             voxel_volume = pixel_spacing[0] * pixel_spacing[1] * slice_thickness
             voxel_area = pixel_spacing[0] * pixel_spacing[1]
-    else:
+
+    if voxel_volume is None:
         # Check if we can use the pixel information from the Nifti
         if hasattr(mask_ITKim, 'GetSpacing'):
             spacing = mask_ITKim.GetSpacing()

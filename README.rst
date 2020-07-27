@@ -1,4 +1,4 @@
-PREDICT v3.1.5
+PREDICT v3.1.6
 ==============
 
 PREDICT: a Radiomics Extensive Digital Interchangable Classification Toolkit
@@ -11,7 +11,9 @@ Documentation
 ~~~~~~~~~~~~~
 
 For more information, see the sphinx generated documentation available
-`here (WIP) <http://predict.readthedocs.io/>`__.
+in the docs folder. PREDICT is mostly used through the WORC toolbox, in
+which further documentation on the features computed is also available,
+see https://worc.readthedocs.io/en/latest/static/features.html.
 
 Alternatively, you can generate the documentation by checking out the
 master branch and running from the root directory:
