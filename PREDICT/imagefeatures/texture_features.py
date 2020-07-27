@@ -138,20 +138,25 @@ def get_GLCM_features_multislice(image, mask, parameters=dict()):
         image_bounded, mask_bounded = bbox_2D(image[:, :, i_slice],
                                               mask[:, :, i_slice])
 
+        # Set all masked voxels to zero
         image_bounded[~mask_bounded] = 0
+
+        # Rescale to reflect the number of levels required
         image_bounded = image_bounded + image_bounded.min()
         image_bounded = image_bounded*255.0 / image_bounded.max()
 
         image_bounded = image_bounded.astype(np.uint8)
 
-        image_bounded = rescale_intensity(image_bounded, out_range=(0, 15))
+        image_bounded = rescale_intensity(image_bounded, out_range=(0, levels-1))
 
+        image_bounded = image_bounded.astype(np.uint8)
+
+        # compute actual GLCM
         try:
-            GLCM_matrix = greycomatrix(image_bounded, distances, angles, levels=levels,
-                                       normed=True)
+            GLCM_matrix = greycomatrix(image_bounded, distances, angles,
+                                       levels=levels, normed=True)
         except ValueError:
             print(f'[PREDICT WARNING] Slice {i_slice} to small to compute GLCM: {image_bounded.shape}.')
-            continue
 
         contrast.append(greycoprops(GLCM_matrix, 'contrast').flatten())
         dissimilarity.append(greycoprops(GLCM_matrix, 'dissimilarity').flatten())
@@ -253,17 +258,23 @@ def get_GLCM_features(image, mask, parameters=dict()):
         image_bounded, mask_bounded = bbox_2D(image[:, :, i_slice],
                                               mask[:, :, i_slice])
 
+        # Set all masked voxels to zero
         image_bounded[~mask_bounded] = 0
+
+        # Rescale to reflect the number of levels required
         image_bounded = image_bounded + image_bounded.min()
         image_bounded = image_bounded*255.0 / image_bounded.max()
 
         image_bounded = image_bounded.astype(np.uint8)
 
-        image_bounded = rescale_intensity(image_bounded, out_range=(0, 15))
+        image_bounded = rescale_intensity(image_bounded, out_range=(0, levels-1))
 
+        image_bounded = image_bounded.astype(np.uint8)
+
+        # compute actual GLCM
         try:
-            GLCM_matrix += greycomatrix(image_bounded, distances, angles, levels=levels,
-                                        normed=True)
+            GLCM_matrix += greycomatrix(image_bounded, distances, angles,
+                                        levels=levels, normed=True)
         except ValueError:
             print(f'[PREDICT WARNING] Slice {i_slice} to small to compute GLCM: {image_bounded.shape}.')
 

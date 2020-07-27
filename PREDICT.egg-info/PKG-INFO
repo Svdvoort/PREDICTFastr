@@ -1,12 +1,12 @@
 Metadata-Version: 1.1
 Name: PREDICT
-Version: 3.1.6
+Version: 3.1.7
 Summary: Predict: a Radiomics Extensive Digital Interchangable Classification Toolkit.
 Home-page: https://github.com/Svdvoort/PREDICTFastr
 Author: M. Starmans, S. van der Voort
 Author-email: m.starmans@erasmusmc.nl, s.vandervoort@erasmusmc.nl
 License: Apache License, Version 2.0
-Description: PREDICT v3.1.6
+Description: PREDICT v3.1.7
         ==============
         
         PREDICT: a Radiomics Extensive Digital Interchangable Classification Toolkit
