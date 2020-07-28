@@ -10,4 +10,4 @@ SimpleITK>=1.2.0
 tables>=3.5.1
 pydicom>=1.2.2
 PyWavelets>=0.4.0, <=1.0.0
-scikit-image
+scikit-image<=0.16.2

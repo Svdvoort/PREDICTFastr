@@ -95,7 +95,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 
 setup(
     name='PREDICT',
-    version='3.1.7',
+    version='3.1.8',
     description='Predict: a Radiomics Extensive Digital Interchangable Classification Toolkit.',
     long_description=_description,
     url='https://github.com/Svdvoort/PREDICTFastr',
