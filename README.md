@@ -1,4 +1,4 @@
-# PREDICT v3.1.8
+# PREDICT v3.1.9
 
 ## PREDICT: a Radiomics Extensive Digital Interchangable Classification Toolkit
 

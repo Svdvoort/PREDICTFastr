@@ -95,11 +95,11 @@ here = os.path.abspath(os.path.dirname(__file__))
 
 setup(
     name='PREDICT',
-    version='3.1.8',
+    version='3.1.9',
     description='Predict: a Radiomics Extensive Digital Interchangable Classification Toolkit.',
     long_description=_description,
     url='https://github.com/Svdvoort/PREDICTFastr',
-    author='M. Starmans, S. van der Voort',
+    author='Martijn P. A. Starmans, Sebastian R. van der Voort',
     author_email='m.starmans@erasmusmc.nl, s.vandervoort@erasmusmc.nl',
     license='Apache License, Version 2.0',
     classifiers=[
