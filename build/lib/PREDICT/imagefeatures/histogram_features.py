@@ -52,24 +52,33 @@ def get_histogram_features(data, N_bins=50):
     hist_range = get_range(data)
     quartile_range = get_quartile_range(data)
 
-    # Features computed on histogram to be more robust to outliers
+    # Features computed on histogram/discretized image to be more robust to outliers
     temp_histogram, temp_bins = create_histogram(data, N_bins)
-    hist_std = get_std(temp_histogram)
-    hist_skewness = get_skewness(temp_histogram)
-    hist_kurtosis = get_kurtosis(temp_histogram)
-    hist_peak = get_peak_position(temp_histogram, temp_bins)
-    energy = get_energy(temp_histogram)
-    entropy = get_entropy(temp_histogram)
-    hist_mean = get_mean(temp_histogram)
-    hist_median = get_median(temp_histogram)
+    discretized_image = list()
+    for d, b in zip(temp_histogram, temp_bins):
+        if d != 0:
+            discretized_image.extend([b] * d)
+
+    discretized_image = np.asarray(discretized_image)
+    hist_std = get_std(discretized_image)
+    hist_skewness = get_skewness(discretized_image)
+    hist_kurtosis = get_kurtosis(discretized_image)
+    hist_peak = get_peak(temp_histogram, temp_bins)
+    hist_peak_position = get_peak_position(temp_histogram)
+    energy = get_energy(discretized_image)
+    entropy = get_entropy(discretized_image)
+    hist_mean = get_mean(discretized_image)
+    hist_median = get_median(discretized_image)
 
     histogram_labels = ['hf_min', 'hf_max', 'hf_mean', 'hf_median',
                         'hf_std', 'hf_skewness', 'hf_kurtosis', 'hf_peak',
+                        'hf_peak_position',
                         'hf_range', 'hf_energy', 'hf_quartile_range',
                         'hf_entropy']
 
     histogram_features = [hist_min, hist_max, hist_mean, hist_median,
                           hist_std, hist_skewness, hist_kurtosis, hist_peak,
+                          hist_peak_position,
                           hist_range, energy, quartile_range, entropy]
 
     return histogram_features, histogram_labels
@@ -110,8 +119,12 @@ def get_kurtosis(data):
     return scipy.stats.kurtosis(data)
 
 
-def get_peak_position(histogram, bins):
-    return np.amax(histogram)
+def get_peak(histogram, bins):
+    return bins[np.argmax(histogram)]
+
+
+def get_peak_position(histogram):
+    return np.argmax(histogram)
 
 
 def get_diff_in_out(image, contour):

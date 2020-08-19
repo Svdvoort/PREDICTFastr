@@ -6,6 +6,14 @@ All notable changes to this project will be documented in this file.
 The format is based on `Keep a Changelog <http://keepachangelog.com/>`_
 and this project adheres to `Semantic Versioning <http://semver.org/>`_
 
+3.1.10 - 2020-08-19
+------------------
+
+Fixed
+~~~~~
+- Bug in histogram feature extraction.
+- Bug in shape roughness feature.
+
 3.1.9 - 2020-07-31
 ------------------
 

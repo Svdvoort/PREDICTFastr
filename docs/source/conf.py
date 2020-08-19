@@ -22,7 +22,7 @@ copyright = '2020, Martijn P. A. Starmans, Sebastian R. van der Voort'
 author = 'Martijn P. A. Starmans, Sebastian R. van der Voort'
 
 # The full version, including alpha/beta/rc tags
-release = '3.1.9'
+release = '3.1.10'
 
 
 # -- General configuration ---------------------------------------------------
@@ -39,7 +39,7 @@ templates_path = ['_templates']
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = []
 
 
 # -- Options for HTML output -------------------------------------------------
