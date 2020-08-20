@@ -153,6 +153,13 @@ def get_entropy(hist):
     if sumhist == 0:
         return 0
 
-    hist = hist + epsilon  # Ensure logarithm works
+    if np.min(hist) < 0:
+        move_to_zero = - np.min(hist)
+    else:
+        move_to_zero = 0
+
+    hist = hist + move_to_zero + epsilon  # Ensure logarithm works
+    sumhist = hist.sum()
     hist = hist / float(sumhist)  # normalize
-    return -1.0 * np.sum(hist * np.log2(hist))
+    entropy = -1.0 * np.sum(hist * np.log2(hist))
+    return entropy
