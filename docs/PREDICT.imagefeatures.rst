@@ -20,6 +20,14 @@ PREDICT.imagefeatures.contour\_functions module
     :undoc-members:
     :show-inheritance:
 
+PREDICT.imagefeatures.dicom\_features module
+--------------------------------------------
+
+.. automodule:: PREDICT.imagefeatures.dicom_features
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 PREDICT.imagefeatures.dti\_features module
 ------------------------------------------
 
@@ -64,14 +72,6 @@ PREDICT.imagefeatures.orientation\_features module
 --------------------------------------------------
 
 .. automodule:: PREDICT.imagefeatures.orientation_features
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-PREDICT.imagefeatures.patient\_features module
-----------------------------------------------
-
-.. automodule:: PREDICT.imagefeatures.patient_features
     :members:
     :undoc-members:
     :show-inheritance:

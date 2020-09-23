@@ -185,4 +185,17 @@ def load_config(config_file_path):
     settings_dict['ImageFeatures']['parameters']['vessel']['radius'] =\
         int(settings['ImageFeatures']['vessel_radius'])
 
+    # dicom features
+    dicom_feature_tags =\
+        [str(item).strip() for item in
+         settings['ImageFeatures']['dicom_feature_tags']
+         .split(',')]
+    settings_dict['ImageFeatures']['dicom_feature_tags'] =\
+        [p.replace(' ', ', ') for p in dicom_feature_tags]
+
+    settings_dict['ImageFeatures']['dicom_feature_labels'] =\
+        [str(item).strip() for item in
+         settings['ImageFeatures']['dicom_feature_labels']
+         .split(',')]
+
     return settings_dict

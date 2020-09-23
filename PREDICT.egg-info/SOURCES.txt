@@ -31,13 +31,13 @@ PREDICT/helpers/sitk_helper.py
 PREDICT/imagefeatures/__init__.py
 PREDICT/imagefeatures/coliage_features.py
 PREDICT/imagefeatures/contour_functions.py
+PREDICT/imagefeatures/dicom_features.py
 PREDICT/imagefeatures/dti_features.py
 PREDICT/imagefeatures/get_features.py
 PREDICT/imagefeatures/histogram_features.py
 PREDICT/imagefeatures/image_helper.py
 PREDICT/imagefeatures/log_features.py
 PREDICT/imagefeatures/orientation_features.py
-PREDICT/imagefeatures/patient_features.py
 PREDICT/imagefeatures/phase_features.py
 PREDICT/imagefeatures/semantic_features.py
 PREDICT/imagefeatures/shape_features.py

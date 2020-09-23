@@ -6,6 +6,20 @@ All notable changes to this project will be documented in this file.
 The format is based on `Keep a Changelog <http://keepachangelog.com/>`_
 and this project adheres to `Semantic Versioning <http://semver.org/>`_
 
+3.1.12 - Unreleased
+------------------
+
+Added
+~~~~~~~
+- In DICOM features, routines for several tags to convert the value
+  to a float. Also support for extracting any tag required, as long
+  as it contains a float.
+
+Changed
+~~~~~~~
+- Patient features are now called dicom features. More accurate, as they
+  are extracted from the DICOM tags.
+
 3.1.11 - 2020-08-20
 ------------------
 

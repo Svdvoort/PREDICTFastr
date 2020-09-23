@@ -27,7 +27,7 @@ import PREDICT.imagefeatures.semantic_features as semf
 import PREDICT.imagefeatures.orientation_features as of
 import PREDICT.imagefeatures.coliage_features as cf
 import PREDICT.imagefeatures.dti_features as dtif
-import PREDICT.imagefeatures.patient_features as pf
+import PREDICT.imagefeatures.dicom_features as df
 import PREDICT.imagefeatures.log_features as logf
 import PREDICT.imagefeatures.vessel_features as vesf
 import PREDICT.imagefeatures.phase_features as phasef
@@ -132,11 +132,14 @@ def get_image_features(image_data, mask, parameters,
         feature_labels += orientation_labels
 
     if meta_data is not None:
-        print("\t Extracting patient features.")
-        patient_features, patient_labels =\
-            pf.get_patient_features(meta_data, image_type)
-        feature_values += patient_features
-        feature_labels += patient_labels
+        print("\t Extracting dicom features.")
+        tags = config['dicom_feature_tags']
+        labels = config['dicom_feature_labels']
+        dicom_features, dicom_labels =\
+            df.get_dicom_features(meta_data, image_type,
+                                  tags, labels)
+        feature_values += dicom_features
+        feature_labels += dicom_labels
 
     if sem_data is not None and output is not None:
         print("\t Extracting semantic features.")
