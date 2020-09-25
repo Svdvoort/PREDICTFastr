@@ -28,7 +28,6 @@ def get_dicom_features(metadata, image_type, tags, labels):
     keys = [str(i) for i in metadata.keys()]
     values = list(metadata.values())
 
-    print(metadata)
     for tag, label in zip(tags, labels):
         # Convert tag to something matching DICOM keys
         tag = '(' + tag + ')'
@@ -52,6 +51,10 @@ def get_dicom_features(metadata, image_type, tags, labels):
         elif tag == '(0018, 0022)' and label == 'FatSat':
             # Get whether scan has fat saturation or not
             value = get_fatsat(metadata)
+
+        elif tag == '(0008, 0070)':
+            # Get scanner manufacturer
+            value = get_manufacturer(metadata)
 
         else:
             # Undefined preset, simply extract the value
@@ -92,11 +95,11 @@ def get_patient_sex(metadata):
         patient_sex = metadata[0x10, 0x40].value
 
         if patient_sex == 'M':
-            patient_sex = 0
+            patient_sex = 0.0
         elif patient_sex == 'F':
-            patient_sex = 1
+            patient_sex = 1.0
         else:
-            patient_sex = 2
+            patient_sex = 2.0
     else:
         print("[PREDICT Warning] No patient sex in metadata, using NaN.")
         patient_sex = np.NaN
@@ -160,12 +163,36 @@ def get_fatsat(metadata):
             fatsat = np.NaN
         else:
             if 'FS' in fatsat or 'SFS' in fatsat:
-                fatsat = 1
+                fatsat = 1.0
             else:
-                fatsat = 0
+                fatsat = 0.0
 
     else:
         print("[PREDICT Warning] No fat saturation in metadata, using NaN.")
         fatsat = np.NaN
 
     return fatsat
+
+
+def get_manufacturer(metadata):
+    """Extract scanner manufacturer from DICOM tags."""
+    if [0x8, 0x70] in list(metadata.keys()):
+        manufacturer = metadata[0x8, 0x70].value
+
+        if 'Siemens' in manufacturer or 'SIEMENS' in manufacturer:
+            manufacturer = 0.0
+        elif 'Philips' in manufacturer or 'PHILIPS' in manufacturer:
+            manufacturer = 1.0
+        elif 'GE' in manufacturer:
+            manufacturer = 2.0
+        elif 'Toshiba' in manufacturer or 'TOSHIBA' in manufacturer:
+            manufacturer = 3.0
+        else:
+            print(f"[PREDICT Warning] Manufacturer {manufacturer} unknown, using NaN.")
+            manufacturer = np.NaN
+
+    else:
+        print("[PREDICT Warning] No manufacturer in metadata, using NaN.")
+        manufacturer = np.NaN
+
+    return manufacturer
