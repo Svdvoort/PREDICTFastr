@@ -22,7 +22,7 @@ copyright = '2020, Martijn P. A. Starmans, Sebastian R. van der Voort'
 author = 'Martijn P. A. Starmans, Sebastian R. van der Voort'
 
 # The full version, including alpha/beta/rc tags
-release = '3.1.12'
+release = '3.1.13'
 
 
 # -- General configuration ---------------------------------------------------
