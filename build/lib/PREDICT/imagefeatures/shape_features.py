@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright 2011-2017 Biomedical Imaging Group Rotterdam, Departments of
+# Copyright 2011-2022 Biomedical Imaging Group Rotterdam, Departments of
 # Medical Informatics and Radiology, Erasmus MC, Rotterdam, The Netherlands
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,12 +35,16 @@ def get_shape_features(mask, metadata=None, mode='2D'):
         features, labels = get_shape_features_3D(mask, metadata)
         labels = [l + '_3D' for l in labels]
     else:
+        # 2D or 2.5D
         if len(mask.GetSize()) == 2:
-            features, labels = get_shape_features_1D(mask, metadata)
-            labels = [l + '_1D' for l in labels]
-        else:
             features, labels = get_shape_features_2D(mask, metadata)
             labels = [l + '_2D' for l in labels]
+        elif mask.GetSize()[2] == 1:
+            features, labels = get_shape_features_2D(mask, metadata)
+            labels = [l + '_2D' for l in labels]
+        else:
+            features, labels = get_shape_features_25D(mask, metadata)
+            labels = [l + '_2.5D' for l in labels]
 
     return features, labels
 
@@ -124,6 +128,7 @@ def get_shape_features_single_slice(maskArray, metadata=None):
 
 
 def get_shape_features_3D(mask_ITKim, metadata=None):
+    """Compute shape features for 3D object."""
     mask = sitk.GetArrayFromImage(mask_ITKim)
 
     # Pre-allocation
@@ -149,8 +154,8 @@ def get_shape_features_3D(mask_ITKim, metadata=None):
     labeledImage = label(mask, connectivity=3)
     for nblob in range(1, np.max(labeledImage)):
         # Iterate over all slices
-        blobimage = np.zeros(mask.shape)
-        blobimage[mask == nblob] = 1
+        blobimage = np.zeros(labeledImage.shape)
+        blobimage[labeledImage == nblob] = 1
         blobimage = blobimage.astype(np.uint8)
         if np.sum(blobimage) <= 3:
             # Only 1 or 2 points in volume, which means it's not really a
@@ -166,6 +171,7 @@ def get_shape_features_3D(mask_ITKim, metadata=None):
             # Only 1 or 2 points in volume, which means it's not really a
             # volume, therefore we ignore it.
             continue
+
         rad_dist_i, rad_dist_norm_i = compute_radial_distance(
             boundary_points)
         rad_dist.append(rad_dist_i)
@@ -247,7 +253,8 @@ def get_shape_features_3D(mask_ITKim, metadata=None):
     return shape_features, shape_labels
 
 
-def get_shape_features_2D(mask_ITKim, metadata=None):
+def get_shape_features_25D(mask_ITKim, metadata=None):
+    """Compute features for 3D object, but in 2.5D-method."""
     # Pre-allocation
     convexity = list()
     area = list()
@@ -283,14 +290,15 @@ def get_shape_features_2D(mask_ITKim, metadata=None):
     # NOTE: Due to conversion to array, first and third axis are switched
     mask = sitkh.GetArrayFromImage(mask_ITKim)
     N_mask_slices = mask.shape[2]
-    mask = label(mask, connectivity=3)
+    labeledImage = label(mask, connectivity=3)
     for i_slice in range(0, N_mask_slices):
         # Iterate over all slices
-        slicie = mask[:, :, i_slice]
+        slicie = labeledImage[:, :, i_slice]
         convexity_temp, area_temp, rad_dist_avg_temp, rad_dist_std_temp,\
             roughness_avg_temp, roughness_std_temp, cvar_temp, prax_temp,\
             evar_temp, solidity_temp, compactness_temp =\
             get_shape_features_single_slice(slicie, metadata)
+
         convexity.append(convexity_temp)
         if voxel_area is not None:
             area_temp *= voxel_area
@@ -347,7 +355,8 @@ def get_shape_features_2D(mask_ITKim, metadata=None):
     return shape_features, shape_labels
 
 
-def get_shape_features_1D(mask_ITKim, metadata=None):
+def get_shape_features_2D(mask_ITKim, metadata=None):
+    """Compute features for a 2D slice."""
     # Determine Voxel Size
     voxel_area = None
     if metadata is not None:
@@ -362,6 +371,7 @@ def get_shape_features_1D(mask_ITKim, metadata=None):
     # Now calculate some of the edge shape features
     # NOTE: Due to conversion to array, first and third axis are switched
     mask = sitkh.GetArrayFromImage(mask_ITKim)
+    mask = np.squeeze(mask)
     mask = label(mask, connectivity=2)
     convexity, area, rad_dist_avg, rad_dist_std,\
         roughness_avg, roughness_std, cvar, prax,\

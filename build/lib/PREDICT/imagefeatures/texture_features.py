@@ -224,6 +224,11 @@ def get_GLCM_features(image, mask, parameters=dict()):
     at multiple distances and angles. The pixels outside the mask will always
     be set to zero.
 
+    The input ``parameters'' variable should be a dictionary,
+    containing three elementst: levels, angles, and distances. Each of these
+    elements should be a list of values for which the GLCM features are
+    computed.
+
     As the GLCM is defined in 2D, the GLCM for a 3D image will be computed
     by computing statistics over all the GLCM for all 2D axial slices, such
     as the mean and std.
