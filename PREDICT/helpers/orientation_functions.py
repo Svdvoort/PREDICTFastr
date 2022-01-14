@@ -165,4 +165,6 @@ def ellipsoid_fit_2D(X):
     A = np.hstack([x**2, x * y, y**2, x, y])
     b = np.ones_like(x)
     solution = np.linalg.lstsq(A, b)[0].squeeze()
+
+    # Solution [A, B, C, D, E]: Ax^2 + Bxy + Cy^2 + Dx +Ey = 1 
     return solution

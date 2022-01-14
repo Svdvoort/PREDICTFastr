@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright 2011-2018 Biomedical Imaging Group Rotterdam, Departments of
+# Copyright 2011-2022 Biomedical Imaging Group Rotterdam, Departments of
 # Medical Informatics and Radiology, Erasmus MC, Rotterdam, The Netherlands
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -119,8 +119,11 @@ def get_image_features(image_data, mask, parameters,
 
     if config["shape"]:
         print("\t Computing shape features.")
-        shape_features, shape_labels = sf.get_shape_features(shape_mask,
-                                                             meta_data)
+        shape_features, shape_labels =\
+            sf.get_shape_features(shape_mask,
+                                  meta_data,
+                                  mode=parameters['extraction_mode'])
+
         feature_values += shape_features
         feature_labels += shape_labels
 
@@ -185,8 +188,10 @@ def get_image_features(image_data, mask, parameters,
                 logf.get_log_features(image_data_array,
                                       mask_array,
                                       parameters['log'])
+
             feature_values += log_features
             feature_labels += log_labels
+
 
         image_data_array, mask_array = ih.get_masked_slices_image(
             image_data_array, mask_array)

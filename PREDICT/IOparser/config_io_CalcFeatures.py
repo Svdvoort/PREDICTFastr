@@ -89,12 +89,17 @@ def load_config(config_file_path):
     # Parameters for computing features
     settings_dict['ImageFeatures']['parameters'] = dict()
 
+    # Whether to extract 2D, 2.5D, or 3D features
+    settings_dict['ImageFeatures']['parameters']['extraction_mode'] =\
+        settings['ImageFeatures']['extraction_mode']
+
     # Gabor settings
     settings_dict['ImageFeatures']['parameters']['gabor_settings'] = dict()
 
     gabor_frequencies = [str(item).strip() for item in
                          settings['ImageFeatures']['gabor_frequencies']
                          .split(',')]
+
     gabor_frequencies = np.asarray(gabor_frequencies).astype(np.float)
 
     gabor_angles = [str(item).strip() for item in
