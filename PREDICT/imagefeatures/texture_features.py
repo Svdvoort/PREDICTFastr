@@ -208,6 +208,10 @@ def get_GLCM_features_multislice(image, mask, parameters=dict()):
         GLCM_labels.append(label_mean)
         GLCM_labels.append(label_std)
 
+    if not contrast:
+        print(f'\t[PREDICT WARNING] Features could not be extracted for any slice, setting all of these features to NaNs.')
+        GLCM_features = [np.NaN] * len(GLCM_labels)
+
     if len(GLCM_features) != len(GLCM_labels):
         l1 = len(GLCM_features)
         l2 = len(GLCM_labels)
