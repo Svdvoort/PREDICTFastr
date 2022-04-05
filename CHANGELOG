@@ -7,6 +7,19 @@ The format is based on `Keep a Changelog <http://keepachangelog.com/>`_
 and this project adheres to `Semantic Versioning <http://semver.org/>`_
 
 
+3.1.14 - 2022-04-05
+-------------------
+
+Fixed
+~~~~~~~
+- Raise error when contour consists of a single pixel. Previously, we
+  still computed features, but the majority was NaN, so it did not make sense.
+
+Added
+~~~~~~~
+- Various other image types can now also be given to PREDICT to compute
+  features.
+
 3.1.14 - 2022-01-14
 ------------------
 
