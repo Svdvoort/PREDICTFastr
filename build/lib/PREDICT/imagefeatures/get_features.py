@@ -164,7 +164,7 @@ def get_image_features(image_data, mask, parameters,
         feature_values += dti_features
         feature_labels += dti_labels
 
-    elif any(type in image_type for type in ['MR', 'CT', 'PET', 'MG']):
+    elif any(type in image_type for type in ['CT', 'PET', 'Thermography', 'ADC', 'MR', 'MRI', 'MG', 'DWI', 'US']):
         image_data_array = sitkh.GetArrayFromImage(image_data)
         mask_array = sitkh.GetArrayFromImage(mask)
 

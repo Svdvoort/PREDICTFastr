@@ -110,6 +110,10 @@ def CalcFeatures(image, segmentation, parameters, output,
         else:
             print("['FIXED'] Excluded last slice.")
 
+    # Raise error when contour consists of a single pixel
+    if np.sum(sitk.GetArrayFromImage(contour)) == 1:
+        raise ValueError('mask only contains 1 segmented voxel! Cannot extract features for a single voxel.')
+
     # Extract the actual features
     print('Calculating image features.')
     feature_values, feature_labels =\
