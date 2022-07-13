@@ -18,11 +18,11 @@
 # -- Project information -----------------------------------------------------
 
 project = 'PREDICT'
-copyright = '2022, Martijn P. A. Starmans, Sebastian R. van der Voort'
-author = 'Martijn P. A. Starmans, Sebastian R. van der Voort'
+copyright = '2022, Sebastian van der Voort & Martijn Starmans'
+author = 'Sebastian van der Voort & Martijn Starmans'
 
 # The full version, including alpha/beta/rc tags
-release = '3.1.15'
+release = '3.1.16'
 
 
 # -- General configuration ---------------------------------------------------
