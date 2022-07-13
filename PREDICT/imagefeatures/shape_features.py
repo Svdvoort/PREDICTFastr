@@ -46,6 +46,9 @@ def get_shape_features(mask, metadata=None, mode='2D'):
             features, labels = get_shape_features_25D(mask, metadata)
             labels = [l + '_2.5D' for l in labels]
 
+    message = f"Length feature labels ({len(features)}) is not equal to length feature labels ({len(labels)})."
+    assert len(features) == len(labels), message
+
     return features, labels
 
 
@@ -111,16 +114,16 @@ def get_shape_features_single_slice(maskArray, metadata=None):
         solidity_temp.append(compute_area(convex_hull)/area)
 
     # Take averages of some features
-    convexity = np.mean(convexity_temp)
-    rad_dist_avg = np.mean(np.asarray(rad_dist_temp))
-    rad_dist_std = np.std(np.asarray(rad_dist_temp))
-    roughness_avg = np.mean(np.asarray(roughness_avg_temp))
-    roughness_std = np.std(np.asarray(roughness_temp))
-    cvar = np.mean(cvar_temp)
-    prax = np.mean(prax_temp)
-    evar = np.mean(evar_temp)
-    solidity = np.mean(solidity_temp)
-    compactness = np.mean(compactness_temp)
+    convexity = np.nanmean(convexity_temp)
+    rad_dist_avg = np.nanmean(np.asarray(rad_dist_temp))
+    rad_dist_std = np.nanstd(np.asarray(rad_dist_temp))
+    roughness_avg = np.nanmean(np.asarray(roughness_avg_temp))
+    roughness_std = np.nanstd(np.asarray(roughness_temp))
+    cvar = np.nanmean(cvar_temp)
+    prax = np.nanmean(prax_temp)
+    evar = np.nanmean(evar_temp)
+    solidity = np.nanmean(solidity_temp)
+    compactness = np.nanmean(compactness_temp)
 
     return convexity, area, rad_dist_avg, rad_dist_std,\
         roughness_avg, roughness_std, cvar, prax, evar, solidity,\
@@ -195,28 +198,28 @@ def get_shape_features_3D(mask_ITKim, metadata=None):
             / perimeter[-1])
 
         solidity.append(compute_area(convex_hull)/area[-1])
-        rad_dist_avg.append(np.mean(np.asarray(rad_dist_i)))
-        rad_dist_std.append(np.std(np.asarray(rad_dist_i)))
-        roughness_std.append(np.std(np.asarray(roughness_i)))
+        rad_dist_avg.append(np.nanmean(np.asarray(rad_dist_i)))
+        rad_dist_std.append(np.nanstd(np.asarray(rad_dist_i)))
+        roughness_std.append(np.nanstd(np.asarray(roughness_i)))
 
-    compactness_avg = np.mean(compactness)
-    compactness_std = np.std(compactness)
-    compactness_std = np.std(compactness)
-    compactness_std = np.std(compactness)
-    convexity_avg = np.mean(convexity)
-    convexity_std = np.std(convexity)
-    rad_dist_avg = np.mean(rad_dist_avg)
-    rad_dist_std = np.mean(rad_dist_std)
-    roughness_avg = np.mean(roughness_avg)
-    roughness_std = np.mean(roughness_std)
-    cvar_avg = np.mean(cvar)
-    cvar_std = np.std(cvar)
-    prax_avg = np.mean(prax)
-    prax_std = np.std(prax)
-    evar_avg = np.mean(evar)
-    evar_std = np.std(evar)
-    solidity_avg = np.mean(solidity)
-    solidity_std = np.std(solidity)
+    compactness_avg = np.nanmean(compactness)
+    compactness_std = np.nanstd(compactness)
+    compactness_std = np.nanstd(compactness)
+    compactness_std = np.nanstd(compactness)
+    convexity_avg = np.nanmean(convexity)
+    convexity_std = np.nanstd(convexity)
+    rad_dist_avg = np.nanmean(rad_dist_avg)
+    rad_dist_std = np.nanmean(rad_dist_std)
+    roughness_avg = np.nanmean(roughness_avg)
+    roughness_std = np.nanmean(roughness_std)
+    cvar_avg = np.nanmean(cvar)
+    cvar_std = np.nanstd(cvar)
+    prax_avg = np.nanmean(prax)
+    prax_std = np.nanstd(prax)
+    evar_avg = np.nanmean(evar)
+    evar_std = np.nanstd(evar)
+    solidity_avg = np.nanmean(solidity)
+    solidity_std = np.nanstd(solidity)
 
     shape_labels = ['sf_compactness_avg', 'sf_compactness_std', 'sf_rad_dist_avg',
                     'sf_rad_dist_std', 'sf_roughness_avg', 'sf_roughness_std',
@@ -230,25 +233,26 @@ def get_shape_features_3D(mask_ITKim, metadata=None):
                       prax_avg, prax_std, evar_avg, evar_std, solidity_avg,
                       solidity_std]
 
+    # Initialize variable if we cannot compute volume
+    volume = np.NaN
     if metadata is not None:
         if (0x18, 0x50) in metadata.keys():
-            # import dicom as pydicom
-            # metadata = pydicom.read_file(metadata)
+            # Use the metadata to determine the volume
             pixel_spacing = metadata[0x28, 0x30].value
             slice_thickness = int(metadata[0x18, 0x50].value)
             voxel_volume = pixel_spacing[0] * pixel_spacing[1] * slice_thickness
             volume = np.sum(mask) * voxel_volume
-            shape_labels.append('sf_volume')
-            shape_features.append(volume)
 
-    if voxel_volume is not None:
+    if volume is np.NaN:
         # Check if we can use the pixel information from the Nifti
         if hasattr(mask_ITKim, 'GetSpacing'):
             spacing = mask_ITKim.GetSpacing()
             voxel_volume = spacing[0] * spacing[1] * spacing[2]
             volume = np.sum(mask) * voxel_volume
-            shape_labels.append('sf_volume')
-            shape_features.append(volume)
+
+    # Append volume features
+    shape_labels.append('sf_volume')
+    shape_features.append(volume)
 
     return shape_features, shape_labels
 
@@ -269,7 +273,7 @@ def get_shape_features_25D(mask_ITKim, metadata=None):
     compactness = list()
 
     # Determine Voxel Size
-    voxel_volume = voxel_area = None
+    voxel_volume = voxel_area = np.NaN
     if metadata is not None:
         if (0x18, 0x50) in metadata.keys():
             # import dicom as pydicom
@@ -279,7 +283,7 @@ def get_shape_features_25D(mask_ITKim, metadata=None):
             voxel_volume = pixel_spacing[0] * pixel_spacing[1] * slice_thickness
             voxel_area = pixel_spacing[0] * pixel_spacing[1]
 
-    if voxel_volume is None:
+    if voxel_volume is np.NaN:
         # Check if we can use the pixel information from the Nifti
         if hasattr(mask_ITKim, 'GetSpacing'):
             spacing = mask_ITKim.GetSpacing()
@@ -313,24 +317,24 @@ def get_shape_features_25D(mask_ITKim, metadata=None):
         solidity.append(solidity_temp)
         compactness.append(compactness_temp)
 
-    compactness_avg = np.mean(compactness)
-    compactness_std = np.std(compactness)
-    convexity_avg = np.mean(convexity)
-    convexity_std = np.std(convexity)
-    rad_dist_avg = np.mean(rad_dist_avg)
-    rad_dist_std = np.mean(rad_dist_std)
-    roughness_avg = np.mean(roughness_avg)
-    roughness_std = np.mean(roughness_std)
-    cvar_avg = np.mean(cvar)
-    cvar_std = np.std(cvar)
-    prax_avg = np.mean(prax)
-    prax_std = np.std(prax)
-    evar_avg = np.mean(evar)
-    evar_std = np.std(evar)
-    solidity_avg = np.mean(solidity)
-    solidity_std = np.std(solidity)
-    area_avg = np.mean(area)
-    area_std = np.std(area)
+    compactness_avg = np.nanmean(compactness)
+    compactness_std = np.nanstd(compactness)
+    convexity_avg = np.nanmean(convexity)
+    convexity_std = np.nanstd(convexity)
+    rad_dist_avg = np.nanmean(rad_dist_avg)
+    rad_dist_std = np.nanmean(rad_dist_std)
+    roughness_avg = np.nanmean(roughness_avg)
+    roughness_std = np.nanmean(roughness_std)
+    cvar_avg = np.nanmean(cvar)
+    cvar_std = np.nanstd(cvar)
+    prax_avg = np.nanmean(prax)
+    prax_std = np.nanstd(prax)
+    evar_avg = np.nanmean(evar)
+    evar_std = np.nanstd(evar)
+    solidity_avg = np.nanmean(solidity)
+    solidity_std = np.nanstd(solidity)
+    area_avg = np.nanmean(area)
+    area_std = np.nanstd(area)
     area_min = np.min(area)
     area_max = np.max(area)
 
@@ -347,7 +351,7 @@ def get_shape_features_25D(mask_ITKim, metadata=None):
                       prax_avg, prax_std, evar_avg, evar_std, solidity_avg,
                       solidity_std, area_avg, area_max, area_min, area_std]
 
-    if voxel_volume is not None:
+    if voxel_volume is not np.NaN:
         volume = np.sum(mask) * voxel_volume
         shape_labels.append('sf_volume')
         shape_features.append(volume)
@@ -398,11 +402,11 @@ def get_shape_features_2D(mask_ITKim, metadata=None):
 
 def get_center(points):
     """Computes the center of the given boundary points"""
-    x_center = np.mean(points[:, 0])
-    y_center = np.mean(points[:, 1])
+    x_center = np.nanmean(points[:, 0])
+    y_center = np.nanmean(points[:, 1])
     if points.shape[1] == 3:
         # 3D: Also give z
-        z_center = np.mean(points[:, 2])
+        z_center = np.nanmean(points[:, 2])
         return x_center, y_center, z_center
     else:
         return x_center, y_center

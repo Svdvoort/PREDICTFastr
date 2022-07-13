@@ -7,6 +7,20 @@ The format is based on `Keep a Changelog <http://keepachangelog.com/>`_
 and this project adheres to `Semantic Versioning <http://semver.org/>`_
 
 
+3.1.16 - Unreleased
+-------------------
+
+Fixed
+~~~~~~~
+- Bug in shape features when voxel volume could not be computed from metadata.
+- Included assertionerror in shape feature computation.
+
+Changed
+~~~~~~~
+- In shape feature computation, previously features had value np.NaN if for
+  a single slice the feature was not defined in 2D / 2.5D feature extraction.
+  Switched to ignoring NaNs.
+
 3.1.15 - 2022-04-05
 -------------------
 
