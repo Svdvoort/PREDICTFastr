@@ -1,4 +1,4 @@
-# Copyright 2011-2022 Biomedical Imaging Group Rotterdam, Departments of
+# Copyright 2011-2023 Biomedical Imaging Group Rotterdam, Departments of
 # Medical Informatics and Radiology, Erasmus MC, Rotterdam, The Netherlands
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -95,7 +95,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 
 setup(
     name='PREDICT',
-    version='3.1.16',
+    version='3.1.17',
     description='Predict: a Radiomics Extensive Digital Interchangable Classification Toolkit.',
     long_description=_description,
     url='https://github.com/Svdvoort/PREDICTFastr',

@@ -26,7 +26,7 @@ N_min_smooth = 10
 N_max_smooth = 40
 
 
-def get_shape_features(mask, metadata=None, mode='2D'):
+def get_shape_features(mask, metadata=None, mode='3D'):
     '''
     Compute all shape features on a mask. Returns two lists: the feature values
     and the feature labels.
@@ -34,8 +34,14 @@ def get_shape_features(mask, metadata=None, mode='2D'):
     if mode == '3D':
         features, labels = get_shape_features_3D(mask, metadata)
         labels = [l + '_3D' for l in labels]
+    elif mode == '2.5D':
+        features, labels = get_shape_features_25D(mask, metadata)
+        labels = [l + '_2.5D' for l in labels]
+    elif mode == '2D':
+        features, labels = get_shape_features_2D(mask, metadata)
+        labels = [l + '_2D' for l in labels]
     else:
-        # 2D or 2.5D
+        # Determine what is optimal: choice between 2D and 2.5D
         if len(mask.GetSize()) == 2:
             features, labels = get_shape_features_2D(mask, metadata)
             labels = [l + '_2D' for l in labels]
