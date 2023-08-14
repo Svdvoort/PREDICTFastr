@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright 2011-2017 Biomedical Imaging Group Rotterdam, Departments of
+# Copyright 2011-2023 Biomedical Imaging Group Rotterdam, Departments of
 # Medical Informatics and Radiology, Erasmus MC, Rotterdam, The Netherlands
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -73,9 +73,6 @@ def load_config(config_file_path):
 
     settings_dict['ImageFeatures']['texture_LBP'] =\
         settings['ImageFeatures'].getboolean('texture_LBP')
-
-    settings_dict['ImageFeatures']['coliage'] =\
-        settings['ImageFeatures'].getboolean('coliage')
 
     settings_dict['ImageFeatures']['vessel'] =\
         settings['ImageFeatures'].getboolean('vessel')
