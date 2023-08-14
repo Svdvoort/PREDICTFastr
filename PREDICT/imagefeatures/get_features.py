@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright 2011-2022 Biomedical Imaging Group Rotterdam, Departments of
+# Copyright 2011-2023 Biomedical Imaging Group Rotterdam, Departments of
 # Medical Informatics and Radiology, Erasmus MC, Rotterdam, The Netherlands
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,7 +25,6 @@ import PREDICT.imagefeatures.texture_features as tf
 import PREDICT.imagefeatures.shape_features as sf
 import PREDICT.imagefeatures.semantic_features as semf
 import PREDICT.imagefeatures.orientation_features as of
-import PREDICT.imagefeatures.coliage_features as cf
 import PREDICT.imagefeatures.dti_features as dtif
 import PREDICT.imagefeatures.dicom_features as df
 import PREDICT.imagefeatures.log_features as logf
@@ -205,14 +204,6 @@ def get_image_features(image_data, mask, parameters,
 
         feature_values += texture_features
         feature_labels += texture_labels
-
-        if config["coliage"]:
-            print("\t Computing coliage features.")
-            coliage_features, coliage_labels =\
-                cf.get_coliage_features(image_data_array,
-                                        mask_array)
-            feature_values += coliage_features
-            feature_labels += coliage_labels
 
         if config["vessel"]:
             print("\t Computing vessel features.")

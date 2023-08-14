@@ -7,7 +7,7 @@ This is an open-source python package supporting radiomics image feature extract
 ### Documentation
 
 For more information, see the sphinx generated documentation available in the docs folder.
-PREDICT is mostly used through the WORC toolbox, in which further documentation
+PREDICT is mostly used through [the WORC toolbox](https://github.com/MStarmans91/WORC), in which further documentation
 on the features computed is also available, see https://worc.readthedocs.io/en/latest/static/features.html.
 
 Alternatively, you can generate the documentation by checking out the master branch and running from the root directory:
@@ -34,6 +34,16 @@ Make sure you first install the required packages:
     pip install -r requirements.txt
 
 
+### Configuration and usage
+
+We recommend using PREDICT through [the WORC toolbox](https://github.com/MStarmans91/WORC), as WORC 
+provides easy execution, good default configurations, and additional functionality
+such as preprocessing. If you want to use PREDICT as standalone package,
+we have included the default config for PREDICT from WORC in the ``tests`` folder. The main function
+of PREDICT is the ``PREDICT.CalcFeatures.CalcFeatures`` function, see tests.py in the test folder
+on the usage.
+
+
 ### 3rd-party packages used in PREDICT:
 We mainly rely on the following packages:
 
@@ -47,7 +57,7 @@ We mainly rely on the following packages:
 See also the [requirements file](requirements.txt).
 
 ### License
-This package is covered by the open source [APACHE 2.0 License](APACHE-LICENSE-2.0). When using PREDICT, please use the following DOI: [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.3854839.svg)](https://zenodo.org/badge/latestdoi/92298822).
+This package is covered by the open source [APACHE 2.0 License](APACHE-LICENSE-2.0). When using PREDICT, please cite the following DOI: [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.3854839.svg)](https://zenodo.org/badge/latestdoi/92298822).
 
 ### Contact
 We are happy to help you with any questions: please send us a message or create an issue on Github.
