@@ -8,31 +8,30 @@ PREDICT.IOparser.config\_io module
 ----------------------------------
 
 .. automodule:: PREDICT.IOparser.config_io
-    :members:
-    :undoc-members:
-    :show-inheritance:
+   :members:
+   :show-inheritance:
+   :undoc-members:
 
 PREDICT.IOparser.config\_io\_CalcFeatures module
 ------------------------------------------------
 
 .. automodule:: PREDICT.IOparser.config_io_CalcFeatures
-    :members:
-    :undoc-members:
-    :show-inheritance:
+   :members:
+   :show-inheritance:
+   :undoc-members:
 
 PREDICT.IOparser.file\_io module
 --------------------------------
 
 .. automodule:: PREDICT.IOparser.file_io
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+   :members:
+   :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: PREDICT.IOparser
-    :members:
-    :undoc-members:
-    :show-inheritance:
+   :members:
+   :show-inheritance:
+   :undoc-members:

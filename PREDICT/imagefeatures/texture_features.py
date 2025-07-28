@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright 2011-2017 Biomedical Imaging Group Rotterdam, Departments of
+# Copyright 2011-2024 Biomedical Imaging Group Rotterdam, Departments of
 # Medical Informatics and Radiology, Erasmus MC, Rotterdam, The Netherlands
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,7 @@ import numpy as np
 import skimage.filters
 from joblib import Parallel, delayed
 import itertools
-from skimage.feature import greycomatrix, greycoprops
+from skimage.feature import graycomatrix, graycoprops
 from skimage.exposure import rescale_intensity
 from skimage.feature import local_binary_pattern
 import SimpleITK as sitk
@@ -153,15 +153,15 @@ def get_GLCM_features_multislice(image, mask, parameters=dict()):
 
         # compute actual GLCM
         try:
-            GLCM_matrix = greycomatrix(image_bounded, distances, angles,
+            GLCM_matrix = graycomatrix(image_bounded, distances, angles,
                                        levels=levels, normed=True)
 
-            contrast.append(greycoprops(GLCM_matrix, 'contrast').flatten())
-            dissimilarity.append(greycoprops(GLCM_matrix, 'dissimilarity').flatten())
-            homogeneity.append(greycoprops(GLCM_matrix, 'homogeneity').flatten())
-            ASM.append(greycoprops(GLCM_matrix, 'ASM').flatten())
-            energy.append(greycoprops(GLCM_matrix, 'energy').flatten())
-            correlation.append(greycoprops(GLCM_matrix, 'correlation').flatten())
+            contrast.append(graycoprops(GLCM_matrix, 'contrast').flatten())
+            dissimilarity.append(graycoprops(GLCM_matrix, 'dissimilarity').flatten())
+            homogeneity.append(graycoprops(GLCM_matrix, 'homogeneity').flatten())
+            ASM.append(graycoprops(GLCM_matrix, 'ASM').flatten())
+            energy.append(graycoprops(GLCM_matrix, 'energy').flatten())
+            correlation.append(graycoprops(GLCM_matrix, 'correlation').flatten())
 
         except ValueError:
             print(f'[PREDICT WARNING] Slice {i_slice} to small to compute GLCM: {image_bounded.shape}.')
@@ -283,17 +283,17 @@ def get_GLCM_features(image, mask, parameters=dict()):
 
         # compute actual GLCM
         try:
-            GLCM_matrix += greycomatrix(image_bounded, distances, angles,
+            GLCM_matrix += graycomatrix(image_bounded, distances, angles,
                                         levels=levels, normed=True)
         except ValueError:
             print(f'[PREDICT WARNING] Slice {i_slice} to small to compute GLCM: {image_bounded.shape}.')
 
-    contrast = greycoprops(GLCM_matrix, 'contrast').flatten()
-    dissimilarity = greycoprops(GLCM_matrix, 'dissimilarity').flatten()
-    homogeneity = greycoprops(GLCM_matrix, 'homogeneity').flatten()
-    ASM = greycoprops(GLCM_matrix, 'ASM').flatten()
-    energy = greycoprops(GLCM_matrix, 'energy').flatten()
-    correlation = greycoprops(GLCM_matrix, 'correlation').flatten()
+    contrast = graycoprops(GLCM_matrix, 'contrast').flatten()
+    dissimilarity = graycoprops(GLCM_matrix, 'dissimilarity').flatten()
+    homogeneity = graycoprops(GLCM_matrix, 'homogeneity').flatten()
+    ASM = graycoprops(GLCM_matrix, 'ASM').flatten()
+    energy = graycoprops(GLCM_matrix, 'energy').flatten()
+    correlation = graycoprops(GLCM_matrix, 'correlation').flatten()
 
     GLCM_features = contrast.tolist() +\
         dissimilarity.tolist() +\

@@ -1,1 +1,4 @@
 PREDICT
+dist
+docs
+tests

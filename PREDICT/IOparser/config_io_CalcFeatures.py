@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright 2011-2023 Biomedical Imaging Group Rotterdam, Departments of
+# Copyright 2011-2024 Biomedical Imaging Group Rotterdam, Departments of
 # Medical Informatics and Radiology, Erasmus MC, Rotterdam, The Netherlands
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -97,12 +97,12 @@ def load_config(config_file_path):
                          settings['ImageFeatures']['gabor_frequencies']
                          .split(',')]
 
-    gabor_frequencies = np.asarray(gabor_frequencies).astype(np.float)
+    gabor_frequencies = np.asarray(gabor_frequencies).astype(float)
 
     gabor_angles = [str(item).strip() for item in
                     settings['ImageFeatures']['gabor_angles']
                     .split(',')]
-    gabor_angles = np.asarray(gabor_angles).astype(np.float)
+    gabor_angles = np.asarray(gabor_angles).astype(float)
     # Convert gabor angle to radians from angles
     gabor_angles = np.radians(gabor_angles)
 
