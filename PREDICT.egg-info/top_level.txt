@@ -1,1 +1,5 @@
 PREDICT
+build
+dist
+docs
+tests

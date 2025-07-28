@@ -1,120 +1,225 @@
-Metadata-Version: 1.1
+Metadata-Version: 2.4
 Name: PREDICT
-Version: 3.1.17
+Version: 3.2.0
 Summary: Predict: a Radiomics Extensive Digital Interchangable Classification Toolkit.
-Home-page: https://github.com/Svdvoort/PREDICTFastr
-Author: Martijn P. A. Starmans, Sebastian R. van der Voort
-Author-email: m.starmans@erasmusmc.nl, s.vandervoort@erasmusmc.nl
-License: Apache License, Version 2.0
-Description: PREDICT v3.1.17
-        ===============
-        
-        PREDICT: a Radiomics Extensive Digital Interchangable Classification Toolkit
-        ----------------------------------------------------------------------------
-        
-        This is an open-source python package supporting radiomics image feature
-        extraction.
-        
-        Documentation
-        ~~~~~~~~~~~~~
-        
-        For more information, see the sphinx generated documentation available
-        in the docs folder. PREDICT is mostly used through `the WORC
-        toolbox <https://github.com/MStarmans91/WORC>`__, in which further
-        documentation on the features computed is also available, see
-        https://worc.readthedocs.io/en/latest/static/features.html.
-        
-        Alternatively, you can generate the documentation by checking out the
-        master branch and running from the root directory:
-        
-        ::
-        
-            python setup.py build_sphinx
-        
-        The documentation can then be viewed in a browser by opening
-        ``PACKAGE_ROOT\build\sphinx\html\index.html``.
-        
-        Installation
-        ~~~~~~~~~~~~
-        
-        PREDICT has currently been tested on Ubuntu 16.04 and 18.04, and Windows
-        10 using Python 3.6.6 and higher.
-        
-        The package can be installed through pip :
-        
-        ::
-        
-            pip install PREDICT
-        
-        Alternatively, you can use the provided setup.py file:
-        
-        ::
-        
-            python setup.py install
-        
-        Make sure you first install the required packages:
-        
-        ::
-        
-            pip install -r requirements.txt
-        
-        Configuration and usage
-        ~~~~~~~~~~~~~~~~~~~~~~~
-        
-        We recommend using PREDICT through `the WORC
-        toolbox <https://github.com/MStarmans91/WORC>`__, as WORC provides easy
-        execution, good default configurations, and additional functionality
-        such as preprocessing. If you want to use PREDICT as standalone package,
-        we have included the default config for PREDICT from WORC in the
-        ``tests`` folder. The main function of PREDICT is the
-        ``PREDICT.CalcFeatures.CalcFeatures`` function, see tests.py in the test
-        folder on the usage.
-        
-        3rd-party packages used in PREDICT:
-        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        
-        We mainly rely on the following packages:
-        
-        -  SimpleITK (Image loading and preprocessing)
-        -  numpy (Feature computation)
-        -  scikit-image
-        -  pandas (Storage)
-        -  PyRadiomics
-        -  pydicom
-        
-        See also the `requirements file <requirements.txt>`__.
-        
-        License
-        ~~~~~~~
-        
-        This package is covered by the open source `APACHE 2.0
-        License <APACHE-LICENSE-2.0>`__. When using PREDICT, please cite the
-        following DOI: |DOI|.
-        
-        Contact
-        ~~~~~~~
-        
-        We are happy to help you with any questions: please send us a message or
-        create an issue on Github.
-        
-        .. |DOI| image:: https://zenodo.org/badge/doi/10.5281/zenodo.3854839.svg
-           :target: https://zenodo.org/badge/latestdoi/92298822
-        
-Keywords: bioinformatics radiomics features
-Platform: UNKNOWN
+Author-email: "Martijn P. A. Starmans" <m.starmans@erasmusmc.nl>, "Sebastian R. van der Voort" <s.vandervoort@erasmusmc.nl>
+License-Expression: Apache-2.0
+Project-URL: Homepage, https://github.com/Svdvoort/PREDICTFastr
+Keywords: bioinformatics,radiomics,features
 Classifier: Development Status :: 5 - Production/Stable
 Classifier: Intended Audience :: Developers
 Classifier: Intended Audience :: Science/Research
 Classifier: Intended Audience :: Healthcare Industry
 Classifier: Intended Audience :: Information Technology
 Classifier: Intended Audience :: Education
-Classifier: License :: OSI Approved :: Apache Software License
 Classifier: Natural Language :: English
 Classifier: Operating System :: OS Independent
-Classifier: Programming Language :: Python :: 3.6
-Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.11
 Classifier: Programming Language :: Python :: 3 :: Only
 Classifier: Topic :: Scientific/Engineering :: Information Analysis
 Classifier: Topic :: System :: Distributed Computing
 Classifier: Topic :: System :: Logging
 Classifier: Topic :: Utilities
+Requires-Python: >=3.11
+Description-Content-Type: text/x-rst
+License-File: LICENSE
+Requires-Dist: numpy==1.26.3
+Requires-Dist: configparser
+Requires-Dist: joblib
+Requires-Dist: natsort
+Requires-Dist: pandas
+Requires-Dist: phasepack
+Requires-Dist: pyradiomics==3.0.1
+Requires-Dist: scipy
+Requires-Dist: scikit-image
+Requires-Dist: SimpleITK
+Requires-Dist: tables
+Requires-Dist: pydicom
+Dynamic: license-file
+
+PREDICT v3.1.17
+
+===============
+
+
+
+PREDICT: a Radiomics Extensive Digital Interchangable Classification Toolkit
+
+----------------------------------------------------------------------------
+
+
+
+This is an open-source python package supporting radiomics image feature
+
+extraction.
+
+
+
+Documentation
+
+~~~~~~~~~~~~~
+
+
+
+For more information, see the sphinx generated documentation available
+
+in the docs folder. PREDICT is mostly used through `the WORC
+
+toolbox <https://github.com/MStarmans91/WORC>`__, in which further
+
+documentation on the features computed is also available, see
+
+https://worc.readthedocs.io/en/latest/static/features.html.
+
+
+
+Alternatively, you can generate the documentation by checking out the
+
+master branch and running from the root directory:
+
+
+
+::
+
+
+
+   python setup.py build_sphinx
+
+
+
+The documentation can then be viewed in a browser by opening
+
+``PACKAGE_ROOT\build\sphinx\html\index.html``.
+
+
+
+Installation
+
+~~~~~~~~~~~~
+
+
+
+PREDICT has currently been tested on Ubuntu 16.04 and 18.04, and Windows
+
+10 using Python 3.6.6 and higher.
+
+
+
+The package can be installed through pip :
+
+
+
+::
+
+
+
+   pip install PREDICT
+
+
+
+Alternatively, you can use the provided setup.py file:
+
+
+
+::
+
+
+
+   python setup.py install
+
+
+
+Make sure you first install the required packages:
+
+
+
+::
+
+
+
+   pip install -r requirements.txt
+
+
+
+Configuration and usage
+
+~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+We recommend using PREDICT through `the WORC
+
+toolbox <https://github.com/MStarmans91/WORC>`__, as WORC provides easy
+
+execution, good default configurations, and additional functionality
+
+such as preprocessing. If you want to use PREDICT as standalone package,
+
+we have included the default config for PREDICT from WORC in the
+
+``tests`` folder. The main function of PREDICT is the
+
+``PREDICT.CalcFeatures.CalcFeatures`` function, see tests.py in the test
+
+folder on the usage.
+
+
+
+3rd-party packages used in PREDICT:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+We mainly rely on the following packages:
+
+
+
+- SimpleITK (Image loading and preprocessing)
+
+- numpy (Feature computation)
+
+- scikit-image
+
+- pandas (Storage)
+
+- PyRadiomics
+
+- pydicom
+
+
+
+See also the `requirements file <requirements.txt>`__.
+
+
+
+License
+
+~~~~~~~
+
+
+
+This package is covered by the open source `APACHE 2.0
+
+License <APACHE-LICENSE-2.0>`__. When using PREDICT, please cite the
+
+following DOI: |DOI|.
+
+
+
+Contact
+
+~~~~~~~
+
+
+
+We are happy to help you with any questions: please send us a message or
+
+create an issue on Github.
+
+
+
+.. |DOI| image:: https://zenodo.org/badge/doi/10.5281/zenodo.3854839.svg
+
+   :target: https://zenodo.org/badge/latestdoi/92298822
+
