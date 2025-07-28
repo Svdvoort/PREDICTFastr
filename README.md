@@ -1,41 +1,45 @@
-# PREDICT v3.1.17
+# PREDICT v3.2.0
 
 ## PREDICT: a Radiomics Extensive Digital Interchangable Classification Toolkit
-
 This is an open-source python package supporting radiomics image feature extraction.
 
 ### Documentation
-
 For more information, see the sphinx generated documentation available in the docs folder.
 PREDICT is mostly used through [the WORC toolbox](https://github.com/MStarmans91/WORC), in which further documentation
 on the features computed is also available, see https://worc.readthedocs.io/en/latest/static/features.html.
 
 Alternatively, you can generate the documentation by checking out the master branch and running from the root directory:
 
-    python setup.py build_sphinx
+```python
+python setup.py build_sphinx
+```
 
 The documentation can then be viewed in a browser by opening `PACKAGE_ROOT\build\sphinx\html\index.html`.
 
 ### Installation
-
-PREDICT has currently been tested on Ubuntu 16.04 and 18.04, and Windows 10
-using Python 3.6.6 and higher.
+PREDICT has currently been tested on Ubuntu 24.04, and Windows 10
+using Python 3.11.5 and higher.
 
 The package can be installed through pip :
 
-    pip install PREDICT
+```python
+pip install PREDICT
+```
 
 Alternatively, you can use the provided setup.py file:
 
-    python setup.py install
+```python
+python setup.py install
+```
 
 Make sure you first install the required packages:
 
-    pip install -r requirements.txt
+```python
+pip install -r requirements.txt
+```
 
 
 ### Configuration and usage
-
 We recommend using PREDICT through [the WORC toolbox](https://github.com/MStarmans91/WORC), as WORC 
 provides easy execution, good default configurations, and additional functionality
 such as preprocessing. If you want to use PREDICT as standalone package,
